@@ -1,0 +1,30 @@
+{extend name="common/base" }
+
+{block name="content"}
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<form class="am-form ajax-form" method="post" action="{:url('account')}">
+			
+			<div class="am-g am-margin-top-sm">
+				<div class="am-u-sm-4 am-u-md-2 am-text-right">
+					登录用户
+				</div>
+				<div class="am-u-sm-8 am-u-md-6 am-u-end">
+					{$manage_user.user_name}
+				</div>
+			</div>
+		
+			{$widget->form('text', ['title' => '账号昵称', 'name' => 'user_nick', 'value' => $manage_user['user_nick']])}
+			
+			{$widget->form('text', ['title' => '原来密码', 'type' => 'password','name' => 'old_passwd', 'tip' => '修改密码时必须'])}
+			
+			{$widget->form('text', ['title' => '新的密码', 'type' => 'password','name' => 'user_passwd', 'tip' => '不修改密码请留空'])}
+			
+			{$widget->form('text', ['title' => '确认密码', 'type' => 'password','name' => 'user_passwd_confirm', 'tip' => '重复新的密码'])}
+			
+			{$widget->form('submit', ['title' => '用户操作'])}
+			
+		</form>
+	</div>
+</div>
+{/block}

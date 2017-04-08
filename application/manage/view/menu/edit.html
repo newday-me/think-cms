@@ -1,0 +1,29 @@
+{extend name="common/base" }
+
+{block name="content"}
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<form class="am-form ajax-form" method="post" action="{:url('edit', ['id' => $_id])}">
+		
+			{$widget->form('text', ['title' => '菜单名称', 'name' => 'menu_name', 'value' => $_record['menu_name']])}
+		
+			{$widget->form('text', ['title' => '菜单链接', 'name' => 'menu_url', 'value' => $_record['menu_url']])}
+			
+			{$widget->form('text', ['title' => '菜单分组', 'name' => 'menu_group', 'value' => $_record['menu_group']])}
+			
+			{$widget->form('select', ['title' => '上级菜单', 'name' => 'menu_pid', 'value' => $_record['menu_pid'], 'list' => $menu_list])}
+			
+			{$widget->form('text', ['title' => '菜单排序', 'name' => 'menu_sort', 'value' => $_record['menu_sort']])}
+			
+			{$widget->form('select', ['title' => '打开方式', 'name' => 'menu_target', 'value' => $_record['menu_target'], 'list' => $target_list])}
+			
+			{$widget->form('select', ['title' => '是否Build', 'name' => 'menu_build', 'value' => $_record['menu_build'], 'list' => $build_list])}
+			
+			{$widget->form('select', ['title' => '菜单状态', 'name' => 'menu_status', 'value' => $_record['menu_status'], 'list' => $status_list])}
+			
+			{$widget->form('submit', ['title' => '用户操作'])}
+			
+		</form>
+	</div>
+</div>
+{/block}

@@ -1,0 +1,84 @@
+{extend name="common/base" }
+
+{block name="style"}
+<style type="text/css">
+.nd-group-select{
+	color: #3bb4f2 !important;
+}
+</style>
+{/block}
+
+{block name="content"}
+<div class="am-g tpl-toolbar">
+	<div class="am-u-sm-12 am-u-md-6">
+		<div class="am-btn-toolbar">
+			<div class="am-btn-group am-btn-group-xs">
+				<a class="am-btn am-btn-default" href="{:url('add')}">
+					<span class="am-icon-plus"></span> 新增
+				</a>
+				<a class="am-btn am-btn-default nd-refresh">
+					<span class="am-icon-refresh"></span> 刷新
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="am-u-sm-12 am-u-md-6">
+		<div class="am-btn-toolbar">
+			<div class="am-btn-group am-btn-group-xs" style="float: right">
+				<a class="am-btn am-btn-default {eq name='group' value=''}nd-group-select{/eq}" href="{:url('index')}">
+					全部
+				</a>
+				{volist name="group_list" id="vo"}
+				<a class="am-btn am-btn-default {eq name='group' value='$vo.config_group'}nd-group-select{/eq}" href="{:url('index', ['group' => $vo['config_group']])}">
+					{$vo.config_group}
+				</a>
+				{/volist}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="am-g">
+	<div class="am-u-sm-12">
+
+		<table class="am-table am-table-striped am-table-radius am-table-bordere">
+			<thead>
+				<tr>
+					<th>配置名称</th>
+					<th>配置标题</th>
+					<th>配置类型</th>
+					<th>配置分组</th>
+					<th>配置排序</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{volist name="_list" id="vo"}
+				<tr>
+					<td>{$vo.config_name}</td>
+					<td>{$vo.config_title}</td>
+					<td>{$vo.config_type}</td>
+					<td>{$vo.config_group}</td>
+					<td class="am-form">
+					   {$widget->row('text', ['value' => $vo['config_sort'], 'url' => url('modify', ['id' => $vo['id'], 'field' => 'config_sort'])])}
+					</td>
+					<td>
+						<div class="am-btn-toolbar">
+							<div class="am-btn-group am-btn-group-xs">
+								{$widget->row('button', ['title' => '编辑', 'class' => 'am-text-secondary', 'icon' => 'am-icon-pencil-square-o', 'url' => url('edit', ['id' => $vo['id']])])}
+                                {$widget->row('button', ['title' => '删除', 'class' => 'am-text-danger ajax-get ajax-confirm', 'icon' => 'am-icon-trash-o', 'url' => url('delete', ['id' => $vo['id']])])}
+                            </div>
+						</div>
+					</td>
+				</tr>
+				{/volist}
+			</tbody>
+		</table>
+
+		{if condition="!empty($_page)"}
+			<div class="am-fl">共 {$_total} 条记录</div>
+			<div class="am-fr">{$_page}</div>
+		{/if}
+	</div>
+</div>
+{/block}

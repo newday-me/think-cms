@@ -1,0 +1,63 @@
+{extend name="common/base" }
+
+{block name="content"}
+<div class="am-g">
+	<div class="am-u-sm-12 am-u-md-6">
+		<div class="am-btn-toolbar">
+			<div class="am-btn-group am-btn-group-xs">
+				<a class="am-btn am-btn-default" href="{:module_url('add')}">
+					<span class="am-icon-plus"></span> 新增
+				</a>
+				<a class="am-btn am-btn-default nd-refresh">
+					<span class="am-icon-refresh"></span> 刷新
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+<br/>
+
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<table class="am-table am-table-striped am-table-radius am-table-bordered">
+			<thead>
+				<tr>
+					<th>名称</th>
+					<th>排序</th>
+					<th>状态</th>
+					<th>时间</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			{volist name="_list" id="vo"}
+				<tr>
+					<td>{$vo.cate_name}</td>
+					<td class="am-form">
+					   {$widget->row('text', ['value' => $vo['cate_sort'], 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'cate_sort'])])}
+					</td>
+					<td>
+						{$widget->row('select', ['value' => $vo['cate_status'], 'list' => $status_list, 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'cate_status'])])}
+					</td>
+					<td>{$vo.create_time}</td>
+					<td>
+						<div class="am-btn-toolbar">
+							<div class="am-btn-group am-btn-group-xs">
+								{$widget->row('button', ['title' => '查看', 'class' => 'am-text-primary', 'icon' => 'am-icon-eye', 'attr' => 'target="new"', 'url' => url('blog/index/cate', ['name' => $vo['cate_flag']])])}
+                                {$widget->row('button', ['title' => '编辑', 'class' => 'am-text-secondary', 'icon' => 'am-icon-pencil-square-o', 'url' => module_url('edit', ['id' => $vo['id']])])}
+                                {$widget->row('button', ['title' => '删除', 'class' => 'am-text-danger ajax-get ajax-confirm', 'icon' => 'am-icon-trash-o', 'url' => module_url('delete', ['id' => $vo['id']])])}
+							</div>
+						</div>
+					</td>
+				</tr>
+			{/volist}
+			</tbody>
+		</table>
+		
+		{if condition="!empty($_page)"}
+            <div class="am-fl">共 {$_total} 条记录</div>
+            <div class="am-fr"> {$_page}</div>
+        {/if}
+	</div>
+</div>
+{/block}

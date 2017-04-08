@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+		<meta name="renderer" content="webkit">
+		<title>{$site_title}</title>
+		<link rel="stylesheet" href="{$lib_path}/amazeui/2.7.2/css/amazeui.css?_={$site_version}" />
+		<link rel="stylesheet" href="{$module_path}/app.css?_={$site_version}" />
+	</head>
+
+	<body id="blog">
+		<nav class="am-g am-g-fixed blog-fixed blog-nav">
+			<button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-primary am-show-sm-only blog-button" data-am-collapse="{target: '#blog-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+
+			<div class="am-collapse am-topbar-collapse" id="blog-collapse">
+				<ul class="am-nav am-nav-pills am-topbar-nav">
+					<li>
+						<a href="http://cms.newday.me">主页</a>
+					</li>
+					<li {eq name="$menu_class" value="index_index" }class="am-active" {/eq}>
+						<a href="{:url('blog/index/index')}">首页</a>
+					</li>
+					{volist name="cate_list" id="vo"}
+					<li {eq name="$menu_class" value="$vo['cate_class']" }class="am-active" {/eq}>
+						<a href="{:url('blog/index/cate', ['name' => $vo['cate_flag']])}">
+							{$vo.cate_name}
+						</a>
+					</li>
+					{/volist}
+				</ul>
+				<div class="blog-word am-fr">
+					希望死后的墓志铭可以有底气刻上：想要的都拥有，得不到的都释怀。
+				</div>
+			</div>
+		</nav>
+		<hr>
+
+		<!-- content srart -->
+		<div class="am-g am-g-fixed blog-fixed">
+			<div class="am-u-md-12 am-u-sm-12">
+				<article class="am-article blog-article">
+					<div class="am-article-hd">
+						<h1 class="am-article-title blog-article-title">{$article.article_title}</h1>
+						<p class="am-article-meta">
+							<span>{$article.article_author}</span>
+							 - 
+							<span>{$article.create_time}</span>
+						</p>
+					</div>
+					
+					<hr />
+					<br />
+					
+					<div class="blog-article-content">
+						{$article.article_content}
+					</div>
+
+				</article>
+
+			</div>
+		</div>
+
+		<hr>
+
+		<footer class="blog-footer">
+			<div class="am-text-center">
+				Copyright
+				<a href="http://www.newday.me"> NewDay </a>
+				All Rights Reserved
+				<font class="footer-font">，
+					<a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010802004255">浙ICP备13001290号</a>
+				</font>
+				，UI power by
+				<a href="http://www.yunshipei.com" target="_blank"> AmazeUI Team</a>。
+			</div>
+		</footer>
+
+		<script type="text/javascript" src="{$lib_path}/jquery/2.0.0/jquery.min.js?_={$site_version}"></script>
+		<script type="text/javascript" src="{$lib_path}/amazeui/2.7.2/js/amazeui.min.js?_={$site_version}"></script>
+	</body>
+
+</html>

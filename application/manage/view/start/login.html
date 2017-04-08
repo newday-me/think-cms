@@ -1,0 +1,88 @@
+{extend name="common/base" }
+
+{block name="style"}
+<style type="text/css">
+body {
+	background-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, #fff), linear-gradient(70deg, #e0f1ff 32%, #fffae3);
+}
+.login-code {
+	max-width: 100%;
+	height: 38px;
+	cursor: pointer;
+}
+</style>
+{/block}
+
+{block name="body"}
+<div class="am-g tpl-g">
+
+	<div class="tpl-login">
+		<div class="tpl-login-content">
+
+			<div class="tpl-login-logo">
+				<img src="{$module_path}/image/logo_manage_black.png" />
+			</div>
+
+			<form class="am-form tpl-form-line-form" action="{$login_url}">
+				<div class="am-form-group">
+					<input type="text" class="tpl-form-input" name="user_name" value="" placeholder="用户名">
+				</div>
+
+				<div class="am-form-group">
+					<input type="password" class="tpl-form-input" name="user_passwd" id="user_passwd" value="" placeholder="密码">
+				</div>
+                
+                {if condition="isset($code_url)"}
+                
+				<div class="am-form-group">
+					<input type="text" class="tpl-form-input" name="verify_code" id="verify_code" placeholder="验证码">
+				</div>
+
+				<div class="am-g am-form-group">
+					<div class="am-u-sm-6 am-text-center">
+						<a class="login-code-change">
+							<img class="login-code" src="{$code_url}" data-src="{$code_url}">
+						</a>
+					</div>
+					<div class="am-u-sm-6 am-text-center">
+						<a href="javascript:void(0)" class="login-code-change" style="line-height: 40px;">看不清？换一张</a>
+					</div>
+				</div>
+				
+				{/if}
+
+				<div class="am-form-group">
+					<button type="button" class="am-btn am-btn-primary am-btn-block ajax-post" target-form="am-form">登录</button>
+				</div>
+			</form>
+
+		</div>
+	</div>
+
+</div>
+{/block}
+
+{block name="script"}
+<script type="text/javascript">
+	$(function() {
+	$('.login-code-change').on('click', function() {
+		var src = $('.login-code').attr('data-src');
+		$('.login-code').attr('src', src + '?_=' + Math.random());
+		$('#verify_code').val('');
+		$('#verify_code').focus();
+	});
+	
+	$('#user_passwd').keydown(function(e) {
+		if (e.keyCode == 13) {
+			$('.ajax-post').click();
+		}
+	});
+	
+	$('#verify_code').keydown(function(e) {
+		if (e.keyCode == 13) {
+			$('.ajax-post').click();
+		}
+	});
+});
+</script>
+{/block}

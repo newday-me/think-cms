@@ -1,0 +1,69 @@
+{extend name="common/base"}
+
+{block name="style"}
+<style type="text/css">
+.count-rect{
+	border: 1px solid #ddd; 
+	margin-bottom: 2rem; 
+	margin-top: 1rem;
+	padding: 2rem;
+}
+.count-rect li a span{
+	margin-bottom: 1rem;
+}
+.count-rect li a br{
+	line-height: 2.5rem; 
+}
+</style>
+{/block}
+
+{block name="content"}
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<ul class="am-avg-sm-1 am-avg-md-4 am-padding am-text-center count-rect">
+			<li>
+				<a href="{:url('user/index')}" class="am-text-primary">
+					<span class="am-icon-btn am-text-primary am-icon-user"></span>
+					<br/>管理员数<br/>{$site_stat.user_num}
+				</a>
+			</li>
+			<li>
+				<a href="{:url('menu/index')}" class="am-text-primary">
+					<span class="am-icon-btn am-text-primary am-icon-tags"></span>
+					<br/>菜单数量<br/>{$site_stat.menu_num}
+				</a>
+			</li>
+			<li>
+				<a href="{:url('config/index')}" class="am-text-primary">
+					<span class="am-icon-btn am-text-primary am-icon-cog"></span>
+					<br/>配置数量<br/>{$site_stat.config_num}
+				</a>
+			</li>
+			<li>
+				<a href="{:url('file/index')}" class="am-text-primary">
+					<span class="am-icon-btn am-text-primary am-icon-file"></span>
+					<br/>附件数量<br/> {$site_stat.file_num}
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<table class="am-table am-table-bordered am-table-radius">
+			<tr>
+				{volist name="server_info" id="value" mod="2"}
+				<td width="20%">{$key}</td>
+				<td width="30%" class="am-text-primary">{$value}</td>
+				{eq name="mod" value="1"}
+			</tr>
+			<tr>
+				{/eq} {/volist}
+				<td>扩展列表</td>
+				<td colspan="3" class="am-text-primary">{$extensions_list}</td>
+			</tr>
+		</table>
+	</div>
+</div>
+{/block}

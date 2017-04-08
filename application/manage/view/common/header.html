@@ -1,0 +1,47 @@
+<header>
+	<!-- logo -->
+	<div class="am-fl tpl-header-logo">
+		<a href="{$manage_url}">
+			<img src="{$module_path}/image/logo_manage_black.png">
+		</a>
+	</div>
+	<!-- 右侧内容 -->
+	<div class="tpl-header-fluid">
+		<!-- 侧边切换 -->
+		<div class="am-fl tpl-header-switch-button am-icon-navicon">
+			<span></span>
+		</div>
+		
+		<!-- 主菜单 -->
+		<div class="am-fl tpl-header-navbar main-menu">
+			<ul>
+				{foreach name="main_menu" id="vo"}
+					<li class="{if condition='$vo.menu_active'}active{/if}">
+						<a target="{$vo.menu_target}" href="{$vo.menu_url}"> {$vo.menu_name} </a>
+					</li>
+				{/foreach}
+			</ul>
+		</div>
+
+		<!-- 账号 -->
+		<div class="am-fr tpl-header-navbar">
+			<ul>
+				<li class="am-dropdown" data-am-dropdown>
+					<a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">
+						<i class="am-icon-user am-icon-fw"></i> {$manage_user.user_nick}({$manage_user.user_name})
+						<span class="am-icon-caret-down"></span>
+					</a>
+					<ul class="am-dropdown-content">
+						<li>
+							<a href="{:url('manage/index/account')}"><i class="am-icon-cog am-icon-fw"></i> 账号设置 </a>
+						</li>
+						<li>
+							<a href="{:url('manage/start/logout')}"><i class="am-icon-power-off am-icon-fw"></i> 安全退出 </a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+
+	</div>
+</header>

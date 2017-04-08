@@ -1,0 +1,92 @@
+{extend name="common/base" }
+
+{block name="style"}
+<style type="text/css">
+.article-cover{
+    width: 60px;
+    height: 40px;
+    margin: auto;
+    background-size: cover;
+}
+</style>
+{/block}
+
+{block name="content"}
+<form action="{:module_url('index')}" class="search-form">
+<div class="am-g">
+
+    <div class="am-u-sm-12 am-u-md-3">
+        <div class="am-btn-toolbar">
+            <div class="am-btn-group am-btn-group-xs">
+                <a class="am-btn am-btn-default" href="{:module_url('add')}">
+                    <span class="am-icon-plus"></span> 新增
+                </a>
+                <a class="am-btn am-btn-default nd-refresh">
+                    <span class="am-icon-refresh"></span> 刷新
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    {$widget->search('select', ['name' => 'cate', 'value' => $cate, 'list' => $cate_list, 'md_num' => 3])}
+    
+    {$widget->search('select', ['name' => 'status', 'value' => $status, 'list' => $status_list, 'md_num' => 3])}
+    
+    {$widget->search('keyword', ['name' => 'keyword', 'holder' => '关键词', 'value' => $keyword, 'md_num' => 3])}
+
+</div>
+</form>
+
+<div class="am-g">
+    <div class="am-u-sm-12">
+    
+        <table class="am-table am-table-striped am-table-radius am-table-bordered am-form">
+            <thead>
+                <tr>
+                    <th>封面</th>
+                    <th>标题</th>
+                    <th>作者</th>
+                    <th>分类</th>
+                    <th>排序</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {volist name="_list" id="vo"}
+                <tr>
+                    <td class="am-text-center">
+                        <div class="article-cover" style="background-image: url('{$vo.article_cover}');"></div>
+                    </td>
+                    <td>{$vo.article_title}</td>
+                    <td>{$vo.article_author}</td>
+                    <td>
+                        {$widget->row('select', ['value' => $vo['article_cate'], 'list' => $cate_list, 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'article_cate'])])}
+                    </td>
+                    <td>
+                        {$widget->row('text', ['value' => $vo['article_sort'], 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'article_sort'])])}
+                    </td>
+                    <td>
+                        {$widget->row('select', ['value' => $vo['article_status'], 'list' => $status_list, 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'article_status'])])}
+                    </td>
+                    <td>
+                        <div class="am-btn-toolbar">
+                            <div class="am-btn-group am-btn-group-xs">
+                                {$widget->row('button', ['title' => '查看', 'class' => 'am-text-primary', 'icon' => 'am-icon-eye', 'attr' => 'target="new"', 'url' => url('blog/index/show', ['key' => $vo['article_key']])])}
+                                {$widget->row('button', ['title' => '编辑', 'class' => 'am-text-secondary', 'icon' => 'am-icon-pencil-square-o', 'url' => module_url('edit', ['id' => $vo['id']])])}
+                                {$widget->row('button', ['title' => '删除', 'class' => 'am-text-danger ajax-get ajax-confirm', 'icon' => 'am-icon-trash-o', 'url' => module_url('delete', ['id' => $vo['id']])])}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {/volist}
+            </tbody>
+        </table>
+        
+        {if condition="!empty($_page)"}
+            <div class="am-fl">共 {$_total} 条记录</div>
+            <div class="am-fr"> {$_page}</div>
+        {/if}
+    </div>
+</div>
+{/block}

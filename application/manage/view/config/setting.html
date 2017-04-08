@@ -1,0 +1,76 @@
+{extend name="common/base" }
+
+{block name="content"}
+<div class="am-g">
+	<div class="am-u-sm-12">
+	
+		<div class="am-tabs" data-am-tabs="{noSwipe: 1}">
+			<ul class="am-tabs-nav am-nav am-nav-tabs">
+			{volist name="_list" id="vo"}
+				<li><a href="#tab_{:md5($key)}">{$key}</a></li>
+			{/volist}
+			</ul>
+			<div class="am-tabs-bd">
+			{volist name="_list" id="vo"}
+				<div class="am-tab-panel am-fade" id="tab_{:md5($key)}">
+					<form class="am-form {$vo.key}-form" method="post" action="{:url('setting')}">
+					{volist name="vo.list" id="ko"}
+						{switch name="ko.config_type"}
+						    {case value="text"}
+						    	{$widget->form('text', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value']])}
+							{/case}
+						    {case value="textarea"}
+						    	{$widget->form('textarea', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value']])}
+							{/case}
+							{case value="tag"}
+								{$widget->form('tag', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value']])}
+							{/case}
+							{case value="date"}
+								{$widget->form('date', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value'], 'format' => $ko['config_extra']])}
+							{/case}
+							{case value="color"}
+								{$widget->form('color', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value']])}
+							{/case}
+							{case value="image"}
+								{$widget->form('image', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value'], 'option' => $ko['config_extra']])}
+							{/case}
+							{case value="file"}
+								{$widget->form('file', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value'], 'option' => $ko['config_extra']])}
+							{/case}
+							{case value="radio"}
+								{$widget->form('radio', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value'], 'list' => $ko['config_extra']])}
+							{/case}
+							{case value="checkbox"}
+						    	{$widget->form('checkbox', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value'], 'list' => $ko['config_extra']])}
+							{/case}
+							{case value="select"}
+						    	{$widget->form('select', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value'], 'list' => $ko['config_extra']])}
+							{/case}
+							{case value="array"}
+								{$widget->form('array', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value']])}
+							{/case}
+							{case value="editor"}
+								{$widget->form('editor', ['title' => $ko['config_title'], 'name' => 'config['.$ko['config_name'].']', 'value' => $ko['config_value']])}
+							{/case}
+						{/switch}
+					{/volist}
+						<div class="am-g am-margin-top">
+							<div class="am-u-sm-4 am-u-md-2 am-text-right">
+								用户操作
+							</div>
+							<div class="am-u-sm-8 am-u-md-10">
+								<button type="button" class="am-btn am-btn-sm am-btn-primary ajax-post" target-form="{$vo.key}-form" >保存设置</button>
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								<button type="button" class="am-btn am-btn-sm am-btn-default nd-backward">取消操作</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			{/volist}
+			</div>
+		</div>
+		<br/>
+		
+	</div>
+</div>
+{/block}

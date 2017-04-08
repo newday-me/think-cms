@@ -1,0 +1,75 @@
+{extend name="common/base" }
+
+{block name="style"}
+<style type="text/css">
+.nd-group-select{
+	color: #0062F9 !important;
+}
+</style>
+{/block}
+
+{block name="content"}
+<form action="{:url('index')}" class="search-form">
+	<div class="am-g">
+	
+		<div class="am-u-sm-12 am-u-md-3">
+			<div class="am-btn-toolbar">
+				<div class="am-btn-group am-btn-group-xs">
+					<a class="am-btn am-btn-default nd-refresh">
+						<span class="am-icon-refresh"></span> 刷新
+					</a>
+				</div>
+			</div>
+		</div>
+		
+		{$widget->search('select', ['name' => 'extension', 'value' => $extension, 'list' => $extension_list])}
+		
+		{$widget->search('date', ['name' => 'start_time', 'holder' => '开始日期', 'value' => $start_time])}
+		
+		{$widget->search('date', ['name' => 'end_time', 'holder' => '结束日期', 'value' => $end_time])}
+	
+		{$widget->search('keyword', ['name' => 'keyword', 'holder' => '关键词', 'value' => $keyword, 'md_num' => 3])}
+	</div>
+</form>
+
+<div class="am-g">
+	<div class="am-u-sm-12">
+	
+		<table class="am-table am-table-striped am-table-radius am-table-bordered">
+			<thead>
+				<tr>
+					<th>文件Hash</th>
+					<th>文件后缀</th>
+					<th>文件链接</th>
+					<th>文件大小</th>
+					<th>上传时间</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			{volist name="_list" id="vo"}
+				<tr>
+					<td>{$vo.file_hash}</td>
+					<td>{$vo.file_ext}</td>
+					<td>{$vo.file_url}</td>
+					<td>{$vo.file_size}</td>
+					<td>{$vo.create_time}</td>
+					<td>
+						<div class="am-btn-toolbar">
+							<div class="am-btn-group am-btn-group-xs">
+								{$widget->row('button', ['title' => '删除', 'class' => 'am-text-danger ajax-get ajax-confirm', 'icon' => 'am-icon-trash-o', 'url' => url('delete', ['id' => $vo['id']])])}
+							</div>
+						</div>
+					</td>
+				</tr>
+			{/volist}
+			</tbody>
+		</table>
+		
+		{if condition="!empty($_page)"}
+			<div class="am-fl">共 {$_total} 条记录</div>
+			<div class="am-fr">{$_page}</div>
+		{/if}
+	</div>
+</div>
+{/block}

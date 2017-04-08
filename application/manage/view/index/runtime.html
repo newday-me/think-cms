@@ -1,0 +1,21 @@
+{extend name="common/base" }
+
+{block name="content"}
+<div class="am-g">
+    <div class="am-u-sm-12">
+        <form class="am-form ajax-form" method="post" action="{:url('runtime')}">
+            
+            {$widget->form('checkbox', ['title' => '清除范围', 'name' => 'path[]', 'inline' => false, 'list' => $path_list, 'r_style' => 'margin-top:-8px'])}
+            
+            {$widget->form('radio', ['title' => '空文件夹', 'name' => 'delete_empty', 'value' => 1, 'list' => $empty_list])}
+            
+            {$widget->form('date', ['title' => '开始日期', 'name' => 'start_time', 'r_md_num' => 4, 'tip' => '不删除修改日期小于该日期的文件，不填则不限'])}
+            
+            {$widget->form('date', ['title' => '结束日期', 'name' => 'end_time', 'r_md_num' => 4, 'tip' => '不删除修改日期大于该日期的文件，不填则不限'])}
+            
+            {$widget->form('submit', ['title' => '用户操作'])}
+            
+        </form>
+    </div>
+</div>
+{/block}

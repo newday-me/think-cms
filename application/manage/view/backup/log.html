@@ -1,0 +1,41 @@
+{extend name="common/base" }
+
+{block name="content"}
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<table class="am-table am-table-striped am-table-radius am-table-bordered">
+			<thead>
+				<tr>
+					<th>备份时间</th>
+					<th>备份用户</th>
+					<th>文件路径</th>
+					<th>文件大小</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			{volist name="_list" id="vo"}
+				<tr>
+					<td>{$vo.create_time}</td>
+					<td>{$vo.user_nick}</td>
+					<td>{$vo.backup_file}</td>
+					<td>{$vo.backup_size}</td>
+					<td>
+						<div class="am-btn-toolbar">
+							<div class="am-btn-group am-btn-group-xs">
+								{$widget->row('button', ['title' => '删除', 'class' => 'am-text-danger ajax-get ajax-confirm', 'icon' => 'am-icon-trash-o', 'url' => url('delete', ['id' => $vo['id']])])}
+							</div>
+						</div>
+					</td>
+				</tr>
+			{/volist}
+			</tbody>
+		</table>
+		
+		{if condition="!empty($_page)"}
+            <div class="am-fl">共 {$_total} 条记录</div>
+            <div class="am-fr">{$_page}</div>
+        {/if}
+	</div>
+</div>
+{/block}

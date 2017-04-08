@@ -1,0 +1,134 @@
+{extend name="manage@common/base" }
+
+{block name="css"}{/block}
+
+{block name="style"}
+<style type="text/css">
+#install_panel{
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+</style>
+{/block}
+
+{block name="body"}
+<form class="am-form tpl-form-line-form" action="{:url('install')}">
+<div class="row">
+	<div class="am-u-sm-12 am-u-md-12 am-u-lg-12" id="install_panel">
+		<div class="widget am-cf">
+			<div class="widget-head am-cf">
+				<div class="widget-title am-fl">
+					{$site_title}
+				</div>
+				<div class="widget-function am-fr">
+					<button type="button" class="am-btn am-btn-success ajax-post" target-form="am-form">安装</button>
+				</div>
+			</div>
+			<div class="widget-body am-fr">
+				
+				<br/>
+				<div class="am-form-group">
+					<h2 class="am-u-sm-push-2" >数据库配置</h2>
+				</div>
+				<div class="am-form-group">
+					<label for="user-name" class="am-u-sm-2 am-form-label">主机</label>
+					<div class="am-u-sm-8">
+						<input type="text" name="db_host" class="tpl-form-input" placeholder="localhost" value="localhost" />
+					</div>
+					<div class="am-u-sm-2"></div>
+				</div>
+				<div class="am-form-group">
+					<label for="user-email" class="am-u-sm-2 am-form-label">用户名</label>
+					<div class="am-u-sm-8">
+						<input type="text" name="db_user" class="am-form-field tpl-form-no-bg" placeholder="root" value="root" />
+					</div>
+					<div class="am-u-sm-2"></div>
+				</div>
+				<div class="am-form-group">
+					<label for="user-email" class="am-u-sm-2 am-form-label">密码</label>
+					<div class="am-u-sm-8">
+						<input type="password" name="db_passwd" class="am-form-field tpl-form-no-bg" placeholder="" />
+					</div>
+					<div class="am-u-sm-2"></div>
+				</div>
+				<div class="am-form-group">
+					<label for="user-email" class="am-u-sm-2 am-form-label">数据库</label>
+					<div class="am-u-sm-8">
+						<input type="text" name="db_database" class="am-form-field tpl-form-no-bg" placeholder="cms" value="cms" />
+					</div>
+					<div class="am-u-sm-2"></div>
+				</div>
+				<div class="am-form-group">
+					<label for="user-email" class="am-u-sm-2 am-form-label">端口</label>
+					<div class="am-u-sm-8">
+						<input type="text" name="db_port" class="am-form-field tpl-form-no-bg" placeholder="3306"  value="3306" />
+					</div>
+					<div class="am-u-sm-2"></div>
+				</div>
+				<div class="am-form-group">
+					<label for="user-email" class="am-u-sm-2 am-form-label">表前缀</label>
+					<div class="am-u-sm-8">
+						<input type="text" name="db_prefix" class="am-form-field tpl-form-no-bg" placeholder="nd_"  value="nd_" />
+					</div>
+					<div class="am-u-sm-2"></div>
+				</div>
+				<div class="am-form-group">
+					<label for="user-email" class="am-u-sm-2 am-form-label">编码</label>
+					<div class="am-u-sm-8">
+						<input type="text" name="db_charset" class="am-form-field tpl-form-no-bg" placeholder="utf8"  value="utf8" />
+					</div>
+					<div class="am-u-sm-2"></div>
+				</div>
+				
+				<br/>
+				<div class="am-form-group">
+					<h2 class="am-u-sm-push-2">管理员配置</h2>
+				</div>
+				<div class="am-form-group">
+					<label for="user-email" class="am-u-sm-2 am-form-label">昵称</label>
+					<div class="am-u-sm-8">
+						<input type="text" name="user_nick" class="am-form-field tpl-form-no-bg" placeholder="昵称" value="管理员" />
+					</div>
+					<div class="am-u-sm-2"></div>
+				</div>
+				<div class="am-form-group">
+					<label for="user-email" class="am-u-sm-2 am-form-label">用户名</label>
+					<div class="am-u-sm-8">
+						<input type="text" name="user_name" class="am-form-field tpl-form-no-bg" placeholder="admin"  value="admin" />
+					</div>
+					<div class="am-u-sm-2"></div>
+				</div>
+				<div class="am-form-group">
+					<label for="user-email" class="am-u-sm-2 am-form-label">密码</label>
+					<div class="am-u-sm-8">
+						<input type="password" name="user_passwd" class="am-form-field tpl-form-no-bg" />
+					</div>
+					<div class="am-u-sm-2"></div>
+				</div>
+				<div class="am-form-group">
+					<label for="user-email" class="am-u-sm-2 am-form-label">重复密码</label>
+					<div class="am-u-sm-8">
+						<input type="password" name="user_passwd_confirm" class="am-form-field tpl-form-no-bg" />
+					</div>
+					<div class="am-u-sm-2"></div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+{/block}
+
+{block name="js"}{/block}
+
+{block name="script"}
+<script type="text/javascript">
+	
+</script>
+{/block}

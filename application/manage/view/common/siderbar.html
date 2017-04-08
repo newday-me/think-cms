@@ -1,0 +1,27 @@
+<div class="left-sidebar">
+	<ul class="sidebar-nav">
+	{foreach name="sider_menu" id="vo" key="key"}
+		{if condition="isset($vo['sub_menu'])"}
+			<li class="sidebar-nav-heading sidebar-nav-list-title">
+				{$vo.menu_name}
+				<span class="am-icon-angle-down am-fr am-margin-right-sm sidebar-nav-sub-ico"></span>
+			</li>
+			<ul class="sidebar-nav sidebar-nav-list">
+			{foreach name="$vo.sub_menu" id="item"}
+				<li class="sidebar-nav-link">
+					<a href="{$item.menu_url}" target="{$item.menu_target}" class="{if condition='$item.menu_active'}active{/if}">
+						<i class="am-icon-angle-right sidebar-nav-link-logo"></i> {$item.menu_name}
+					</a>
+				</li>
+			{/foreach}
+			</ul>
+		{else /}
+			<li class="sidebar-nav-link">
+				<a href="{$item.menu_url}" target="{$item.menu_target}" class="{if condition='$item.menu_active'}active{/if}">
+					<i class="am-icon-graduation-cap sidebar-nav-link-logo"></i> {$item.menu_name}
+				</a>
+			</li>
+		{/if}
+	{/foreach}
+	</ul>
+</div>

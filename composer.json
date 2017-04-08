@@ -1,0 +1,23 @@
+{
+    "name": "newday-me/think-cms",
+    "description": "think cms",
+    "type": "project",
+    "homepage": "http://cms.newday.me/",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "哩呵",
+            "email": "newday_me@163.com"
+        }
+    ],
+    "require": {
+        "newday-me/think-cms-framework": "~0.0.1"
+    },
+    "minimum-stability": "RC",
+    "extra": {
+        "think-path": "thinkphp"
+    },
+    "config": {
+        "preferred-install": "dist"
+    }
+}

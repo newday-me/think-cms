@@ -1,0 +1,44 @@
+{extend name="common/base" }
+
+{block name="content"}
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<form class="am-form auth-form" action="{:url('auth', ['gid' => $gid])}">
+		<table class="am-table am-table-striped am-table-radius am-table-bordered">
+		{volist name="$menu_list['main_menu']" id="main_vo"}
+			<tr>
+				<th colspan="2">
+					<label class="am-checkbox-inline">
+						<input type="checkbox" name="group_menus[]" {if condition="in_array($main_vo.menu_id, $menu_ids)"}checked{/if} value="{$main_vo.menu_id}" data-am-ucheck> {$main_vo.menu_name}
+					</label>
+				</th>
+			</tr>
+			{volist name="$menu_list['sub_menu'][$main_vo['menu_id']]" id="sub_vo"}
+			<tr>
+				<td width="200px" style="padding-left: 50px;">
+					<label class="am-checkbox-inline">
+						<input type="checkbox" name="group_menus[]" {if condition="in_array($sub_vo.menu_id, $menu_ids)"}checked{/if} value="{$sub_vo.menu_id}" data-am-ucheck> {$sub_vo.menu_name}
+					</label>
+				</td>
+				<td>
+					{volist name="$menu_list['sub_sub_menu'][$sub_vo['menu_id']]" id="sub_sub_vo"}
+					<label class="am-checkbox-inline">
+						<input type="checkbox" name="group_menus[]" {if condition="in_array($sub_sub_vo.menu_id, $menu_ids)"}checked{/if} value="{$sub_sub_vo.menu_id}" data-am-ucheck> {$sub_sub_vo.menu_name}
+					</label>
+					{/volist}
+				</td>
+			</tr>
+			{/volist}
+		{/volist}
+			<tr>
+				<td colspan="2" class="am-text-center">
+					<button type="button" class="am-btn am-btn-sm am-btn-primary ajax-post" target-form="auth-form" >保存权限</button>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<button type="button" class="am-btn am-btn-sm am-btn-default nd-backward">取消操作</button>
+				</td>
+			</tr>
+		</table>
+		</form>
+	</div>
+</div>
+{/block}
