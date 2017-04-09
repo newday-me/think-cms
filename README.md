@@ -12,7 +12,7 @@
 
 *  **下载完整代码包**
 
-从[http://cms.newday.me/download.html](http://cms.newday.me/download.html "http://cms.newday.me/download.html")下载压缩包，然后直接解压。
+从【[http://cms.newday.me/download.html](http://cms.newday.me/download.html "http://cms.newday.me/download.html")】下载压缩包，然后直接解压。
 
 ## 二、功能设计
 

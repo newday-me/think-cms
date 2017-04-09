@@ -1,6 +1,6 @@
 {
     "name": "newday-me/think-cms",
-    "description": "think cms",
+    "description": "CMS应用",
     "type": "project",
     "homepage": "http://cms.newday.me/",
     "license": "Apache-2.0",
