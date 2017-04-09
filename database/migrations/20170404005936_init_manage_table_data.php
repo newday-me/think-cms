@@ -146,9 +146,9 @@ class InitManageTableData extends Migrator
         $data = [
             'menu_name' => '新增菜单',
             'menu_pid' => $subMenu['id'],
-            'menu_url' => 'manage/config/add',
+            'menu_url' => 'manage/menu/add',
             'menu_group' => '',
-            'menu_flag' => 'manage/config/add',
+            'menu_flag' => 'manage/menu/add',
             'menu_sort' => 0,
             'menu_status' => 1
         ];
@@ -158,9 +158,9 @@ class InitManageTableData extends Migrator
         $data = [
             'menu_name' => '编辑菜单',
             'menu_pid' => $subMenu['id'],
-            'menu_url' => 'manage/config/edit',
+            'menu_url' => 'manage/menu/edit',
             'menu_group' => '',
-            'menu_flag' => 'manage/config/edit',
+            'menu_flag' => 'manage/menu/edit',
             'menu_sort' => 1,
             'menu_status' => 1
         ];
@@ -170,9 +170,9 @@ class InitManageTableData extends Migrator
         $data = [
             'menu_name' => '修改菜单',
             'menu_pid' => $subMenu['id'],
-            'menu_url' => 'manage/config/modify',
+            'menu_url' => 'manage/menu/modify',
             'menu_group' => '',
-            'menu_flag' => 'manage/config/modify',
+            'menu_flag' => 'manage/menu/modify',
             'menu_sort' => 2,
             'menu_status' => 1
         ];
@@ -182,9 +182,9 @@ class InitManageTableData extends Migrator
         $data = [
             'menu_name' => '删除菜单',
             'menu_pid' => $subMenu['id'],
-            'menu_url' => 'manage/config/delete',
+            'menu_url' => 'manage/menu/delete',
             'menu_group' => '',
-            'menu_flag' => 'manage/config/delete',
+            'menu_flag' => 'manage/menu/delete',
             'menu_sort' => 3,
             'menu_status' => 1
         ];
