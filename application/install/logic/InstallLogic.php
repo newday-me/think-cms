@@ -40,6 +40,11 @@ class InstallLogic extends Logic
         return APP_PATH . 'extra' . DS . 'database.php';
     }
 
+    /**
+     * 执行安装
+     *
+     * @throws \Exception
+     */
     public function doInstall()
     {
         $request = Request::instance();

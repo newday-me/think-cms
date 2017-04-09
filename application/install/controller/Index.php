@@ -28,8 +28,9 @@ class Index extends Controller
      */
     protected function checkInstall()
     {
-        if (is_file(APP_PATH . 'extra' . DS . 'database.php')) {
-            // $this->error('安装完成');
+        $databaseFile = InstallLogic::getSingleton()->getDatabaseFile();
+        if (is_file($databaseFile)) {
+            $this->success('安装完成');
         }
     }
 
@@ -51,6 +52,9 @@ class Index extends Controller
      */
     public function install()
     {
+        // 验证安装
+        $this->checkInstall();
+        
         try {
             InstallLogic::getSingleton()->doInstall();
         } catch (\Exception $e) {
