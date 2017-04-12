@@ -115,8 +115,7 @@ class InstallService extends Service
         
         // 连接数据库
         $database = eval(str_replace('<?php', '', $databaseContent));
-        $db = Db::connect($database);
-        $db->connect();
+        $db = Db::connect($database, true);
         
         // 读取SQL
         $sqlFile = $this->getSqlFile();
@@ -141,7 +140,7 @@ class InstallService extends Service
             'user_nick' => $userNick,
             'user_passwd' => UserLogic::getSingleton()->encryptPasswd($userPasswd)
         ];
-        $db->name('manage_user')
+        Db::connect($database, true)->name('manage_user')
             ->where($map)
             ->update($data);
         
