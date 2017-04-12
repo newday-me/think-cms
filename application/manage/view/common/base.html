@@ -57,7 +57,7 @@ require.config({
 		'amazeui' : 'amazeui/2.7.2/js/amazeui.min',
 		'alertify' : 'alertify.js/1.8.0/alertify.min',
 		'color-picker' : 'color.picker/1.0/colorPicker',
-		'wangEditor' : 'wang.editor/2.1.23/js/wangEditor.min',
+		'wangEditor' : 'wang.editor/2.1.23/js/wangEditor',
 		'beautify' : 'js.beautify/1.6.4/beautify.min',
 		'beautify-css' : 'js.beautify/1.6.4/beautify-css.min',
 		'beautify-html' : 'js.beautify/1.6.4/beautify-html.min',
@@ -93,9 +93,13 @@ require.config({
     },
     'waitSeconds' : 10
 });
-require(['amazeui'], function(){
+require(['amazeui'], function(amazeui, alertify){
 	$.AMUI.progress.start();
-	require([CMS.path.static + '/manage/common.js'], function(){
+	require(['alertify', CMS.path.static + '/manage/common.js'], function(alertify){
+		
+		// 发现alertify与wangEditor冲突，原因待查
+		window.alertify = alertify;
+		
 		$.AMUI.progress.done();
 	});
 });

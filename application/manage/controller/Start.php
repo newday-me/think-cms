@@ -4,7 +4,7 @@ namespace app\manage\controller;
 use think\Url;
 use think\Config;
 use think\Request;
-use app\manage\logic\LoginLogic;
+use app\manage\service\LoginService;
 
 class Start extends Base
 {
@@ -28,7 +28,7 @@ class Start extends Base
         $needVerify = Config::get('manage_verify_code');
         
         if ($request->isPost()) {
-            $loginLogic = LoginLogic::getSingleton();
+            $login = LoginService::getSingleton();
             
             // 验证码
             if ($needVerify) {
@@ -43,7 +43,7 @@ class Start extends Base
             // 登录
             $name = $request->param('user_name');
             $passwd = $request->param('user_passwd');
-            list ($success, $msg, $url) = $loginLogic->doLogin($name, $passwd);
+            list ($success, $msg, $url) = $login->doLogin($name, $passwd);
             if ($success) {
                 $this->success($msg, $url);
             } else {
@@ -67,7 +67,7 @@ class Start extends Base
      */
     public function logout()
     {
-        LoginLogic::getSingleton()->loginOut();
+        LoginService::getSingleton()->loginOut();
         $this->success('退出登录成功', Url::build('start/login'));
     }
 }

@@ -1,11 +1,11 @@
 <?php
-namespace app\manage\logic;
+namespace app\manage\service;
 
 use cms\Auth;
 use core\manage\logic\UserLogic;
 use core\manage\logic\MenuLogic;
 
-class AuthLogic extends Auth
+class AuthService extends Auth
 {
 
     /**

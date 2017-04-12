@@ -1,6 +1,7 @@
 <?php
 namespace core;
 
+use think\Config;
 use cms\traits\InstanceTrait;
 
 /**
@@ -22,11 +23,10 @@ use cms\traits\InstanceTrait;
  * @method integer insert(array $data, boolean $replace = false, boolean $getLastInsID = false, string $sequence = null) 插入一条记录
  * @method integer insertGetId(array $data, boolean $replace = false, string $sequence = null) 插入一条记录并返回自增ID
  * @method integer insertAll(array $dataSet) 插入多条记录
- * @method integer update(array $data) 更新记录
  * @method boolean chunk(integer $count, callable $callback, string $column = null) 分块获取数据
  * @method mixed query(string $sql, array $bind = [], boolean $fetch = false, boolean $master = false, mixed $class = false) SQL查询
  * @method integer execute(string $sql, array $bind = [], boolean $fetch = false, boolean $getLastInsID = false, string $sequence = null) SQL执行
- * @method \think\paginator\PaginatorCollection paginate(integer $listRows = 15, boolean $simple = false, array $config = []) 分页查询
+ * @method \think\Paginator paginate(integer $listRows = 15, boolean $simple = false, array $config = []) 分页查询
  * @method mixed transaction(callable $callback) 执行数据库事务
  * @method string getLastSql() 获取最后一条SQL
  */
@@ -36,6 +36,28 @@ class Model extends \think\Model
      * 实例Trait
      */
     use InstanceTrait;
+
+    /**
+     * 获取表名
+     *
+     * @return string
+     */
+    public function getTableName()
+    {
+        if ($this->table) {
+            return $this->table;
+        } else {
+            return Config::get('database.prefix') . $this->getTableShortName();
+        }
+    }
+
+    /**
+     * 获取去前缀表名
+     */
+    public function getTableShortName()
+    {
+        return $this->name;
+    }
 
     /**
      * 软删除

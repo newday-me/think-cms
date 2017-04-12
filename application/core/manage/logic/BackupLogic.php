@@ -3,7 +3,7 @@ namespace core\manage\logic;
 
 use think\Db;
 use think\Config;
-use cms\Logic;
+use core\Logic;
 use core\manage\model\BackupModel;
 use Ifsnop\Mysqldump\Mysqldump;
 
@@ -30,7 +30,7 @@ class BackupLogic extends Logic
     public function addBakup($userId, $tables = [])
     {
         $bakupPath = $this->getBakupPath();
-        $model = BackupModel::getSingleton();
+        $model = BackupModel::getInstance();
         $dump = $this->getDumper($tables);
         
         // 备份数据库
@@ -55,7 +55,7 @@ class BackupLogic extends Logic
     public function deleteBakup($id)
     {
         $bakupPath = $this->getBakupPath();
-        $model = BackupModel::getSingleton();
+        $model = BackupModel::getInstance();
         
         $bakup = $model->get($id);
         @unlink($bakupPath . $bakup['backup_file']);

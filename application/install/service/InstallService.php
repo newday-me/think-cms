@@ -1,14 +1,30 @@
 <?php
-namespace app\install\logic;
+namespace app\install\service;
 
 use think\Db;
 use think\Request;
-use cms\Logic;
+use cms\Service;
+use core\manage\model\ConfigModel;
 use core\manage\logic\UserLogic;
 use core\manage\validate\UserValidate;
 
-class InstallLogic extends Logic
+class InstallService extends Service
 {
+
+    /**
+     * 是否安装
+     *
+     * @return boolean
+     */
+    public function isInstall()
+    {
+        try {
+            ConfigModel::getInstance()->count();
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 
     /**
      * 数据库配置模板路径

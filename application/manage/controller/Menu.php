@@ -23,20 +23,20 @@ class Menu extends Base
         $pid = $request->param('pid', 0);
         $this->assign('pid', $pid);
         
-        // 条件
+        // 查询条件
         $map = [
             'menu_pid' => $pid
         ];
         
-        // 条件-分组
+        // 查询条件-分组
         $group = $request->param('group', '');
         if (! empty($group_name)) {
             $map['menu_group'] = $group;
         }
         $this->assign('group', $group);
         
-        // 列表
-        $list = MenuModel::getSingleton()->where($map)
+        // 记录列表
+        $list = MenuModel::getInstance()->where($map)
             ->order('menu_sort asc')
             ->select();
         $this->_list($list);
@@ -176,7 +176,7 @@ class Menu extends Base
      */
     public function delete()
     {
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         $map = [
             'menu_pid' => $this->_id()
         ];
@@ -194,7 +194,7 @@ class Menu extends Base
      */
     protected function assignGroupList($map = [])
     {
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         $groupList = $model->getGroupList($map);
         $this->assign('group_list', $groupList);
     }
@@ -218,7 +218,7 @@ class Menu extends Base
      */
     protected function assignTargetList()
     {
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         $targetList = $model->getTargetList();
         $this->assign('target_list', $targetList);
     }
@@ -230,7 +230,7 @@ class Menu extends Base
      */
     protected function assignBuildList()
     {
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         $buildList = $model->getBuildList();
         $this->assign('build_list', $buildList);
     }
@@ -242,7 +242,7 @@ class Menu extends Base
      */
     protected function assignStatusList()
     {
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         $statusList = $model->getStatusList();
         $this->assign('status_list', $statusList);
     }

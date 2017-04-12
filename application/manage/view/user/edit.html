@@ -13,7 +13,7 @@
 			
 			{$widget->form('text', ['title' => '重复密码', 'type' => 'password', 'type' => 'password', 'name' => 'user_passwd_confirm', 'value' => ''])}
 			
-			{$widget->form('select', ['title' => '所属群组', 'name' => 'group_id', 'value' => $_record['group_id'], 'list' => $group_list])}
+			{$widget->form('select', ['title' => '所属群组', 'name' => 'user_gid', 'value' => $_record['user_gid'], 'list' => $group_list])}
 			
 			{$widget->form('select', ['title' => '用户状态', 'name' => 'user_status', 'value' => $_record['user_status'], 'list' => $status_list])}
 			

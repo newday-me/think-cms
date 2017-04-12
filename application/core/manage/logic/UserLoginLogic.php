@@ -16,7 +16,7 @@ class UserLoginLogic extends Logic
      */
     public function addLogin($userId)
     {
-        $model = UserLoginModel::getSingleton();
+        $model = UserLoginModel::getInstance();
         $common = Common::getSingleton();
         $data = [
             'login_uid' => $userId,

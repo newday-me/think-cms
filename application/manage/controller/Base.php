@@ -9,9 +9,9 @@ use cms\Controller;
 use core\Model;
 use core\Validate;
 use core\manage\logic\MenuLogic;
-use app\manage\logic\LoginLogic;
-use app\manage\logic\ViewLogic;
-use app\manage\logic\AuthLogic;
+use app\manage\service\LoginService;
+use app\manage\service\ViewService;
+use app\manage\service\AuthService;
 
 class Base extends Controller
 {
@@ -62,7 +62,7 @@ class Base extends Controller
         $publicAction = Config::get('manage_public_action') ?: [
             'manage.start.*'
         ];
-        if (! AuthLogic::getSingleton()->isPublicAction($publicAction)) {
+        if (! AuthService::getSingleton()->isPublicAction($publicAction)) {
             
             // 验证登录
             $this->verifyLogin();
@@ -82,8 +82,8 @@ class Base extends Controller
      */
     protected function verifyLogin()
     {
-        $loginLogic = LoginLogic::getSingleton();
-        $loginUser = $loginLogic->getLoginUser();
+        $login = LoginService::getSingleton();
+        $loginUser = $login->getLoginUser();
         if (empty($loginUser)) {
             Response::getSingleton()->redirect('manage/start/login');
         }
@@ -92,7 +92,7 @@ class Base extends Controller
         $this->userId = $loginUser['user_id'];
         
         // 用户信息
-        $manageUser = $loginLogic->gteLoginUserInfo();
+        $manageUser = $login->gteLoginUserInfo();
         $this->assign('manage_user', $manageUser);
         
         // 管理首页
@@ -106,7 +106,7 @@ class Base extends Controller
      */
     protected function verifyAuth()
     {
-        if (! AuthLogic::getSingleton()->isAuthAction($this->userId)) {
+        if (! AuthService::getSingleton()->isAuthAction($this->userId)) {
             $this->error('你没有权限访问该页面');
         }
     }
@@ -136,7 +136,7 @@ class Base extends Controller
      * @param Closure $perform            
      * @return void
      */
-    protected function _list($list, $perform = null)
+    protected function _list($list, \Closure $perform = null)
     {
         $perform && $perform($list);
         $this->assign('_list', $list);
@@ -150,7 +150,7 @@ class Base extends Controller
      * @param Closure $perform            
      * @return void
      */
-    protected function _page($model, $rowNum = null, $perform = null)
+    protected function _page($model, $rowNum = null, \Closure $perform = null)
     {
         $rowNum || $rowNum = Config::get('manage_row_num');
         $rowNum || $rowNum = 10;
@@ -205,7 +205,7 @@ class Base extends Controller
     protected function _add($model, $data)
     {
         $model = $this->buildModel($model);
-        if ($model->create($data)) {
+        if ($model->save($data)) {
             $this->success('添加成功', self::JUMP_REFERER);
         } else {
             $this->error('添加失败');
@@ -318,7 +318,14 @@ class Base extends Controller
      */
     protected function buildModel($model)
     {
-        return $this->buildObject($model);
+        if (is_string($model) && class_exists($model)) {
+            if (method_exists($model, 'getInstance')) {
+                return $model::getInstance();
+            } else {
+                return new $model();
+            }
+        }
+        return $model;
     }
 
     /**
@@ -329,27 +336,16 @@ class Base extends Controller
      */
     protected function buildValidate($validate)
     {
-        return $this->buildObject($validate);
-    }
-
-    /**
-     * 构造对象
-     *
-     * @param mixed $object            
-     * @return object
-     */
-    protected function buildObject($object)
-    {
-        if (is_string($object) && class_exists($object)) {
-            if (method_exists($object, 'getSingleton')) {
-                return $object::getSingleton();
-            } elseif (method_exists($object, 'getInstance')) {
-                return $object::getInstance();
+        if (is_string($validate) && class_exists($validate)) {
+            if (method_exists($validate, 'getSingleton')) {
+                return $validate::getSingleton();
+            } elseif (method_exists($validate, 'getInstance')) {
+                return $validate::getInstance();
             } else {
-                return new $object();
+                return new $validate();
             }
         }
-        return $object;
+        return $validate;
     }
 
     /**
@@ -387,7 +383,7 @@ class Base extends Controller
      */
     protected function getView()
     {
-        return ViewLogic::getSingleton()->getView();
+        return ViewService::getSingleton()->getView();
     }
 
     /**

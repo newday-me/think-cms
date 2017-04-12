@@ -4,7 +4,8 @@ namespace app\index\controller;
 use think\Config;
 use cms\Controller;
 use cms\Response;
-use app\manage\logic\ViewLogic;
+use app\manage\service\ViewService;
+use app\common\App;
 
 class Index extends Controller
 {
@@ -46,7 +47,7 @@ class Index extends Controller
      */
     protected function getView()
     {
-        return ViewLogic::getSingleton()->getView();
+        return ViewService::getSingleton()->getView();
     }
 }
  

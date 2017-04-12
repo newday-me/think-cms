@@ -16,7 +16,7 @@ class FileLogic extends Logic
      */
     public function deleteFile($id)
     {
-        $model = FileModel::getSingleton();
+        $model = FileModel::getInstance();
         $file = $model->get($id);
         if (empty($file)) {
             return true;

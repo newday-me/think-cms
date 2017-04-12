@@ -2,7 +2,8 @@
 namespace app\manage\controller;
 
 use think\Request;
-use app\manage\logic\IndexLogic;
+use app\manage\service\IndexService;
+use app\manage\service\RuntimeService;
 
 class Index extends Base
 {
@@ -16,19 +17,19 @@ class Index extends Base
     public function index(Request $request)
     {
         $this->siteTitle = '后台首页';
-        $logic = IndexLogic::getSingleton();
+        $index = IndexService::getSingleton();
         
         // 基础统计
-        $siteStat = $logic->getSiteStat();
+        $siteStat = $index->getSiteStat();
         $this->assign('site_stat', $siteStat);
         
         // 系统信息
-        $serverInfo = $logic->getServerInfo();
+        $serverInfo = $index->getServerInfo();
         $this->assign('server_info', $serverInfo);
         
         // 扩展列表
-        $extensions_list = get_loaded_extensions();
-        $this->assign('extensions_list', implode(' , ', $extensions_list));
+        $extensionsList = get_loaded_extensions();
+        $this->assign('extensions_list', implode(' , ', $extensionsList));
         
         return $this->fetch();
     }
@@ -53,14 +54,14 @@ class Index extends Base
     public function runtime(Request $request)
     {
         if ($request->isPost()) {
-            $logic = IndexLogic::getSingleton();
+            $runtime = RuntimeService::getSingleton();
             
             $paths = $request->param('path/a', []);
             $deleteEmpty = $request->param('delete_empty', 1);
             $startTime = strtotime($request->param('start_time', ''));
             $endTime = strtotime($request->param('start_time', ''));
             
-            $logic->clearRuntime($paths, [
+            $runtime->clearRuntime($paths, [
                 'delete_empty' => $deleteEmpty,
                 'start_time' => $startTime,
                 'end_time' => $endTime

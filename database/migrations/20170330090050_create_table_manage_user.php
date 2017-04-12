@@ -29,19 +29,19 @@ class CreateTableManageUser extends Migrator
         $userName = Column::string('user_name', 16)->setComment('用户名');
         $table->addColumn($userName);
         
-        // 密码
-        $userPasswd = Column::string('user_passwd', 32)->setComment('密码');
+        // 登录密码
+        $userPasswd = Column::string('user_passwd', 32)->setComment('登录密码');
         $table->addColumn($userPasswd);
         
-        // 昵称
-        $userNick = Column::string('user_nick', 150)->setDefault('')->setComment('昵称');
+        // 用户昵称
+        $userNick = Column::string('user_nick', 150)->setDefault('')->setComment('用户昵称');
         $table->addColumn($userNick);
         
-        // 分组ID
-        $groupId = Column::integer('group_id')->setComment('分组ID');
-        $table->addColumn($groupId);
+        // 用户分组
+        $userGid = Column::integer('user_gid')->setComment('用户分组');
+        $table->addColumn($userGid);
         
-        // 状态
+        // 用户状态
         $userStatus = Column::integer('user_status')->setLimit(4)
             ->setDefault(0)
             ->setComment('用户状态');

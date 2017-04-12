@@ -16,8 +16,6 @@ class ArticleValidate extends Validate
         'article_author' => 'require',
         'article_info' => 'require',
         'article_cover' => 'require',
-        'article_cate' => 'require',
-        'article_tags' => 'require',
         'article_content' => 'require'
     ];
 
@@ -31,8 +29,6 @@ class ArticleValidate extends Validate
         'article_author.require' => '文章作者为空',
         'article_info.require' => '文章简介为空',
         'article_cover.require' => '文章封面为空',
-        'article_cate.require' => '文章分类为空',
-        'article_tags.require' => '文章标签为空',
         'article_content.require' => '文章内容为空'
     ];
 
@@ -47,8 +43,6 @@ class ArticleValidate extends Validate
             'article_author',
             'article_info',
             'article_cover',
-            'article_cate',
-            'article_tags',
             'article_content'
         ],
         'edit' => [
@@ -56,8 +50,6 @@ class ArticleValidate extends Validate
             'article_author',
             'article_info',
             'article_cover',
-            'article_cate',
-            'article_tags',
             'article_content'
         ]
     ];

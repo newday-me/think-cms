@@ -2,8 +2,8 @@
 namespace module\blog\controller;
 
 use think\Request;
-use core\blog\model\ArticleModel;
 use core\blog\model\ArticleCateModel;
+use core\blog\model\ArticleCateLinkModel;
 use core\blog\validate\ArticleCateValidate;
 
 class ArticleCate extends Base
@@ -20,7 +20,7 @@ class ArticleCate extends Base
         $this->siteTitle = '分类列表';
         
         // 分页列表
-        $model = ArticleCateModel::getSingleton()->order('cate_sort asc');
+        $model = ArticleCateModel::getInstance()->order('cate_sort asc');
         $this->_page($model);
         
         // 状态列表
@@ -119,15 +119,14 @@ class ArticleCate extends Base
      */
     public function delete(Request $request)
     {
-        $model = ArticleModel::getSingleton();
+        // 删除连接
+        $model = ArticleCateLinkModel::getInstance();
         $map = [
-            'article_cate' => $this->_id()
+            'cate_id' => $this->_id()
         ];
-        if ($model->where($map)->find()) {
-            $this->error('请先删除该分类下的文章');
-        }
+        $model->where($map)->delete();
         
-        $this->_delete($model, false);
+        $this->_delete(ArticleCateModel::class, false);
     }
 
     /**
@@ -137,7 +136,7 @@ class ArticleCate extends Base
      */
     protected function assignStatusList()
     {
-        $model = ArticleCateModel::getSingleton();
+        $model = ArticleCateModel::getInstance();
         $statusList = $model->getStatusList();
         $this->assign('status_list', $statusList);
     }

@@ -27,7 +27,7 @@ class User extends Base
         $this->assignStatusList();
         
         // 分页列表
-        $list = UserModel::getSingleton()->select();
+        $list = UserModel::getInstance()->select();
         $this->_list($list);
         
         return $this->fetch();
@@ -47,7 +47,7 @@ class User extends Base
                 'user_nick' => $request->param('user_nick'),
                 'user_passwd' => $request->param('user_passwd'),
                 'user_passwd_confirm' => $request->param('user_passwd_confirm'),
-                'group_id' => $request->param('group_id'),
+                'user_gid' => $request->param('user_gid'),
                 'user_status' => $request->param('user_status', 0)
             ];
             
@@ -87,7 +87,7 @@ class User extends Base
                 'user_nick' => $request->param('user_nick'),
                 'user_passwd' => $request->param('user_passwd'),
                 'user_passwd_confirm' => $request->param('user_passwd_confirm'),
-                'group_id' => $request->param('group_id'),
+                'user_gid' => $request->param('user_gid'),
                 'user_status' => $request->param('user_status', 0)
             ];
             
@@ -125,7 +125,7 @@ class User extends Base
     public function modify()
     {
         $fields = [
-            'group_id',
+            'user_gid',
             'user_status'
         ];
         $this->_modify(UserModel::class, $fields);
@@ -160,7 +160,7 @@ class User extends Base
      */
     protected function assignStatusList()
     {
-        $model = UserModel::getSingleton();
+        $model = UserModel::getInstance();
         $statusList = $model->getStatusList();
         $this->assign('status_list', $statusList);
     }

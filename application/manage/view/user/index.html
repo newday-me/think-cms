@@ -39,7 +39,7 @@
 					<td>{$vo.login_count}</td>
 					<td>{$vo.login_time|date='Y-m-d H:i:s',###}</td>
 					<td>
-						{$widget->row('select', ['value' => $vo['group_id'], 'list' => $group_list, 'url' => url('modify', ['id' => $vo['id'], 'field' =>  'group_id'])])}
+						{$widget->row('select', ['value' => $vo['user_gid'], 'list' => $group_list, 'url' => url('modify', ['id' => $vo['id'], 'field' =>  'user_gid'])])}
 					</td>
 					<td>
 						{$widget->row('select', ['value' => $vo['user_status'], 'list' => $status_list, 'url' => url('modify', ['id' => $vo['id'], 'field' =>  'user_status'])])}

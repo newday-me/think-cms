@@ -21,6 +21,16 @@ class UserModel extends Model
     protected $autoWriteTimestamp = true;
 
     /**
+     * 关联用户
+     *
+     * @return \think\model\relation\BelongsTo
+     */
+    public function group()
+    {
+        return $this->belongsTo(UserGroupModel::class, 'user_gid', 'id');
+    }
+
+    /**
      * 获取用户列表
      *
      * @return array

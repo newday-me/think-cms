@@ -5,7 +5,7 @@ use think\Request;
 use cms\Controller;
 use core\blog\model\ArticleModel;
 use core\blog\model\ArticleCateModel;
-use app\manage\logic\ViewLogic;
+use app\manage\service\ViewService;
 
 class Index extends Controller
 {
@@ -52,7 +52,8 @@ class Index extends Controller
         $this->siteTitle = '博客 - 首页';
         
         $map = [
-            'article_status' => 1
+            'article_status' => 1,
+            'cate_status' => 1
         ];
         return $this->displayList($map);
     }
@@ -75,7 +76,7 @@ class Index extends Controller
         $map = [
             'cate_flag' => $cateName
         ];
-        $cate = ArticleCateModel::getSingleton()->where($map)->find();
+        $cate = ArticleCateModel::getInstance()->where($map)->find();
         if (empty($cate)) {
             $this->error('分类不存在');
         } elseif ($cate['cate_status'] == 0) {
@@ -86,7 +87,7 @@ class Index extends Controller
         $this->menuClass = 'cate_' . $cateName;
         $map = [
             'article_status' => 1,
-            'article_cate' => $cate['id']
+            'cate_id' => $cate['id']
         ];
         return $this->displayList($map);
     }
@@ -107,7 +108,7 @@ class Index extends Controller
         $map = [
             'article_key' => $articleKey
         ];
-        $article = ArticleModel::getSingleton()->where($map)->find();
+        $article = ArticleModel::getInstance()->where($map)->find();
         if (empty($article)) {
             $this->error('文章不存在');
         } elseif ($article['article_status'] == 0) {
@@ -146,10 +147,13 @@ class Index extends Controller
      */
     protected function assignPageList($map)
     {
-        $model = ArticleModel::getSingleton();
-        $list = $model->where($map)
-            ->order('id desc')
-            ->paginate(4);
+        $model = ArticleModel::getInstance();
+        $query = $model->withCates($model);
+        $list = $query->where($map)
+            ->field('article_key, article_title, article_author, article_info, article_cover, _a_article.create_time')
+            ->group('_a_article.id')
+            ->order('_a_article.id desc')
+            ->paginate(5);
         $this->assign('_list', $list);
         $this->assign('_page', $list->render());
         $this->assign('_total', $list->total());
@@ -162,10 +166,12 @@ class Index extends Controller
      */
     protected function assignSliderList($map)
     {
-        $model = ArticleModel::getSingleton();
-        $sliderList = $model->where($map)
+        $model = ArticleModel::getInstance();
+        $query = $model->withCates($model);
+        $sliderList = $query->where($map)
+            ->field('article_key, article_title, article_author, article_info, article_cover')
+            ->group('_a_article.id')
             ->order('rand()')
-            ->limit(4)
             ->select();
         $this->assign('slider_list', $sliderList);
     }
@@ -180,7 +186,9 @@ class Index extends Controller
         $map = [
             'cate_status' => 1
         ];
-        $cateList = ArticleCateModel::getSingleton()->order('cate_sort desc')->select();
+        $cateList = ArticleCateModel::getInstance()->where($map)
+            ->order('cate_sort desc')
+            ->select();
         foreach ($cateList as &$vo) {
             $vo['cate_class'] = 'cate_' . $vo['cate_flag'];
         }
@@ -211,6 +219,6 @@ class Index extends Controller
      */
     protected function getView()
     {
-        return ViewLogic::getSingleton()->getView();
+        return ViewService::getSingleton()->getView();
     }
 }

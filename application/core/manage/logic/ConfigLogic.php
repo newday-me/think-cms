@@ -24,7 +24,7 @@ class ConfigLogic extends Logic
     {
         $config = Cache::get(self::CACHE_KEY);
         if (empty($config)) {
-            $list = ConfigModel::getSingleton()->select();
+            $list = ConfigModel::getInstance()->select();
             $config = [];
             foreach ($list as $vo) {
                 switch ($vo['config_type']) {
@@ -62,7 +62,7 @@ class ConfigLogic extends Logic
      */
     public function getSetting()
     {
-        $list = ConfigModel::getSingleton()->order('config_sort asc')->select();
+        $list = ConfigModel::getInstance()->order('config_sort asc')->select();
         $res = [];
         foreach ($list as $vo) {
             $group = $vo['config_group'];

@@ -15,7 +15,7 @@ class InitBlogManageTableData extends Migrator
     public function up()
     {
         // 菜单
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         
         // 菜单-内容
         $data = [
@@ -88,6 +88,42 @@ class InitBlogManageTableData extends Migrator
             'menu_status' => 1
         ];
         $menu = $model->create($data);
+
+        // 菜单-文章标签
+        $data = [
+            'menu_name' => '文章标签',
+            'menu_pid' => $mainMain['id'],
+            'menu_url' => '@module/blog/article_tag/index',
+            'menu_group' => '博客',
+            'menu_flag' => 'module/blog/article_tag/index',
+            'menu_sort' => 1,
+            'menu_status' => 1
+        ];
+        $subMenu = $model->create($data);
+
+        // 菜单-文章标签-更改
+        $data = [
+            'menu_name' => '更改标签',
+            'menu_pid' => $subMenu['id'],
+            'menu_url' => '@module/blog/article_tag/modify',
+            'menu_group' => '',
+            'menu_flag' => 'module/blog/article_tag/modify',
+            'menu_sort' => 0,
+            'menu_status' => 1
+        ];
+        $menu = $model->create($data);
+
+        // 菜单-文章标签-删除
+        $data = [
+            'menu_name' => '删除标签',
+            'menu_pid' => $subMenu['id'],
+            'menu_url' => '@module/blog/article_tag/delete',
+            'menu_group' => '',
+            'menu_flag' => 'module/blog/article_tag/delete',
+            'menu_sort' => 1,
+            'menu_status' => 1
+        ];
+        $menu = $model->create($data);
         
         // 菜单-文章列表
         $data = [
@@ -96,7 +132,7 @@ class InitBlogManageTableData extends Migrator
             'menu_url' => '@module/blog/article/index',
             'menu_group' => '博客',
             'menu_flag' => 'module/blog/article/index',
-            'menu_sort' => 1,
+            'menu_sort' => 2,
             'menu_status' => 1
         ];
         $subMenu = $model->create($data);
@@ -149,6 +185,18 @@ class InitBlogManageTableData extends Migrator
         ];
         $menu = $model->create($data);
         
+        // 菜单-文章回收站
+        $data = [
+            'menu_name' => '文章回收站',
+            'menu_pid' => $mainMain['id'],
+            'menu_url' => '@module/blog/article/recycle',
+            'menu_group' => '博客',
+            'menu_flag' => 'module/blog/article/recycle',
+            'menu_sort' => 3,
+            'menu_status' => 1
+        ];
+        $subMenu = $model->create($data);
+        
         // 菜单-主页
         $data = [
             'menu_name' => '主页',
@@ -184,7 +232,7 @@ class InitBlogManageTableData extends Migrator
      */
     public function down()
     {
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         
         $map = [
             'menu_name' => '内容'

@@ -69,7 +69,7 @@ class File extends Base
         $this->assign('keyword', $keyword);
         
         // 分页列表
-        $model = FileModel::getSingleton();
+        $model = FileModel::getInstance();
         $this->_page($model, null, function (&$list) {
             $common = Common::getSingleton();
             foreach ($list as &$vo) {
@@ -117,7 +117,7 @@ class File extends Base
      */
     protected function assignExtensionList()
     {
-        $model = FileModel::getSingleton();
+        $model = FileModel::getInstance();
         $extensionList = $model->getExtensionList();
         $this->assign('extension_list', $extensionList);
     }

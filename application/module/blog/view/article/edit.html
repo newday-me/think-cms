@@ -7,7 +7,7 @@
 		
 			{$widget->form('text', ['title' => '文章标题', 'name' => 'article_title', 'value' => $_record['article_title']])}
 			
-			{$widget->form('select', ['title' => '文章分类', 'name' => 'article_cate', 'value' => $_record['article_cate'], 'list' => $cate_list])}
+			{$widget->form('checkbox', ['title' => '文章分类', 'name' => 'article_cate[]', 'value' => $_record['article_cates'], 'list' => $cate_list])}
 			
 			{$widget->form('text', ['title' => '文章作者', 'name' => 'article_author', 'value' => $_record['article_author']])}
 			

@@ -15,7 +15,7 @@ class SuccessHook
      */
     public static function hook(&$params)
     {
-        $model = FileModel::getSingleton();
+        $model = FileModel::getInstance();
         $map = [
             'file_hash' => $params['hash']
         ];

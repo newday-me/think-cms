@@ -2,6 +2,7 @@
 use think\Db;
 use think\Cache;
 use think\migration\Migrator;
+use core\blog\logic\ArticleLogic;
 use core\blog\model\ArticleModel;
 use core\blog\model\ArticleCateModel;
 
@@ -16,7 +17,7 @@ class InitBlogTableData extends Migrator
      */
     public function up()
     {
-        $model = ArticleCateModel::getSingleton();
+        $model = ArticleCateModel::getInstance();
         
         // 分类-读书
         $data = [
@@ -159,13 +160,15 @@ class InitBlogTableData extends Migrator
             'article_author' => $result['author'] ?: $result['nick_name'],
             'article_info' => $result['desc'],
             'article_cover' => $this->transImageUrl($result['cdn_url']),
-            'article_cate' => $cateId,
-            'article_tags' => $result['nick_name'],
             'article_origin' => $result['source_url'] ?: $url,
             'article_sort' => 0,
             'article_content' => $this->transContent($result['content_noencode']),
             'article_status' => 1
         ];
-        return ArticleModel::getSingleton()->create($data);
+        $article = ArticleModel::getInstance()->create($data);
+        
+        $logic = ArticleLogic::getSingleton();
+        $logic->attachArticleCates($article['id'], $cateId);
+        $logic->attachArticleTags($article['id'], $result['nick_name'] . ',' . $result['author']);
     }
 }

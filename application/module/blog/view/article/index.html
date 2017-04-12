@@ -60,9 +60,7 @@
                     </td>
                     <td>{$vo.article_title}</td>
                     <td>{$vo.article_author}</td>
-                    <td>
-                        {$widget->row('select', ['value' => $vo['article_cate'], 'list' => $cate_list, 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'article_cate'])])}
-                    </td>
+                    <td>{$vo.cate_name}</td>
                     <td>
                         {$widget->row('text', ['value' => $vo['article_sort'], 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'article_sort'])])}
                     </td>

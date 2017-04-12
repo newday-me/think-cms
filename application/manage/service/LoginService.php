@@ -1,13 +1,13 @@
 <?php
-namespace app\manage\logic;
+namespace app\manage\service;
 
 use think\Url;
-use cms\Logic;
+use cms\Service;
 use core\manage\logic\UserLogic;
 use core\manage\model\UserModel;
 use app\common\App;
 
-class LoginLogic extends Logic
+class LoginService extends Service
 {
 
     /**
@@ -83,7 +83,7 @@ class LoginLogic extends Logic
             return null;
         }
         
-        return UserModel::getSingleton()->get($user['user_id']);
+        return UserModel::getInstance()->get($user['user_id']);
     }
 
     /**

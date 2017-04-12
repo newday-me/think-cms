@@ -65,7 +65,7 @@ class UserLogin extends Base
         $this->assign('keyword', $keyword);
         
         // 分页列表
-        $model = UserLoginModel::getSingleton()->with('user')->where($map);
+        $model = UserLoginModel::getInstance()->with('user')->where($map);
         $this->_page($model, null, function (&$list) {
             foreach ($list as $co => $vo) {
                 $vo['user_nick'] = $vo->user ? $vo->user['user_nick'] : '未知';
@@ -85,7 +85,7 @@ class UserLogin extends Base
      */
     protected function assignUserList()
     {
-        $model = UserModel::getSingleton();
+        $model = UserModel::getInstance();
         $userList = $model->getUserList();
         $this->assign('user_list', $userList);
     }

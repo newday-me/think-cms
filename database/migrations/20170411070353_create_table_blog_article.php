@@ -46,14 +46,6 @@ class CreateTableBlogArticle extends Migrator
         $articleCover = Column::string('article_cover', 250)->setDefault('')->setComment('文章封面');
         $table->addColumn($articleCover);
         
-        // 文章分类
-        $articleCate = Column::integer('article_cate')->setDefault(0)->setComment('分类ID');
-        $table->addColumn($articleCate);
-        
-        // 文章标签
-        $articleTags = Column::string('article_tags', 250)->setDefault('')->setComment('文章标签');
-        $table->addColumn($articleTags);
-        
         // 原文链接
         $articleOrigin = Column::string('article_origin', 250)->setDefault('')->setComment('原文链接');
         $table->addColumn($articleOrigin);

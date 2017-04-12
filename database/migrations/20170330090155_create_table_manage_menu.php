@@ -73,6 +73,9 @@ class CreateTableManageMenu extends Migrator
         $updateTime = Column::integer('update_time')->setDefault(0)->setComment('更新时间');
         $table->addColumn($updateTime);
         
+        // 上级菜单，普通索引
+        $table->addIndex('menu_pid');
+        
         // 保存
         $table->save();
     }

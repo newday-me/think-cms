@@ -14,7 +14,7 @@ class UserGroupLogic extends Logic
      */
     public function getGroupList()
     {
-        $model = UserGroupModel::getSingleton();
+        $model = UserGroupModel::getInstance();
         $list = $model->select();
         
         $groups = [];
@@ -38,7 +38,7 @@ class UserGroupLogic extends Logic
         $map = [
             'id' => $groupId
         ];
-        $model = UserGroupModel::getSingleton();
+        $model = UserGroupModel::getInstance();
         $group = $model->field('group_menus')
             ->where($map)
             ->find();

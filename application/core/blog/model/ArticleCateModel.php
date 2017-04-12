@@ -21,6 +21,16 @@ class ArticleCateModel extends Model
     protected $autoWriteTimestamp = true;
 
     /**
+     * 关联文章
+     *
+     * @return \think\model\relation\BelongsToMany
+     */
+    public function articles()
+    {
+        return $this->belongsToMany(ArticleModel::class, ArticleCateLinkModel::getInstance()->getTableName(), 'article_id', 'cate_id');
+    }
+
+    /**
      * 获取分类列表
      *
      * @return array

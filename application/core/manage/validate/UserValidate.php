@@ -16,7 +16,7 @@ class UserValidate extends Validate
         'user_nick' => 'require',
         'user_passwd' => 'require',
         'user_passwd_confirm' => 'require|confirm:user_passwd',
-        'group_id' => 'require'
+        'user_gid' => 'require'
     ];
 
     /**
@@ -30,7 +30,7 @@ class UserValidate extends Validate
         'user_passwd.require' => '密码为空',
         'user_passwd_confirm.require' => '重复密码为空',
         'user_passwd_confirm.confirm' => '两次密码不同',
-        'group_id.require' => '分组ID不能为空'
+        'user_gid.require' => '分组ID不能为空'
     ];
 
     /**
@@ -47,19 +47,19 @@ class UserValidate extends Validate
             'user_name',
             'user_passwd',
             'user_passwd_confirm',
-            'group_id'
+            'user_gid'
         ],
         'edit_info' => [
             'user_name',
             'user_nick',
-            'group_id'
+            'user_gid'
         ],
         'edit_passwd' => [
             'user_name',
             'user_nick',
             'user_passwd',
             'user_passwd_confirm',
-            'group_id'
+            'user_gid'
         ],
         'install' => [
             'user_name',

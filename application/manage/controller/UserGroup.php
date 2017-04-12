@@ -21,8 +21,8 @@ class UserGroup extends Base
     {
         $this->siteTitle = '用户群组';
         
-        // 列表
-        $list = UserGroupModel::getSingleton()->select();
+        // 记录列表
+        $list = UserGroupModel::getInstance()->select();
         $this->_list($list);
         
         // 状态列表
@@ -157,9 +157,9 @@ class UserGroup extends Base
      */
     public function delete()
     {
-        $model = UserModel::getSingleton();
+        $model = UserModel::getInstance();
         $map = [
-            'group_id' => $this->_id()
+            'user_gid' => $this->_id()
         ];
         if ($model->where($map)->find()) {
             $this->error('请先删除该群组下的账号');
@@ -173,7 +173,7 @@ class UserGroup extends Base
      */
     protected function assignStatusList()
     {
-        $model = UserGroupModel::getSingleton();
+        $model = UserGroupModel::getInstance();
         $statusList = $model->getStatusList();
         $this->assign('status_list', $statusList);
     }

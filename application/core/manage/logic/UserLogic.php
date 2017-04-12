@@ -4,7 +4,6 @@ namespace core\manage\logic;
 use cms\Common;
 use core\Logic;
 use core\manage\model\UserModel;
-use core\manage\model\UserGroupModel;
 
 class UserLogic extends Logic
 {
@@ -50,7 +49,7 @@ class UserLogic extends Logic
             'user_name' => $name,
             'user_passwd' => $this->encryptPasswd($passwd)
         ];
-        $user = UserModel::getSingleton()->where($map)->find();
+        $user = UserModel::getInstance()->where($map)->find();
         
         // 用户状态
         if (empty($user)) {
@@ -77,7 +76,7 @@ class UserLogic extends Logic
         }
         
         // 群组状态
-        $group = UserGroupModel::getSingleton()->get($user['group_id']);
+        $group = $user->group;
         if (empty($group)) {
             return [
                 - 4,
@@ -116,7 +115,7 @@ class UserLogic extends Logic
         // 登录日志
         UserLoginLogic::getSingleton()->addLogin($userId);
         
-        $model = UserModel::getSingleton();
+        $model = UserModel::getInstance();
         $common = Common::getSingleton();
         $map = [
             'id' => $userId

@@ -1,7 +1,7 @@
 <?php
 namespace app\manage\custom\exception;
 
-use app\manage\logic\ViewLogic;
+use app\manage\service\ViewService;
 
 class Handle extends \cms\exception\Handle
 {
@@ -14,7 +14,7 @@ class Handle extends \cms\exception\Handle
      */
     protected function getView()
     {
-        return ViewLogic::getSingleton()->getView();
+        return ViewService::getSingleton()->getView();
     }
 
 }

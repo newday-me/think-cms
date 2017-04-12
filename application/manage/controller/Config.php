@@ -30,7 +30,7 @@ class Config extends Base
         $this->assign('group', $group);
         
         // 分页列表
-        $model = ConfigModel::getSingleton();
+        $model = ConfigModel::getInstance();
         $model = $model->where($map)->order('config_sort asc');
         $this->_page($model);
         
@@ -146,7 +146,6 @@ class Config extends Base
             $config = $request->param('config/a', []);
             
             // 逐条保存
-            $model = ConfigModel::getSingleton();
             foreach ($config as $co => $vo) {
                 $map = [
                     'config_name' => $co
@@ -154,7 +153,7 @@ class Config extends Base
                 $data = [
                     'config_value' => is_array($vo) ? json_encode($vo, JSON_UNESCAPED_UNICODE) : $vo
                 ];
-                $model->save($data, $map);
+                ConfigModel::update($data, $map);
             }
             
             // 刷新缓存
@@ -179,7 +178,7 @@ class Config extends Base
      */
     protected function assignTypeList()
     {
-        $model = ConfigModel::getSingleton();
+        $model = ConfigModel::getInstance();
         $typeList = $model->getTypeList();
         $this->assign('type_list', $typeList);
     }
@@ -191,7 +190,7 @@ class Config extends Base
      */
     protected function assignGroupList()
     {
-        $model = ConfigModel::getSingleton();
+        $model = ConfigModel::getInstance();
         $groupList = $model->getGroupList();
         $this->assign('group_list', $groupList);
     }

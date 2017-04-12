@@ -10,11 +10,9 @@ window.alert = window.commonAlert = function(text, code) {
 
 	message = '<p class="alert-icon"><span class="' + icon_name + ' am-icon-lg ' + class_name + '"></span></p>';
 	message += '<p class="' + class_name + '">' + text + '</p>';
-	require(['alertify'], function(alertify) {
-		alertify.alert(message).setting({
-			basic: true,
-			transition: 'fade',
-		});
+	alertify.alert(message).setting({
+		basic: true,
+		transition: 'fade',
 	});
 };
 // commonAlert('登录名称不能为空');
@@ -27,17 +25,15 @@ window.confirmAlert = function(text, success, error) {
 	var onError = function() {
 		error && error();
 	};
-	require(['alertify'], function(alertify) {
-		alertify.confirm(text).setHeader('温馨提醒').setting({
-			labels: {
-				ok: '确定',
-				cancel: '取消',
-			},
-			transition: 'fade',
-			onok: onSuccess,
-			oncancel: onError,
-			onclose: onError
-		});
+	alertify.confirm(text).setHeader('温馨提醒').setting({
+		labels: {
+			ok: '确定',
+			cancel: '取消',
+		},
+		transition: 'fade',
+		onok: onSuccess,
+		oncancel: onError,
+		onclose: onError
 	});
 };
 // confirmAlert('确定要删除吗?');
@@ -50,17 +46,15 @@ window.promptAlert = function(text, value, success, error) {
 	var onError = function() {
 		error && error();
 	};
-	require(['alertify'], function(alertify) {
-		alertify.prompt('', value).setHeader(text).setting({
-			labels: {
-				ok: '确定',
-				cancel: '取消',
-			},
-			transition: 'fade',
-			onok: onSuccess,
-			oncancel: onError,
-			onclose: onError
-		});
+	alertify.prompt('', value).setHeader(text).setting({
+		labels: {
+			ok: '确定',
+			cancel: '取消',
+		},
+		transition: 'fade',
+		onok: onSuccess,
+		oncancel: onError,
+		onclose: onError
 	});
 };
 // promptAlert('请输入姓名', '张三');
@@ -90,18 +84,16 @@ window.jumpAlert = function(text, code, url, wait) {
 	message = '<p class="alert-icon"><span class="' + icon_name + ' am-icon-lg ' + class_name + '"></span></p>';
 	message += '<p class="' + class_name + '">' + text + '</p>';
 	message += '<p class="alert-link"><a href="' + url + '">' + wait + ' 秒后自动跳转链接</a></p>';
-	require(['alertify'], function(alertify) {
-		alertify.alert(message).setting({
-			basic: true,
-			transition: 'fade',
-			oncancel: onJump,
-			onclose: onJump
-		});
-
-		setTimeout(function() {
-			onJump();
-		}, wait * 1000);
+	alertify.alert(message).setting({
+		basic: true,
+		transition: 'fade',
+		oncancel: onJump,
+		onclose: onJump
 	});
+
+	setTimeout(function() {
+		onJump();
+	}, wait * 1000);
 };
 // jumpAlert('添加记录成功!', 1);
 
@@ -360,11 +352,13 @@ $(function() {
 						textarea.value = beautify_html.html_beautify(textarea.value);
 						var codeMirror = CodeMirror.fromTextArea(textarea, {
 							mode: mixedMode,
+							lineWrapping: true,
 							lineNumbers: true,
 							styleActiveLine: true,
 							matchBrackets: true,
 							selectionPointer: true
 						});
+						codeMirror.setSize('auto', $(textarea).height() + 'px');
 						codeMirror.on('change', function() {
 							textarea.value = codeMirror.getValue();
 						});

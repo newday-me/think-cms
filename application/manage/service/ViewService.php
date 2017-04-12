@@ -1,12 +1,12 @@
 <?php
-namespace app\manage\logic;
+namespace app\manage\service;
 
 use think\Config;
 use think\Request;
-use cms\Logic;
 use cms\View;
+use cms\Service;
 
-class ViewLogic extends Logic
+class ViewService extends Service
 {
 
     /**

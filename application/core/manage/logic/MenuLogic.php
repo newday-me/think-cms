@@ -19,7 +19,7 @@ class MenuLogic extends Logic
     public function addMenu($data)
     {
         $data = $this->processMenuData($data);
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         return $model->save($data);
     }
 
@@ -33,7 +33,7 @@ class MenuLogic extends Logic
     public function saveMenu($data, $map)
     {
         $data = $this->processMenuData($data);
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         return $model->save($data, $map);
     }
 
@@ -125,7 +125,7 @@ class MenuLogic extends Logic
             'sub_menu' => [],
             'sub_sub_menu' => []
         ];
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         
         // 一级菜单
         $map = [
@@ -235,7 +235,7 @@ class MenuLogic extends Logic
                 $menuIds
             ]
         );
-        $menu = MenuModel::getSingleton()->where($map)
+        $menu = MenuModel::getInstance()->where($map)
             ->order('menu_sort asc')
             ->find();
         return $menu ? $this->parseMenuUrl($menu['menu_url'], $menu['menu_build']) : '';
@@ -301,7 +301,7 @@ class MenuLogic extends Logic
                 $menuIds
             ]
         ];
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         $list = $model->where($map)
             ->order('menu_sort asc')
             ->select();
@@ -334,12 +334,12 @@ class MenuLogic extends Logic
      */
     public function getUserMenuIds($userId)
     {
-        $member = UserModel::getSingleton()->get($userId);
+        $member = UserModel::getInstance()->get($userId);
         if (empty($member)) {
             return [];
         }
         
-        return UserGroupLogic::getSingleton()->getGroupMenuIds($member['group_id']);
+        return UserGroupLogic::getSingleton()->getGroupMenuIds($member['user_gid']);
     }
 
     /**
@@ -357,7 +357,7 @@ class MenuLogic extends Logic
         }
         
         // 上级菜单
-        $parentMenu = MenuModel::getSingleton()->get($currentMenu['menu_pid']);
+        $parentMenu = MenuModel::getInstance()->get($currentMenu['menu_pid']);
         if ($parentMenu['menu_pid'] > 0) {
             return $this->getCurrentMenu($parentMenu['menu_flag']);
         } else {
@@ -381,7 +381,7 @@ class MenuLogic extends Logic
                 0
             ]
         ];
-        return MenuModel::getSingleton()->where($map)->find();
+        return MenuModel::getInstance()->where($map)->find();
     }
 
     /**

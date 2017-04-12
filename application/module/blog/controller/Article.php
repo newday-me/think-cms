@@ -2,6 +2,7 @@
 namespace module\blog\controller;
 
 use think\Request;
+use core\blog\logic\ArticleLogic;
 use core\blog\model\ArticleModel;
 use core\blog\model\ArticleCateModel;
 use core\blog\validate\ArticleValidate;
@@ -19,16 +20,52 @@ class Article extends Base
     {
         $this->siteTitle = '文章列表';
         
-        // 查询条件
+        // 文章列表
         $map = [
             'delete_time' => 0
         ];
+        $this->assignArticleList($map);
+        
+        return $this->fetch();
+    }
+
+    /**
+     * 回收站
+     *
+     * @param Request $request            
+     *
+     * @return string
+     */
+    public function recycle(Request $request)
+    {
+        $this->siteTitle = '文章回收站';
+        
+        // 文章列表
+        $map = [
+            'delete_time' => [
+                'gt',
+                0
+            ]
+        ];
+        $this->assignArticleList($map);
+        
+        return $this->fetch();
+    }
+
+    /**
+     * 赋值文章列表
+     *
+     * @param array $map            
+     */
+    protected function assignArticleList($map)
+    {
+        $request = Request::instance();
         
         // 查询条件-分类
         $cate = $request->param('cate');
         if (! empty($cate)) {
             $cate = intval($cate);
-            $map['article_cate'] = $cate;
+            $map['cate_id'] = $cate;
         }
         $this->assign('cate', $cate);
         
@@ -51,8 +88,12 @@ class Article extends Base
         $this->assign('keyword', $keyword);
         
         // 分页列表
-        $model = ArticleModel::getSingleton();
-        $model = $model->where($map)->order('article_sort desc');
+        $model = ArticleModel::getInstance();
+        $query = $model->withCates($model);
+        $query = $query->field('_a_article.id, article_key, article_title, article_author, article_cover, article_info, article_sort, article_status, _a_article.create_time, group_concat(cate_name) as cate_name')
+            ->where($map)
+            ->group('_a_article.id')
+            ->order('article_sort desc, _a_article.id desc');
         $this->_page($model);
         
         // 分类列表
@@ -60,8 +101,6 @@ class Article extends Base
         
         // 赋值状态列表
         $this->assignStatusList();
-        
-        return $this->fetch();
     }
 
     /**
@@ -75,9 +114,7 @@ class Article extends Base
         if ($request->isPost()) {
             $data = [
                 'article_title' => $request->param('article_title'),
-                'article_cate' => $request->param('article_cate'),
                 'article_author' => $request->param('article_author'),
-                'article_tags' => $request->param('article_tags'),
                 'article_info' => $request->param('article_info'),
                 'article_cover' => $request->param('article_cover'),
                 'article_origin' => $request->param('article_origin'),
@@ -86,12 +123,16 @@ class Article extends Base
                 'create_time' => strtotime($request->param('create_time')),
                 'article_sort' => $request->param('article_sort', 0)
             ];
+            $articleCates = $request->param('article_cate/a', []);
+            $articleTags = $request->param('article_tags', '');
             
             // 验证
             $this->_validate(ArticleValidate::class, $data, 'add');
             
             // 添加
-            $this->_add(ArticleModel::class, $data);
+            $logic = ArticleLogic::getSingleton();
+            $logic->addArticle($data, $articleCates, $articleTags);
+            $this->success('新增成功', self::JUMP_REFERER);
         } else {
             $this->siteTitle = '新增文章';
             
@@ -119,25 +160,29 @@ class Article extends Base
                 'article_author' => $request->param('article_author'),
                 'article_info' => $request->param('article_info'),
                 'article_cover' => $request->param('article_cover'),
-                'article_cate' => $request->param('article_cate'),
-                'article_tags' => $request->param('article_tags'),
                 'article_origin' => $request->param('article_origin'),
                 'article_sort' => $request->param('article_sort', 0),
                 'article_content' => $request->param('article_content'),
                 'create_time' => strtotime($request->param('create_time')),
                 'article_status' => $request->param('article_status', 0)
             ];
+            $articleCates = $request->param('article_cate/a', []);
+            $articleTags = $request->param('article_tags', '');
             
             // 验证
             $this->_validate(ArticleValidate::class, $data, 'edit');
             
             // 修改
-            $this->_edit(ArticleModel::class, $data);
+            $logic = ArticleLogic::getSingleton();
+            $logic->saveArticle($data, $this->_id(), $articleCates, $articleTags);
+            $this->success('修改成功', self::JUMP_REFERER);
         } else {
             $this->siteTitle = '编辑文章';
             
             // 记录
-            $this->_record(ArticleModel::class);
+            $logic = ArticleLogic::getSingleton();
+            $record = $logic->getRecord($this->_id());
+            $this->assign('_record', $record);
             
             // 分类列表
             $this->assignCateList();
@@ -160,7 +205,8 @@ class Article extends Base
         $fields = [
             'article_cate',
             'article_sort',
-            'article_status'
+            'article_status',
+            'delete_time'
         ];
         $this->_modify(ArticleModel::class, $fields);
     }
@@ -183,7 +229,7 @@ class Article extends Base
      */
     protected function assignCateList()
     {
-        $model = ArticleCateModel::getSingleton();
+        $model = ArticleCateModel::getInstance();
         $cateList = $model->getCateList();
         $this->assign('cate_list', $cateList);
     }
@@ -195,7 +241,7 @@ class Article extends Base
      */
     protected function assignStatusList()
     {
-        $model = ArticleModel::getSingleton();
+        $model = ArticleModel::getInstance();
         $statusList = $model->getStatusList();
         $this->assign('status_list', $statusList);
     }

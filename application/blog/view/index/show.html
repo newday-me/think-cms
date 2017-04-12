@@ -17,9 +17,6 @@
 
 			<div class="am-collapse am-topbar-collapse" id="blog-collapse">
 				<ul class="am-nav am-nav-pills am-topbar-nav">
-					<li>
-						<a href="http://cms.newday.me">主页</a>
-					</li>
 					<li {eq name="$menu_class" value="index_index" }class="am-active" {/eq}>
 						<a href="{:url('blog/index/index')}">首页</a>
 					</li>
@@ -30,6 +27,9 @@
 						</a>
 					</li>
 					{/volist}
+					<li>
+                        <a href="http://cms.newday.me">CMS</a>
+                    </li>
 				</ul>
 				<div class="blog-word am-fr">
 					希望死后的墓志铭可以有底气刻上：想要的都拥有，得不到的都释怀。

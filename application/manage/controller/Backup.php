@@ -37,7 +37,7 @@ class Backup extends Base
     {
         $this->siteTitle = '备份记录';
         
-        $model = BackupModel::getSingleton()->with('user')->order('id desc');
+        $model = BackupModel::getInstance()->with('user')->order('id desc');
         $this->_page($model, null, function (&$list) {
             foreach ($list as &$vo) {
                 $vo['user_nick'] = $vo->user ? $vo->user['user_nick'] : '未知';

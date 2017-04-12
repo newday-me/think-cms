@@ -2,6 +2,7 @@
 use think\migration\Migrator;
 
 use think\Db;
+use think\helper\Str;
 use core\manage\logic\UserLogic;
 use core\manage\model\UserModel;
 use core\manage\model\UserGroupModel;
@@ -20,7 +21,7 @@ class InitManageTableData extends Migrator
     public function up()
     {
         // 菜单
-        $model = MenuModel::getSingleton();
+        $model = MenuModel::getInstance();
         
         // 菜单-系统
         $data = [
@@ -534,7 +535,7 @@ class InitManageTableData extends Migrator
         }
         
         // 群组
-        $model = UserGroupModel::getSingleton();
+        $model = UserGroupModel::getInstance();
         $data = [
             'group_name' => '管理员',
             'group_info' => '管理网站',
@@ -545,18 +546,18 @@ class InitManageTableData extends Migrator
         $group = $model->create($data);
         
         // 用户
-        $model = UserModel::getSingleton();
+        $model = UserModel::getInstance();
         $data = [
             'user_name' => 'admin',
             'user_passwd' => UserLogic::getSingleton()->encryptPasswd('123456'),
             'user_nick' => '管理员',
-            'group_id' => $group['id'],
+            'user_gid' => $group['id'],
             'user_status' => 1
         ];
         $user = $model->create($data);
         
         // 配置
-        $model = ConfigModel::getSingleton();
+        $model = ConfigModel::getInstance();
         
         // 配置-调试模式
         $data = [
@@ -804,6 +805,23 @@ class InitManageTableData extends Migrator
         ];
         $model->create($data);
         
+        // 配置-加密配置
+        $option = [
+            'mode' => 'cbc',
+            'key' => Str::random(16),
+            'iv' => Str::random(16)
+        ];
+        $data = [
+            'config_name' => 'crypt',
+            'config_value' => json_encode($option, JSON_UNESCAPED_UNICODE),
+            'config_type' => 'array',
+            'config_title' => '加密配置',
+            'config_group' => '网站',
+            'config_extra' => 'mode,key,iv',
+            'config_sort' => 106
+        ];
+        $model->create($data);
+        
         // 配置-备份路径
         $data = [
             'config_name' => 'bakup_path',
@@ -812,7 +830,19 @@ class InitManageTableData extends Migrator
             'config_title' => '备份路径',
             'config_group' => '网站',
             'config_extra' => '',
-            'config_sort' => 106
+            'config_sort' => 107
+        ];
+        $model->create($data);
+        
+        // 配置-CMS文件
+        $data = [
+            'config_name' => 'cms_file',
+            'config_value' => 'http://static.newday.me/cms/think-cms-0.0.2.zip',
+            'config_type' => 'file',
+            'config_title' => 'CMS文件',
+            'config_group' => '网站',
+            'config_extra' => '',
+            'config_sort' => 108
         ];
         $model->create($data);
         

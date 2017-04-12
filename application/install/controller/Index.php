@@ -2,8 +2,8 @@
 namespace app\install\controller;
 
 use cms\Controller;
-use app\manage\logic\ViewLogic;
-use app\install\logic\InstallLogic;
+use app\manage\service\ViewService;
+use app\install\service\InstallService;
 
 class Index extends Controller
 {
@@ -28,9 +28,8 @@ class Index extends Controller
      */
     protected function checkInstall()
     {
-        $databaseFile = InstallLogic::getSingleton()->getDatabaseFile();
-        if (is_file($databaseFile)) {
-            $this->success('安装完成');
+        if (InstallService::getSingleton()->isInstall()) {
+            $this->error('CMS已安装完成');
         }
     }
 
@@ -52,11 +51,8 @@ class Index extends Controller
      */
     public function install()
     {
-        // 验证安装
-        $this->checkInstall();
-        
         try {
-            InstallLogic::getSingleton()->doInstall();
+            InstallService::getSingleton()->doInstall();
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
@@ -83,6 +79,6 @@ class Index extends Controller
      */
     protected function getView()
     {
-        return ViewLogic::getSingleton()->getView();
+        return ViewService::getSingleton()->getView();
     }
 }

@@ -44,7 +44,7 @@ class Job extends Base
         $this->assign('keyword', $keyword);
         
         // 分页列表
-        $model = JobModel::getSingleton();
+        $model = JobModel::getInstance();
         $model = $model->where($map);
         $this->_page($model, null, function (&$list) {
             foreach ($list as &$vo) {
@@ -110,7 +110,7 @@ class Job extends Base
      */
     protected function assignStatusList()
     {
-        $model = JobModel::getSingleton();
+        $model = JobModel::getInstance();
         $statusList = $model->getStatusList();
         $this->assign('status_list', $statusList);
     }
@@ -122,7 +122,7 @@ class Job extends Base
      */
     protected function assignQueueList()
     {
-        $model = JobModel::getSingleton();
+        $model = JobModel::getInstance();
         $queueList = $model->getQueueList();
         $this->assign('queue_list', $queueList);
     }
