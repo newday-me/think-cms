@@ -6,9 +6,9 @@
 
 ## 一、安装CMS
 
-* **使用Composer安装**
+* **使用[Composer](http://www.phpcomposer.com/ "Composer")安装**
 
-直接运行【composer create-project newday-me/think-cms path】即可
+直接运行【composer create-project newday-me/think-cms path version】即可
 
 *  **下载完整代码包**
 
