@@ -993,6 +993,18 @@ class InitManageTableData extends Migrator
             'config_sort' => 303
         ];
         $model->create($data);
+        
+        // 后台-编辑器
+        $data = [
+            'config_name' => 'manage_editor',
+            'config_value' => 'ueditor',
+            'config_type' => 'radio',
+            'config_title' => '编辑器',
+            'config_group' => '后台',
+            'config_extra' => 'wang:wangEditor|ueditor:Ueditor',
+            'config_sort' => 304
+        ];
+        $model->create($data);
     }
 
     /**

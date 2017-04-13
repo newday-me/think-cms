@@ -370,6 +370,10 @@ class Base extends Controller
         // 网站标题
         $this->assign('site_title', $this->siteTitle);
         
+        // 编辑器
+        $manageEditor = Config::get('manage_editor');
+        $this->assign('manage_editor', $manageEditor);
+        
         // 组件
         $widget = Widget::getSingleton();
         $this->assign('widget', $widget);

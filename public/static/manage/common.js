@@ -167,7 +167,7 @@ window.uploadCancel = function() {
 };
 
 $(function() {
-	
+
 	// 刷新页面
 	$('.nd-refresh').on('click', function() {
 		history.go(0);
@@ -308,6 +308,123 @@ $(function() {
 	$('.nd-editor-html').each(function() {
 		var $this = $(this),
 			target = $this.attr('nd-target');
+		if(CMS.editor == 'wang') {
+			createWangEditor($this, target);
+		} else {
+			createUeditor($this, target);
+		}
+	});
+
+	// 创建Ueditor
+	function createUeditor($this, target) {
+		require(['ZeroClipboard', 'baiduEditor'], function(ZeroClipboard) {
+
+			// 剪切板
+			window.ZeroClipboard = ZeroClipboard;
+
+			var ue = UE.getEditor($this.get(0), {
+				UEDITOR_HOME_URL: CMS.path.lib + '/ueditor/1.4.3.3/',
+				serverUrl: CMS.api.upload_editor,
+				zIndex: 10000,
+				autoHeightEnabled: false,
+				initialFrameHeight: 520,
+				toolbars: [
+					[
+						'source', 'selectall', 'undo', 'redo', '|',
+						'removeformat', 'formatmatch', 'autotypeset', '|',
+						'print', 'preview', 'searchreplace', 'drafts', 'help', 'fullscreen'
+					],
+					[
+						'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|',
+						'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'blockquote', '|',
+						'forecolor', 'backcolor', '|',
+						'insertorderedlist', 'insertunorderedlist', '|',
+						'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+						'customstyle', 'paragraph', 'fontfamily', 'fontsize'
+					],
+					[
+						'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+						'simpleupload', 'insertimage', 'emotion', 'scrawl', 'snapscreen', '|',
+						'horizontal', 'spechars', 'link', 'unlink',
+						'template', 'attachment', 'map', 'insertframe', 'insertcode', '|',
+						'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts'
+					]
+				],
+				xssFilterRules: true,
+				inputXssFilter: true,
+				outputXssFilter: true,
+				whitList: {
+					a: ['target', 'href', 'title', 'class', 'style'],
+					abbr: ['title', 'class', 'style'],
+					address: ['class', 'style'],
+					area: ['shape', 'coords', 'href', 'alt'],
+					article: [],
+					aside: [],
+					audio: ['autoplay', 'controls', 'loop', 'preload', 'src', 'class', 'style'],
+					b: ['class', 'style'],
+					bdi: ['dir'],
+					bdo: ['dir'],
+					big: [],
+					blockquote: ['cite', 'class', 'style'],
+					br: [],
+					caption: ['class', 'style'],
+					center: [],
+					cite: [],
+					code: ['class', 'style'],
+					col: ['align', 'valign', 'span', 'width', 'class', 'style'],
+					colgroup: ['align', 'valign', 'span', 'width', 'class', 'style'],
+					dd: ['class', 'style'],
+					del: ['datetime'],
+					details: ['open'],
+					div: ['class', 'style'],
+					dl: ['class', 'style'],
+					dt: ['class', 'style'],
+					em: ['class', 'style'],
+					font: ['color', 'size', 'face'],
+					footer: [],
+					h1: ['class', 'style'],
+					h2: ['class', 'style'],
+					h3: ['class', 'style'],
+					h4: ['class', 'style'],
+					h5: ['class', 'style'],
+					h6: ['class', 'style'],
+					header: [],
+					hr: [],
+					i: ['class', 'style'],
+					img: ['src', 'alt', 'title', 'width', 'height', 'id', '_src', 'loadingclass', 'class', 'data-latex'],
+					ins: ['datetime'],
+					li: ['class', 'style'],
+					mark: [],
+					nav: [],
+					ol: ['class', 'style'],
+					p: ['class', 'style'],
+					pre: ['class', 'style'],
+					s: [],
+					section: [],
+					small: [],
+					span: ['class', 'style'],
+					sub: ['class', 'style'],
+					sup: ['class', 'style'],
+					strong: ['class', 'style'],
+					table: ['width', 'border', 'align', 'valign', 'class', 'style'],
+					tbody: ['align', 'valign', 'class', 'style'],
+					td: ['width', 'rowspan', 'colspan', 'align', 'valign', 'class', 'style'],
+					tfoot: ['align', 'valign', 'class', 'style'],
+					th: ['width', 'rowspan', 'colspan', 'align', 'valign', 'class', 'style'],
+					thead: ['align', 'valign', 'class', 'style'],
+					tr: ['rowspan', 'align', 'valign', 'class', 'style'],
+					tt: [],
+					u: [],
+					ul: ['class', 'style'],
+					video: ['autoplay', 'controls', 'loop', 'preload', 'src', 'height', 'width', 'class', 'style']
+				}
+			});
+		});
+	}
+
+	// 创建wangEditor
+	function createWangEditor($this, target) {
+
 		require(['beautify-html', 'wangEditor', 'codemirror', 'codemirror/mode/htmlmixed/htmlmixed'], function(beautify_html, wangEditor, CodeMirror) {
 
 			// 关闭调试
@@ -318,6 +435,9 @@ $(function() {
 			// 上传设置
 			editor.config.uploadImgUrl = CMS.api.upload_editor;
 			editor.config.uploadImgFileName = 'upload_file';
+			editor.config.uploadParams = {
+				action: 'wang',
+			};
 
 			// 不过滤JS
 			editor.config.jsFilter = false;
@@ -336,7 +456,7 @@ $(function() {
 				if(source.isShowCode == true) {
 					if(!source.isShow) {
 						source.isShow = true;
-						
+
 						// 美化查看源代码
 						var mixedMode = {
 							name: "htmlmixed",
@@ -362,7 +482,7 @@ $(function() {
 						codeMirror.on('change', function() {
 							textarea.value = codeMirror.getValue();
 						});
-						
+
 					}
 				} else {
 					$this.parent().find('.CodeMirror').remove();
@@ -383,7 +503,7 @@ $(function() {
 			}
 
 		});
-	});
+	}
 
 	// Ajax Get
 	$('.ajax-get').click(function() {
@@ -466,7 +586,7 @@ $(function() {
 	$('.sidebar-nav-list-title').on('click', function() {
 		$(this).next().slideToggle(150).end().find('.sidebar-nav-sub-ico').toggleClass('sidebar-nav-sub-ico-rotate');
 	});
-	
+
 	// 调整侧边栏
 	ajustSidebar();
 	$(window).resize(function() {
@@ -490,7 +610,7 @@ $(function() {
 	})
 
 	// 调整侧边栏
-	function ajustSidebar(){
+	function ajustSidebar() {
 		if($(window).width() < 1024) {
 			$('.left-sidebar').addClass('active');
 		} else {
