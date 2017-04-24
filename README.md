@@ -3,6 +3,7 @@
 ![](https://img.shields.io/github/stars/newday-me/think-cms.svg) ![](https://img.shields.io/github/forks/newday-me/think-cms.svg) ![](https://img.shields.io/github/tag/newday-me/think-cms.svg)
 
 **演示地址：[http://cms.newday.me](http://cms.newday.me "http://cms.newday.me")，开发文档：[http://www.kancloud.cn/newday_me/think-cms](http://www.kancloud.cn/newday_me/think-cms "http://www.kancloud.cn/newday_me/think-cms")。**
+**CMS交流群**：**482165089**。
 
 ## 一、安装CMS
 
