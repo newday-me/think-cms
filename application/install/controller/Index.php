@@ -69,6 +69,9 @@ class Index extends Controller
     {
         // 网站标题
         $this->assign('site_title', $this->siteTitle);
+        
+        // 编辑器
+        $this->assign('manage_editor', '');
     }
 
     /**
