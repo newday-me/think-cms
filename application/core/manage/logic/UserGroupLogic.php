@@ -8,23 +8,32 @@ class UserGroupLogic extends Logic
 {
 
     /**
-     * 获取群组列表
+     * 获取列表下拉
      *
      * @return array
      */
-    public function getGroupList()
+    public function getSelectList()
     {
-        $model = UserGroupModel::getInstance();
-        $list = $model->select();
-        
-        $groups = [];
-        foreach ($list as $vo) {
-            $groups[] = [
-                'name' => $vo['group_name'],
-                'value' => $vo['id']
-            ];
-        }
-        return $groups;
+        return UserGroupModel::getInstance()->field('id as value, group_name as name')->select();
+    }
+
+    /**
+     * 获取状态下拉
+     *
+     * @return array
+     */
+    public function getSelectStatus()
+    {
+        return [
+            [
+                'name' => '启用',
+                'value' => 1
+            ],
+            [
+                'name' => '禁用',
+                'value' => 0
+            ]
+        ];
     }
 
     /**
@@ -35,13 +44,7 @@ class UserGroupLogic extends Logic
      */
     public function getGroupMenuIds($groupId)
     {
-        $map = [
-            'id' => $groupId
-        ];
-        $model = UserGroupModel::getInstance();
-        $group = $model->field('group_menus')
-            ->where($map)
-            ->find();
+        $group = UserGroupModel::get($groupId);
         if ($group && $group['group_menus']) {
             return explode(',', $group['group_menus']);
         } else {

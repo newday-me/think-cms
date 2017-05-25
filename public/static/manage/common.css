@@ -77,6 +77,81 @@ body {
 	color: #dd514c;
 }
 
+/* sort start */
+
+.nd-sorted-table .nd-sorted-handle {
+	cursor: pointer;
+}
+
+.nd-sorted-table tr.dragged {
+	position: absolute;
+	top: 0;
+	opacity: 0.5;
+	z-index: 2000;
+}
+
+.nd-sorted-table tr.placeholder {
+	display: block;
+	background: red;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+.nd-sorted-table tr.placeholder:before {
+	content: "";
+	position: absolute;
+	width: 0;
+	height: 0;
+	border: 5px solid transparent;
+	border-left-color: red;
+	margin-top: -5px;
+	left: -5px;
+	border-right: none;
+}
+
+/* sort end */
+
+/* nest start */
+
+.nd-list {
+	margin: 0px;
+}
+.nd-list .nd-list {
+	padding-left: 40px;
+}
+.nd-handle {
+	width: 3rem;
+	padding: 1rem;
+}
+.nd-switch span{
+	padding: 0.8rem 0rem 0.8rem 0.8rem;
+	display: block;
+}
+.nd-area {
+	border: 1px solid #eee;
+	padding: 1rem;
+}
+.nd-area .nd-action{
+	margin-left: 0.5rem;
+}
+.nd-placeholder{
+	width: 100%;
+	border: 1px dashed #eee;
+}
+.nd-drage {
+	position: absolute;
+	pointer-events: none;
+	z-index: 9999;
+}
+.nd-drage .nd-handle {
+	-webkit-box-shadow: 2px 4px 6px 0 rgba(0,0,0,.1);
+	box-shadow: 2px 4px 6px 0 rgba(0,0,0,.1);
+}
+
+/* nest end */
+
 /* alertify start */
 
 .alertify .ajs-dialog {

@@ -3,9 +3,12 @@ namespace app\blog\controller;
 
 use think\Request;
 use cms\Controller;
-use core\blog\model\ArticleModel;
+use core\blog\logic\ArticleCateLogic;
+use core\blog\logic\ArticleLogic;
+use core\blog\model\PageModel;
 use core\blog\model\ArticleCateModel;
-use app\manage\service\ViewService;
+use app\blog\service\ViewService;
+use app\blog\service\IndexService;
 
 class Index extends Controller
 {
@@ -18,13 +21,6 @@ class Index extends Controller
     protected $siteTitle;
 
     /**
-     * 当前菜单样式
-     *
-     * @var unknown
-     */
-    protected $menuClass;
-
-    /**
      *
      * {@inheritdoc}
      *
@@ -34,11 +30,13 @@ class Index extends Controller
     {
         parent::_initialize();
         
-        // 默认样式
-        $request = Request::instance();
-        $this->menuClass = strtolower($request->controller() . '_' . $request->action());
+        $this->assignArticleCate();
         
-        $this->assignCateList();
+        $this->assignBlogPage();
+        
+        $this->assignArticleListSidebar();
+        
+        $this->assignArticleTags();
     }
 
     /**
@@ -49,13 +47,12 @@ class Index extends Controller
      */
     public function index(Request $request)
     {
-        $this->siteTitle = '博客 - 首页';
+        $this->siteTitle = '首页';
         
-        $map = [
-            'article_status' => 1,
-            'cate_status' => 1
-        ];
-        return $this->displayList($map);
+        $articleList = IndexService::getSingleton()->getArticleListHome();
+        $this->assign('article_list', $articleList);
+        
+        return $this->fetch('index');
     }
 
     /**
@@ -66,34 +63,80 @@ class Index extends Controller
      */
     public function cate(Request $request)
     {
-        // 分类
         $cateName = $request->param('name');
         if (empty($cateName)) {
-            $this->error('链接错误');
+            $this->error('页面不存在');
         }
         
-        // 检查分类
         $map = [
-            'cate_flag' => $cateName
+            'cate_name' => $cateName,
+            'cate_status' => 1
         ];
         $cate = ArticleCateModel::getInstance()->where($map)->find();
         if (empty($cate)) {
             $this->error('分类不存在');
-        } elseif ($cate['cate_status'] == 0) {
-            $this->error('分类未启用');
         }
+        $this->siteTitle = $cate['cate_title'];
         
-        $this->siteTitle = '博客 - ' . $cate['cate_name'];
-        $this->menuClass = 'cate_' . $cateName;
-        $map = [
-            'article_status' => 1,
-            'cate_id' => $cate['id']
-        ];
-        return $this->displayList($map);
+        $articleList = IndexService::getSingleton()->getArticleListCate($cateName);
+        $this->assign('article_list', $articleList);
+        
+        return $this->fetch('index');
     }
 
     /**
-     * 详情
+     * 标签
+     *
+     * @param Request $request            
+     * @return string
+     */
+    public function tag(Request $request)
+    {
+        $tagName = $request->param('name');
+        if (empty($tagName)) {
+            $this->error('页面不存在');
+        }
+        $this->siteTitle = $tagName;
+        
+        $articleList = IndexService::getSingleton()->getArticleListTag($tagName);
+        $this->assign('article_list', $articleList);
+        
+        return $this->fetch('index');
+    }
+
+    /**
+     * 单页面
+     *
+     * @param Request $request            
+     * @return string
+     */
+    public function page(Request $request)
+    {
+        $pageName = $request->param('name');
+        if (empty($pageName)) {
+            $this->error('页面不存在');
+        }
+        
+        $map = [
+            'delete_time' => 0,
+            'page_status' => [
+                'gt',
+                0
+            ]
+        ];
+        $page = PageModel::getInstance()->where($map)->find();
+        if (empty($page)) {
+            $this->error('页面不存在');
+        }
+        $this->assign('page', $page);
+        
+        $this->siteTitle = $page['page_title'];
+        
+        return $this->fetch();
+    }
+
+    /**
+     * 文章详情
      *
      * @param Request $request            
      * @return string
@@ -102,98 +145,78 @@ class Index extends Controller
     {
         $articleKey = $request->param('key');
         if (empty($articleKey)) {
-            $this->error('链接错误');
+            $this->error('页面不存在');
         }
         
-        $map = [
-            'article_key' => $articleKey
-        ];
-        $article = ArticleModel::getInstance()->where($map)->find();
+        // 查找文章
+        $article = IndexService::getSingleton()->getArticle($articleKey);
         if (empty($article)) {
             $this->error('文章不存在');
-        } elseif ($article['article_status'] == 0) {
-            $this->error('文章审核中');
         }
         $this->assign('article', $article);
         
-        $this->siteTitle = '博客 - ' . $article['article_title'];
-        $this->menuClass = 'index_index';
+        // 增加访问
+        ArticleLogic::getSingleton()->addVisit($article['id']);
+        
+        // 网站标题
+        $this->siteTitle = $article['article_title'];
         
         return $this->fetch();
     }
 
     /**
-     * 显示列表
-     *
-     * @param array $map            
-     * @return string
-     */
-    protected function displayList($map)
-    {
-        
-        // 幻灯片列表
-        $this->assignSliderList($map);
-        
-        // 分页列表
-        $this->assignPageList($map);
-        
-        return $this->fetch('index');
-    }
-
-    /**
-     * 赋值分页列表
+     * 赋值文章分类
      *
      * @return void
      */
-    protected function assignPageList($map)
+    protected function assignArticleCate()
     {
-        $model = ArticleModel::getInstance();
-        $query = $model->withCates($model);
-        $list = $query->where($map)
-            ->field('article_key, article_title, article_author, article_info, article_cover, _a_article.create_time')
-            ->group('_a_article.id')
-            ->order('_a_article.id desc')
-            ->paginate(5);
-        $this->assign('_list', $list);
-        $this->assign('_page', $list->render());
-        $this->assign('_total', $list->total());
+        $nest = ArticleCateLogic::getSingleton()->getCateNest();
+        $this->assign('cate_tree', $nest['tree']);
     }
 
     /**
-     * 赋值幻灯片
+     * 赋值博客单页面
      *
      * @return void
      */
-    protected function assignSliderList($map)
+    protected function assignBlogPage()
     {
-        $model = ArticleModel::getInstance();
-        $query = $model->withCates($model);
-        $sliderList = $query->where($map)
-            ->field('article_key, article_title, article_author, article_info, article_cover')
-            ->group('_a_article.id')
-            ->order('rand()')
-            ->select();
-        $this->assign('slider_list', $sliderList);
+        $pageList = IndexService::getSingleton()->getBlogPageList();
+        $this->assign('page_list', $pageList);
     }
 
     /**
-     * 赋值分类列表
+     * 赋值最新、热门、随机文章列表
      *
      * @return void
      */
-    protected function assignCateList()
+    protected function assignArticleListSidebar()
     {
-        $map = [
-            'cate_status' => 1
-        ];
-        $cateList = ArticleCateModel::getInstance()->where($map)
-            ->order('cate_sort desc')
-            ->select();
-        foreach ($cateList as &$vo) {
-            $vo['cate_class'] = 'cate_' . $vo['cate_flag'];
-        }
-        unset($vo);
-        $this->assign('cate_list', $cateList);
+        $indexService = IndexService::getSingleton();
+        
+        // 最新文章
+        $listNew = $indexService->getArticleListAside('create_time desc', 10);
+        $this->assign('article_list_new', $listNew);
+        
+        // 热门文章
+        $listHot = $indexService->getArticleListAside('article_visit desc, create_time desc', 10);
+        $this->assign('article_list_hot', $listHot);
+        
+        // 随机文章
+        $listRand = $indexService->getArticleListAside('rand()', 10);
+        $this->assign('article_list_rand', $listRand);
+    }
+
+    /**
+     * 赋值文章标签
+     *
+     * @return void
+     */
+    protected function assignArticleTags()
+    {
+        $tagList = IndexService::getSingleton()->getArticleTagList(20);
+        $this->assign('tag_list', $tagList);
     }
 
     /**
@@ -206,9 +229,6 @@ class Index extends Controller
     {
         // 网站标题
         $this->assign('site_title', $this->siteTitle);
-        
-        // 菜单样式
-        $this->assign('menu_class', $this->menuClass);
     }
 
     /**

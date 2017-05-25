@@ -3,15 +3,16 @@ namespace app\manage\controller;
 
 use think\Url;
 use think\Config;
+use think\db\Query;
 use cms\Widget;
 use cms\Response;
 use cms\Controller;
 use core\Model;
 use core\Validate;
-use core\manage\logic\MenuLogic;
 use app\manage\service\LoginService;
 use app\manage\service\ViewService;
 use app\manage\service\AuthService;
+use app\manage\service\MenuService;
 
 class Base extends Controller
 {
@@ -106,7 +107,7 @@ class Base extends Controller
      */
     protected function verifyAuth()
     {
-        if (! AuthService::getSingleton()->isAuthAction($this->userId)) {
+        if (! AuthService::getSingleton()->isAuthAction()) {
             $this->error('你没有权限访问该页面');
         }
     }
@@ -118,14 +119,18 @@ class Base extends Controller
      */
     protected function buildMenu()
     {
-        $menuLogic = MenuLogic::getSingleton();
+        $menu = MenuService::getSingleton();
+        
+        // 菜单树
+        $menuTree = $menu->getMenuTree();
+        $this->assign('main_tree', $menuTree);
         
         // 主菜单
-        $mainMenu = $menuLogic->getMainMenu($this->userId);
+        $mainMenu = $menu->getMainMenu();
         $this->assign('main_menu', $mainMenu);
         
         // 侧边菜单
-        $siderMenu = $menuLogic->getSiderMenu($this->userId);
+        $siderMenu = $menu->getSiderMenu();
         $this->assign('sider_menu', $siderMenu);
     }
 
@@ -138,6 +143,12 @@ class Base extends Controller
      */
     protected function _list($list, \Closure $perform = null)
     {
+        if (is_string($list)) {
+            $list = $this->buildModel($list)->select();
+        } elseif ($list instanceof Model || $list instanceof Query) {
+            $list = $list->select();
+        }
+        
         $perform && $perform($list);
         $this->assign('_list', $list);
     }
@@ -218,9 +229,10 @@ class Base extends Controller
      * @param mixed $model            
      * @param array $data            
      * @param array $map            
+     * @param string $url            
      * @return void
      */
-    protected function _edit($model, $data, $map = null)
+    protected function _edit($model, $data, $map = null, $url = self::JUMP_REFERER)
     {
         $model = $this->buildModel($model);
         $map || $map = [
@@ -228,7 +240,7 @@ class Base extends Controller
         ];
         
         if ($model->save($data, $map)) {
-            $this->success('修改成功', self::JUMP_REFERER);
+            $this->success('修改成功', $url);
         } else {
             $this->error('修改失败');
         }
@@ -271,6 +283,38 @@ class Base extends Controller
     }
 
     /**
+     * 记录排序
+     *
+     * @param mixed $model            
+     * @param string $field            
+     * @param integer $weight            
+     * @param mixed $idx            
+     *
+     * @return void
+     */
+    protected function _sort($model, $field, $weight = 0, $idx = null)
+    {
+        if (is_null($idx)) {
+            $idx = $this->getRequest()->param('idx', '');
+        }
+        $idx = is_array($idx) ? $idx : array_filter(explode(',', $idx));
+        
+        $sort = $weight + count($idx);
+        foreach ($idx as $id) {
+            $map = [
+                'id' => $id
+            ];
+            $data = [
+                $field => $sort
+            ];
+            $this->buildModel($model)->update($data, $map);
+            $sort --;
+        }
+        
+        $this->success('操作成功', self::JUMP_REFRESH);
+    }
+
+    /**
      * 删除记录
      *
      * @param mixed $model            
@@ -291,6 +335,32 @@ class Base extends Controller
             $this->success('删除成功', $url);
         } else {
             $this->error('删除失败');
+        }
+    }
+
+    /**
+     * 恢复记录
+     *
+     * @param mixed $model            
+     * @param string $url            
+     * @return void
+     */
+    protected function _recover($model, $url = null)
+    {
+        $model = $this->buildModel($model);
+        $url || $url = self::JUMP_REFRESH;
+        
+        $map = [
+            'id' => $this->_id()
+        ];
+        $data = [
+            $model->getDeleteTimeField() => 0
+        ];
+        $status = $model->where($map)->update($data);
+        if ($status) {
+            $this->success('恢复成功', $url);
+        } else {
+            $this->error('恢复失败');
         }
     }
 

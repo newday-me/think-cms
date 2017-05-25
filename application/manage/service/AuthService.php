@@ -3,7 +3,7 @@ namespace app\manage\service;
 
 use cms\Auth;
 use core\manage\logic\UserLogic;
-use core\manage\logic\MenuLogic;
+use core\manage\logic\UserGroupLogic;
 
 class AuthService extends Auth
 {
@@ -11,20 +11,21 @@ class AuthService extends Auth
     /**
      * 是否授权的操作
      *
-     * @param integer $userId            
-     *
      * @return boolean
      */
-    public function isAuthAction($userId)
+    public function isAuthAction()
     {
+        // 当前用户
+        $loginUser = LoginService::getSingleton()->getLoginUser();
+        
         // 超级管理员
-        if (UserLogic::getSingleton()->isSuperAdmin($userId)) {
+        if (UserLogic::getSingleton()->isSuperAdmin($loginUser['user_id'])) {
             return true;
         }
         
         // 操作是否授权
-        $menuLogic = MenuLogic::getSingleton();
-        $currentMenu = $menuLogic->getMenuByFlag();
-        return in_array($currentMenu['id'], $menuLogic->getUserMenuIds($userId));
+        $currentMenu = MenuService::getSingleton()->getCurrentMenu();
+        $menuIds = UserGroupLogic::getSingleton()->getGroupMenuIds($loginUser['user_gid']);
+        return in_array($currentMenu['id'], $menuIds);
     }
 }

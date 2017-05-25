@@ -46,4 +46,22 @@ class ArticleTagLogic extends Logic
         }
     }
 
+    /**
+     * 获取状态下拉
+     *
+     * @return array
+     */
+    public function getSelectStatus()
+    {
+        return [
+            [
+                'name' => '启用',
+                'value' => 1
+            ],
+            [
+                'name' => '停用',
+                'value' => 0
+            ]
+        ];
+    }
 }

@@ -233,6 +233,38 @@ $(function() {
 			location.href = url;
 		}
 	});
+	
+	// 排序
+	$('.nd-sorted-table').length && require(['jquery-sortable'], function(){
+		$('.nd-sorted-table').sortable({
+			containerSelector: 'table',
+			itemPath: '> tbody',
+			handle: '.nd-sorted-handle',
+			itemSelector: '.nd-sorted-item',
+			placeholder: '<tr class="placeholder"/>',
+			onDrop: function($item, container, _super, event){
+				_super($item, container, _super, event);
+				
+				var table = $(container['el'][0]);
+				var sortAction = table.attr('sort-action'), idx = '';
+				table.find('.nd-sorted-item').each(function(){
+					idx && (idx += ',');
+					idx += $(this).attr('data-id');
+				});
+				sortAction && $.ajax({
+					url: sortAction,
+					type: 'post',
+					dataType: 'json',
+					data: {
+						idx: idx
+					},
+					complete: function(){
+						history.go(0);
+					}
+				});
+			}
+		});
+	});
 
 	// 上传文件
 	$('.nd-upload-file').on('change', function() {

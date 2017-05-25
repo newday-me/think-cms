@@ -1,0 +1,51 @@
+<div id="kratos-header">
+	<header id="kratos-header-section">
+		<div class="container">
+			<div class="nav-header">
+				<a href="#" class="js-kratos-nav-toggle kratos-nav-toggle"><i></i></a>
+				<h1 id="kratos-logo">
+					<a href="{:url('blog/index/index')}">{:config('blog_title')}</a>
+				</h1>
+				<nav id="kratos-menu-wrap" class="menu-menu-container">
+					<ul id="kratos-primary-menu" class="sf-menu">
+						<li>
+							<a href="{:url('blog/index/index')}">首页</a>
+						</li>
+					{volist name="$cate_tree[0]" id="vo"}
+						{if condition="isset($cate_tree[$vo['id']])"}
+						<li class="current-menu-ancestor current-menu-parent">
+							<a href="{:url('blog/index/cate', ['name' => $vo['cate_name']])}">{$vo.cate_title}</a>
+							<ul class="sub-menu">
+							{volist name="$cate_tree[$vo['id']]" id="ko"}
+								<li>
+									<a href="{:url('blog/index/cate', ['name' => $ko['cate_name']])}">
+										<i class="fa fa-angle-double-right"></i>&nbsp;&nbsp;
+										{$ko.cate_title}
+									</a>
+								</li>
+							{/volist}
+							</ul>
+						</li>
+						{else /}
+						<li>
+							<a href="{:url('blog/index/cate', ['name' => $vo['cate_name']])}">{$vo.cate_title}</a>
+						</li>
+						{/if}
+					{/volist}
+					{volist name="page_list" id="vo"}
+						<li>
+							<a href="{:url('blog/index/page', ['name' => $vo['page_name']])}">{$vo.page_title}</a>
+						</li>
+					{/volist}
+						<li>
+							<a href="http://cms.newday.me">CMS</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</header>
+</div>
+<div class="kratos-start kratos-hero-2 kratos-post-header">
+	<div class="kratos-overlay kratos-post" style="background:#23282d"></div>
+</div>

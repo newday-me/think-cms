@@ -1,115 +1,60 @@
-<!DOCTYPE html>
-<html>
+{extend name="common/base"}
 
-	<head>
-		<meta charset="UTF-8">
-		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
-		<meta name="renderer" content="webkit">
-		<title>{$site_title}</title>
-		<link rel="stylesheet" href="{$lib_path}/amazeui/2.7.2/css/amazeui.css?_={$site_version}" />
-		<link rel="stylesheet" href="{$module_path}/app.css?_={$site_version}" />
-	</head>
+{block name="style"}
+<style type="text/css">
+.pagination li span{
+	margin-left: 6px;
+}
+</style>
+{/block}
 
-	<body id="blog">
-		<nav class="am-g am-g-fixed blog-fixed blog-nav">
-			<button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-primary am-show-sm-only blog-button" data-am-collapse="{target: '#blog-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
-
-			<div class="am-collapse am-topbar-collapse" id="blog-collapse">
-				<ul class="am-nav am-nav-pills am-topbar-nav">
-					<li {eq name="$menu_class" value="index_index"}class="am-active"{/eq}>
-						<a href="{:url('blog/index/index')}">首页</a>
-					</li>
-					{volist name="cate_list" id="vo"}
-					<li {eq name="$menu_class" value="$vo['cate_class']"}class="am-active"{/eq}>
-						<a href="{:url('blog/index/cate', ['name' => $vo['cate_flag']])}">
-							{$vo.cate_name}
+{block name="content"}
+<section id="main" class="col-md-8">
+{volist name="article_list" id="vo"}
+	<article class="kratos-hentry clearfix">
+		<div class="kratos-entry-border-new clearfix">
+			<div class="kratos-entry-thumb-new">
+				<a href="{$vo.article_link}">
+					<img src="{$vo.article_cover}" />
+				</a>
+			</div>
+			<div class="kratos-post-inner-new">
+				<header class="kratos-entry-header-new">
+					{volist name="$vo->cates" id="mo"}
+						<a class="label" href="{:url('blog/index/cate', ['name' => $mo['cate_name']])}">
+							{$mo.cate_title}<i class="label-arrow"></i>
 						</a>
-					</li>
 					{/volist}
-					<li>
-                        <a href="http://cms.newday.me">CMS</a>
-                    </li>
-				</ul>
-				<div class="blog-word am-fr">
-					希望死后的墓志铭可以有底气刻上：想要的都拥有，得不到的都释怀。
+					<h2 class="kratos-entry-title-new">
+						<a href="{$vo.article_link}">{$vo.article_title}</a>
+					</h2>
+				</header>
+				<div class="kratos-entry-content-new">
+					<p>{$vo.article_info}</p>
 				</div>
 			</div>
-		</nav>
-		<hr>
-
-		<!-- banner start -->
-		<div class="am-g am-g-fixed blog-fixed am-u-sm-centered blog-article-margin">
-			<div data-am-widget="slider" class="am-slider am-slider-b1" data-am-slider='{&quot;controlNav&quot;:false}'>
-				<ul class="am-slides">
-				{volist name="slider_list" id="vo"}
-					<li>
-						<div class="blog-slider-image" style="background-image: url({$vo.article_cover});"></div>
-						<div class="blog-slider-desc am-slider-desc ">
-							<div class="blog-text-center blog-slider-con">
-								<span>{$vo.article_author}</span>
-								<h1 class="blog-h-margin">
-									<a href="{:url('blog/index/show', ['key' => $vo['article_key']])}">{$vo.article_title}</a>
-								</h1>
-								<p>{$vo.article_info}</p>
-							</div>
-						</div>
-					</li>
-				{/volist}
-				</ul>
+			<div class="kratos-post-meta-new">
+				<span class="visible-lg visible-md visible-sm pull-left">
+					<a href="{$vo.article_link}">
+						<i class="fa fa-calendar"></i> {$vo.create_time_str}
+					</a>
+				</span>
+				<span class="pull-left">
+					<a href="{$vo.article_link}">
+						<i class="fa fa-eye"></i> {$vo.article_visit} Views
+					</a>
+				</span>
+				<span class="pull-right">
+					<a class="read-more" href="{$vo.article_link}" title="阅读全文">
+						阅读全文 <i class="fa fa-chevron-circle-right"></i>
+					</a>
+				</span>
 			</div>
 		</div>
-		<!-- banner end -->
-
-		<!-- content srart -->
-		<div class="am-g am-g-fixed blog-fixed">
-			<div class="am-u-md-12 am-u-sm-12">
-
-				<hr/>
-				
-				{volist name="_list" id="vo"}
-				<article class="am-g blog-entry-article">
-					<div class="am-u-md-10 am-u-sm-12 blog-entry-text">
-						<span>{$vo.article_author}</span>
-						<span>{$vo.create_time}</span>
-						<h1>
-							<a href="{:url('blog/index/show', ['key' => $vo['article_key']])}">{$vo.article_title}</a>
-						</h1>
-						<p>{$vo.article_info}</p>
-					</div>
-					<div class="am-u-md-2 am-u-sm-12">
-						<div class="blog-entry-img" style="background-image: url({$vo.article_cover});"></div>
-					</div>
-				</article>
-				{/volist}
-
-				{if condition="!empty($_page)"}
-				<div class="blog-pagination">
-					<span>共{$_total}条记录</span>
-					{$_page}
-				</div>
-				{/if}
-			</div>
-
-		</div>
-		
-		<hr>
-		
-		<footer class="blog-footer">
-			<div class="am-text-center">
-				Copyright
-				<a href="http://www.newday.me"> NewDay </a> 
-				All Rights Reserved
-				<font class="footer-font">，
-					<a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010802004255">浙ICP备13001290号</a>
-				</font>
-				，UI power by
-				<a href="http://www.yunshipei.com" target="_blank"> AmazeUI Team</a>。
-			</div>
-		</footer>
-
-		<script type="text/javascript" src="{$lib_path}/jquery/2.0.0/jquery.min.js?_={$site_version}"></script>
-		<script type="text/javascript" src="{$lib_path}/amazeui/2.7.2/js/amazeui.min.js?_={$site_version}"></script>
-	</body>
-
-</html>
+	</article>
+{/volist}
+	<div class='text-center' id='page-footer'>
+		{$article_list->render()}
+	</div>
+</section>
+{/block}

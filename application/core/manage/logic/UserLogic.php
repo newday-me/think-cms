@@ -9,6 +9,38 @@ class UserLogic extends Logic
 {
 
     /**
+     * 获取状态下拉
+     *
+     * @return array
+     */
+    public function getSelectStatus()
+    {
+        return [
+            [
+                'name' => '启用',
+                'value' => 1
+            ],
+            [
+                'name' => '禁用',
+                'value' => 0
+            ]
+        ];
+    }
+
+    public function getSelectList()
+    {
+        $list = UserModel::getInstance()->select();
+        $users = [];
+        foreach ($list as $vo) {
+            $users[$vo['id']] = [
+                'name' => $vo['user_name'] . '(' . $vo['user_nick'] . ')',
+                'value' => $vo['id']
+            ];
+        }
+        return $users;
+    }
+
+    /**
      * 是否超级管理员
      *
      * @param integer $userId            

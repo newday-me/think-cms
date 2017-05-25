@@ -69,7 +69,7 @@ class File extends Base
         $this->assign('keyword', $keyword);
         
         // 分页列表
-        $model = FileModel::getInstance();
+        $model = FileModel::getInstance()->where($map)->order('id desc');
         $this->_page($model, null, function (&$list) {
             $common = Common::getSingleton();
             foreach ($list as &$vo) {
@@ -77,8 +77,8 @@ class File extends Base
             }
         });
         
-        // 扩展名列表
-        $this->assignExtensionList();
+        // 文件扩展名下拉
+        $this->assignSelectFileExtension();
         
         return $this->fetch();
     }
@@ -111,14 +111,13 @@ class File extends Base
     }
 
     /**
-     * 赋值扩展名列表
+     * 赋值文件扩展名下拉
      *
      * @return void
      */
-    protected function assignExtensionList()
+    protected function assignSelectFileExtension()
     {
-        $model = FileModel::getInstance();
-        $extensionList = $model->getExtensionList();
-        $this->assign('extension_list', $extensionList);
+        $selectFileExtension = FileLogic::getSingleton()->getSelectExtension();
+        $this->assign('select_file_extension', $selectFileExtension);
     }
 }

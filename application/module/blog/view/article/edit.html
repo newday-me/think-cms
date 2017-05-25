@@ -7,7 +7,7 @@
 		
 			{$widget->form('text', ['title' => '文章标题', 'name' => 'article_title', 'value' => $_record['article_title']])}
 			
-			{$widget->form('checkbox', ['title' => '文章分类', 'name' => 'article_cate[]', 'value' => $_record['article_cates'], 'list' => $cate_list])}
+			{$widget->form('select', ['title' => '文章分类', 'name' => 'article_cate[]', 'value' => $_record['article_cates'], 'list' => $select_cate_list, 'attr' => 'multiple'])}
 			
 			{$widget->form('text', ['title' => '文章作者', 'name' => 'article_author', 'value' => $_record['article_author']])}
 			
@@ -17,7 +17,7 @@
 			
 			{$widget->form('image', ['title' => '文章封面', 'name' => 'article_cover', 'value' => $_record['article_cover'], 'width' => 600])}
 			
-			{$widget->form('select', ['title' => '文章状态', 'name' => 'article_status', 'value' => $_record['article_status'], 'list' => $status_list])}
+			{$widget->form('select', ['title' => '文章状态', 'name' => 'article_status', 'value' => $_record['article_status'], 'list' => $select_article_status])}
 			
 			{$widget->form('editor', ['title' => '文章内容', 'name' => 'article_content', 'value' => $_record['article_content']])}
 			

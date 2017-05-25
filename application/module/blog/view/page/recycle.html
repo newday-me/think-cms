@@ -1,0 +1,69 @@
+{extend name="common/base" }
+
+{block name="content"}
+<form action="{:module_url('recycle')}" class="search-form">
+<div class="am-g">
+
+	<div class="am-u-sm-12 am-u-md-6">
+		<div class="am-btn-toolbar">
+			<div class="am-btn-group am-btn-group-xs">
+				<a class="am-btn am-btn-default" href="{:module_url('add')}">
+                    <span class="am-icon-plus"></span> 新增
+                </a>
+				<a class="am-btn am-btn-default nd-refresh">
+					<span class="am-icon-refresh"></span> 刷新
+				</a>
+			</div>
+		</div>
+	</div>
+	
+	{$widget->search('select', ['name' => 'status', 'value' => $status, 'list' => $select_page_status, 'md_num' => 3])}
+	
+	{$widget->search('keyword', ['name' => 'keyword', 'holder' => '关键词', 'value' => $keyword, 'md_num' => 3])}
+	
+</div>
+</form>
+<br/>
+
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<table class="am-table am-table-striped am-table-radius am-table-bordered am-form">
+			<thead>
+				<tr>
+					<th>标题</th>
+					<th>名称</th>
+					<th>排序</th>
+					<th>状态</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			{volist name="_list" id="vo"}
+				<tr>
+					<td class="am-text-middle">{$vo.page_title}</td>
+					<td class="am-text-middle">{$vo.page_name}</td>
+					<td class="am-text-middle">
+                        {$widget->row('text', ['value' => $vo['page_sort'], 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'page_sort'])])}
+                    </td>
+					<td class="am-text-middle">
+						{$widget->row('select', ['value' => $vo['page_status'], 'list' => $select_page_status, 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'page_status'])])}
+					</td>
+					<td class="am-text-middle">
+						<div class="am-btn-toolbar">
+							<div class="am-btn-group am-btn-group-xs">
+								{$widget->row('button', ['title' => '恢复', 'class' => 'am-text-success ajax-get', 'icon' => 'am-icon-recycle', 'url' => module_url('recover', ['id' => $vo['id']])])}
+							</div>
+						</div>
+					</td>
+				</tr>
+			{/volist}
+			</tbody>
+		</table>
+		
+		{if condition="!empty($_page)"}
+            <div class="am-fl">共 {$_total} 条记录</div>
+            <div class="am-fr"> {$_page}</div>
+        {/if}
+	</div>
+</div>
+{/block}

@@ -21,75 +21,25 @@ class ConfigModel extends Model
     protected $autoWriteTimestamp = true;
 
     /**
-     * 获取分组列表
+     * 使用别名
      *
-     * @return array
+     * @param unknown $query            
      */
-    public function getGroupList()
+    public function useAlias($query = null)
     {
-        return $this->field('id, config_group')
-            ->group('config_group')
-            ->order('config_sort asc')
-            ->select();
+        is_null($query) && $query = $this;
+        return $query->alias('_a_config');
     }
 
     /**
-     * 获取类型列表
+     * 连接分组
      *
-     * @return array
+     * @return \think\db\Query
      */
-    public function getTypeList()
+    public function withGroups($query = null)
     {
-        return [
-            [
-                'name' => '文本',
-                'value' => 'text'
-            ],
-            [
-                'name' => '文本域',
-                'value' => 'textarea'
-            ],
-            [
-                'name' => '标签',
-                'value' => 'tag'
-            ],
-            [
-                'name' => '日期',
-                'value' => 'date'
-            ],
-            [
-                'name' => '颜色',
-                'value' => 'color'
-            ],
-            [
-                'name' => '图片',
-                'value' => 'image'
-            ],
-            [
-                'name' => '文件',
-                'value' => 'file'
-            ],
-            [
-                'name' => '多选',
-                'value' => 'checkbox'
-            ],
-            [
-                'name' => '单选',
-                'value' => 'radio'
-            ],
-            [
-                'name' => '下拉',
-                'value' => 'select'
-            ],
-            [
-                'name' => '数组',
-                'value' => 'array'
-            ],
-            [
-                'name' => '富文本',
-                'value' => 'editor'
-            ]
-        ];
+        $query = $this->useAlias($query);
+        return $query->join(ConfigGroupModel::getInstance()->getTableShortName() . ' _a_config_group', '_a_config.config_gid = _a_config_group.id');
     }
 
 }

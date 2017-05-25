@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "newday-me/think-cms-framework": "~0.0.2"
+        "newday-me/think-cms-framework": "0.0.3"
     },
     "minimum-stability": "RC",
     "extra": {

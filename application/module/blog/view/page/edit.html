@@ -1,0 +1,23 @@
+{extend name="common/base" }
+
+{block name="content"}
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<form class="am-form ajax-form" method="post" action="{:module_url('edit', ['id' => $_id])}">
+		
+			{$widget->form('text', ['title' => '页面标题', 'name' => 'page_title', 'value' => $_record['page_title']])}
+			
+			{$widget->form('text', ['title' => '页面名称', 'name' => 'page_name', 'value' => $_record['page_name']])}
+			
+			{$widget->form('editor', ['title' => '页面内容', 'name' => 'page_content', 'value' => $_record['page_content']])}
+			
+			{$widget->form('select', ['title' => '页面状态', 'name' => 'page_status', 'value' => $_record['page_status'], 'list' => $select_page_status])}
+			
+			{$widget->form('text', ['title' => '页面排序', 'name' => 'page_sort', 'value' => $_record['page_sort']])}
+			
+			{$widget->form('submit', ['title' => '用户操作'])}
+			
+		</form>
+	</div>
+</div>
+{/block}

@@ -19,45 +19,4 @@ class ArticleCateModel extends Model
      * @var unknown
      */
     protected $autoWriteTimestamp = true;
-
-    /**
-     * 关联文章
-     *
-     * @return \think\model\relation\BelongsToMany
-     */
-    public function articles()
-    {
-        return $this->belongsToMany(ArticleModel::class, ArticleCateLinkModel::getInstance()->getTableName(), 'article_id', 'cate_id');
-    }
-
-    /**
-     * 获取分类列表
-     *
-     * @return array
-     */
-    public function getCateList()
-    {
-        return $this->field('id as value, cate_name as name')
-            ->order('cate_sort desc')
-            ->select();
-    }
-
-    /**
-     * 获取状态列表
-     *
-     * @return array
-     */
-    public function getStatusList()
-    {
-        return [
-            [
-                'name' => '启用',
-                'value' => 1
-            ],
-            [
-                'name' => '禁用',
-                'value' => 0
-            ]
-        ];
-    }
 }

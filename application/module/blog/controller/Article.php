@@ -3,8 +3,8 @@ namespace module\blog\controller;
 
 use think\Request;
 use core\blog\logic\ArticleLogic;
+use core\blog\logic\ArticleCateLogic;
 use core\blog\model\ArticleModel;
-use core\blog\model\ArticleCateModel;
 use core\blog\validate\ArticleValidate;
 
 class Article extends Base
@@ -53,57 +53,6 @@ class Article extends Base
     }
 
     /**
-     * 赋值文章列表
-     *
-     * @param array $map            
-     */
-    protected function assignArticleList($map)
-    {
-        $request = Request::instance();
-        
-        // 查询条件-分类
-        $cate = $request->param('cate');
-        if (! empty($cate)) {
-            $cate = intval($cate);
-            $map['cate_id'] = $cate;
-        }
-        $this->assign('cate', $cate);
-        
-        // 查询条件-状态
-        $status = $request->param('status', '');
-        if ($status != '') {
-            $status = intval($status);
-            $map['article_status'] = $status;
-        }
-        $this->assign('status', $status);
-        
-        // 查询条件-关键词
-        $keyword = $request->param('keyword');
-        if ($keyword != '') {
-            $map['article_title|article_author|article_content'] = [
-                'like',
-                '%' . $keyword . '%'
-            ];
-        }
-        $this->assign('keyword', $keyword);
-        
-        // 分页列表
-        $model = ArticleModel::getInstance();
-        $query = $model->withCates($model);
-        $query = $query->field('_a_article.id, article_key, article_title, article_author, article_cover, article_info, article_sort, article_status, _a_article.create_time, group_concat(cate_name) as cate_name')
-            ->where($map)
-            ->group('_a_article.id')
-            ->order('article_sort desc, _a_article.id desc');
-        $this->_page($model);
-        
-        // 分类列表
-        $this->assignCateList();
-        
-        // 赋值状态列表
-        $this->assignStatusList();
-    }
-
-    /**
      * 添加文章
      *
      * @param Request $request            
@@ -113,6 +62,7 @@ class Article extends Base
     {
         if ($request->isPost()) {
             $data = [
+                'article_type' => $request->param('article_type'),
                 'article_title' => $request->param('article_title'),
                 'article_author' => $request->param('article_author'),
                 'article_info' => $request->param('article_info'),
@@ -136,11 +86,11 @@ class Article extends Base
         } else {
             $this->siteTitle = '新增文章';
             
-            // 分类列表
-            $this->assignCateList();
+            // 分类搜索下拉
+            $this->assignSelectCateList();
             
-            // 状态列表
-            $this->assignStatusList();
+            // 文章状态下拉
+            $this->assignSelectArticleStatus();
             
             return $this->fetch();
         }
@@ -180,15 +130,14 @@ class Article extends Base
             $this->siteTitle = '编辑文章';
             
             // 记录
-            $logic = ArticleLogic::getSingleton();
-            $record = $logic->getRecord($this->_id());
+            $record = ArticleLogic::getSingleton()->getRecord($this->_id());
             $this->assign('_record', $record);
             
-            // 分类列表
-            $this->assignCateList();
+            // 分类搜索下拉
+            $this->assignSelectCateList();
             
-            // 状态列表
-            $this->assignStatusList();
+            // 文章状态下拉
+            $this->assignSelectArticleStatus();
             
             return $this->fetch();
         }
@@ -203,10 +152,8 @@ class Article extends Base
     public function modify(Request $request)
     {
         $fields = [
-            'article_cate',
             'article_sort',
-            'article_status',
-            'delete_time'
+            'article_status'
         ];
         $this->_modify(ArticleModel::class, $fields);
     }
@@ -223,26 +170,95 @@ class Article extends Base
     }
 
     /**
-     * 赋值分类列表
+     * 恢复文章
      *
-     * @return void
+     * @param Request $request            
+     * @return mixed
      */
-    protected function assignCateList()
+    public function recover(Request $request)
     {
-        $model = ArticleCateModel::getInstance();
-        $cateList = $model->getCateList();
-        $this->assign('cate_list', $cateList);
+        $this->_recover(ArticleModel::class);
     }
 
     /**
-     * 赋值状态列表
+     * 赋值文章列表
+     *
+     * @param array $map            
      *
      * @return void
      */
-    protected function assignStatusList()
+    protected function assignArticleList($map)
     {
+        $request = Request::instance();
+        
+        // 查询条件-分类
+        $cate = $request->param('cate');
+        if (! empty($cate)) {
+            $cate = intval($cate);
+            $map['cate_id'] = $cate;
+        }
+        $this->assign('cate', $cate);
+        
+        // 查询条件-状态
+        $status = $request->param('status', '');
+        if ($status != '') {
+            $status = intval($status);
+            $map['article_status'] = $status;
+        }
+        $this->assign('status', $status);
+        
+        // 查询条件-类型
+        $type = $request->param('type', '');
+        if (! empty($type)) {
+            $map['article_type'] = $type;
+        }
+        $this->assign('type', $type);
+        
+        // 查询条件-关键词
+        $keyword = $request->param('keyword');
+        if ($keyword != '') {
+            $map['article_title|article_author'] = [
+                'like',
+                '%' . $keyword . '%'
+            ];
+        }
+        $this->assign('keyword', $keyword);
+        
+        // 分页列表
         $model = ArticleModel::getInstance();
-        $statusList = $model->getStatusList();
-        $this->assign('status_list', $statusList);
+        $query = $model->withCates()
+            ->field('_a_article.id, article_key, article_title, article_author, article_cover, article_info, article_sort, article_status, _a_article.create_time, group_concat(cate_name) as cate_name')
+            ->where($map)
+            ->group('_a_article.id')
+            ->order('article_sort desc, _a_article.create_time desc');
+        $this->_page($model);
+        
+        // 分类搜索下拉
+        $this->assignSelectCateList();
+        
+        // 文章状态下拉
+        $this->assignSelectArticleStatus();
+    }
+
+    /**
+     * 赋值分类搜索下拉
+     *
+     * @return void
+     */
+    protected function assignSelectCateList()
+    {
+        $selectCateList = ArticleCateLogic::getInstance()->getSelectListForArticle();
+        $this->assign('select_cate_list', $selectCateList);
+    }
+
+    /**
+     * 赋值文章状态下拉
+     *
+     * @return void
+     */
+    protected function assignSelectArticleStatus()
+    {
+        $selectArticleStatus = ArticleLogic::getSingleton()->getSelectStatus();
+        $this->assign('select_article_status', $selectArticleStatus);
     }
 }

@@ -32,13 +32,13 @@
 			<tbody>
 			{volist name="_list" id="vo"}
 				<tr>
-					<td>{$vo.group_name}</td>
-					<td>{$vo.group_info}</td>
-					<td>{$vo.home_page}</td>
-					<td>
-						{$widget->row('select', ['value' => $vo['group_status'], 'list' => $status_list,'url' => url('modify', ['id' => $vo['id'], 'field' =>  'group_status'])])}
+					<td class="am-text-middle">{$vo.group_name}</td>
+					<td class="am-text-middle">{$vo.group_info}</td>
+					<td class="am-text-middle">{$vo.home_page}</td>
+					<td class="am-text-middle">
+						{$widget->row('select', ['value' => $vo['group_status'], 'list' => $select_group_status,'url' => url('modify', ['id' => $vo['id'], 'field' =>  'group_status'])])}
 					</td>
-					<td>
+					<td class="am-text-middle">
 						<div class="am-btn-toolbar">
 							<div class="am-btn-group am-btn-group-xs">
 								{$widget->row('button', ['title' => '权限', 'class' => 'am-text-success', 'icon' => 'am-icon-users', 'url' => url('auth', ['gid' => $vo['id']])])}

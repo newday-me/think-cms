@@ -23,14 +23,11 @@
 		</div>
 	</div>
 	<div class="am-u-sm-12 am-u-md-6">
-		<div class="am-btn-toolbar">
-			<div class="am-btn-group am-btn-group-xs" style="float: right">
-				<a class="am-btn am-btn-default {eq name='group' value=''}nd-group-select{/eq}" href="{:url('index')}">
-					全部
-				</a>
-				{volist name="group_list" id="vo"}
-				<a class="am-btn am-btn-default {eq name='group' value='$vo.config_group'}nd-group-select{/eq}" href="{:url('index', ['group' => $vo['config_group']])}">
-					{$vo.config_group}
+		<div class="am-btn-toolbar am-fr">
+			<div class="am-btn-group am-btn-group-xs nd-group-menu">
+				{volist name="select_config_group" id="vo"}
+				<a class="am-btn am-btn-default {eq name='gid' value='$vo.value'}nd-group-select{/eq}" href="{:url('index', ['gid' => $vo['value']])}">
+					{$vo.name}
 				</a>
 				{/volist}
 			</div>
@@ -41,7 +38,7 @@
 <div class="am-g">
 	<div class="am-u-sm-12">
 
-		<table class="am-table am-table-striped am-table-radius am-table-bordere">
+		<table class="am-table am-table-striped am-table-radius am-table-bordere nd-sorted-table" sort-action="{:url('sort')}">
 			<thead>
 				<tr>
 					<th>配置名称</th>
@@ -54,15 +51,18 @@
 			</thead>
 			<tbody>
 				{volist name="_list" id="vo"}
-				<tr>
-					<td>{$vo.config_name}</td>
-					<td>{$vo.config_title}</td>
-					<td>{$vo.config_type}</td>
-					<td>{$vo.config_group}</td>
-					<td class="am-form">
-					   {$widget->row('text', ['value' => $vo['config_sort'], 'url' => url('modify', ['id' => $vo['id'], 'field' => 'config_sort'])])}
+				<tr class="nd-sorted-item" data-id="{$vo.id}">
+					<td class="am-text-middle">
+						<span class="am-icon-list-ul nd-sorted-handle"></span>
+						{$vo.config_name}
 					</td>
-					<td>
+					<td class="am-text-middle">{$vo.config_title}</td>
+					<td class="am-text-middle">{$vo.config_type}</td>
+					<td class="am-text-middle">
+						{$widget->row('select', ['value' => $vo['config_gid'], 'list' => $select_config_group,'url' => url('modify', ['id' => $vo['id'], 'field' =>  'config_gid'])])}
+					</td>
+					<td class="am-text-middle">{$vo.config_sort}</td>
+					<td class="am-text-middle">
 						<div class="am-btn-toolbar">
 							<div class="am-btn-group am-btn-group-xs">
 								{$widget->row('button', ['title' => '编辑', 'class' => 'am-text-secondary', 'icon' => 'am-icon-pencil-square-o', 'url' => url('edit', ['id' => $vo['id']])])}
@@ -75,10 +75,6 @@
 			</tbody>
 		</table>
 
-		{if condition="!empty($_page)"}
-			<div class="am-fl">共 {$_total} 条记录</div>
-			<div class="am-fr">{$_page}</div>
-		{/if}
 	</div>
 </div>
 {/block}

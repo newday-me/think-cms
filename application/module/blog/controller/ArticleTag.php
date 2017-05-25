@@ -3,6 +3,8 @@ namespace module\blog\controller;
 
 use think\Request;
 use core\blog\model\ArticleTagModel;
+use core\blog\model\ArticleTagLinkModel;
+use core\blog\logic\ArticleTagLogic;
 
 class ArticleTag extends Base
 {
@@ -40,12 +42,11 @@ class ArticleTag extends Base
         $this->assign('keyword', $keyword);
         
         // 列表
-        $model = ArticleTagModel::getInstance();
-        $model = $model->where($map);
+        $model = ArticleTagModel::getInstance()->where($map);
         $this->_page($model);
         
-        // 状态列表
-        $this->assignStatusList();
+        // 状态下拉
+        $this->assignSelectTagStatus();
         
         return $this->fetch();
     }
@@ -64,15 +65,30 @@ class ArticleTag extends Base
     }
 
     /**
-     * 赋值状态列表
+     * 删除标签
+     *
+     * @param Request $request            
+     * @return mixed
+     */
+    public function delete(Request $request)
+    {
+        // 删除连接
+        $map = [
+            'tag_id' => $this->_id()
+        ];
+        ArticleTagLinkModel::getInstance()->where($map)->delete();
+        
+        $this->_delete(ArticleTagModel::class, false);
+    }
+
+    /**
+     * 赋值状态下拉
      *
      * @return void
      */
-    protected function assignStatusList()
+    protected function assignSelectTagStatus()
     {
-        $model = ArticleTagModel::getInstance();
-        $statusList = $model->getStatusList();
-        $this->assign('status_list', $statusList);
+        $selectTagStatus = ArticleTagLogic::getSingleton()->getSelectStatus();
+        $this->assign('select_tag_status', $selectTagStatus);
     }
-
 }

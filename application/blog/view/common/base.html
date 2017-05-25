@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html class="no-js">
+
+	<head>
+		<title>{$site_title} - {:config('blog_title')}</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="Cache-Control" content="no-transform" />
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="{$static_path}/kratos/css/animate.min.css?_={$site_version}" type="text/css" media="all" />
+		<link rel="stylesheet" href="{$static_path}/kratos/css/font-awesome.min.css?_={$site_version}" type="text/css" media="all" />
+		<link rel="stylesheet" href="{$static_path}/kratos/css/bootstrap.min.css?_={$site_version}" type="text/css" media="all" />
+		<link rel="stylesheet" href="{$static_path}/kratos/css/superfish.min.css?_={$site_version}" type="text/css" media="all" />
+		<link rel="stylesheet" href="{$static_path}/kratos/style.css?_={$site_version}" type="text/css" media="all" />
+		<link rel="stylesheet" href="{$static_path}/kratos/css/kratos.diy.css?_={$site_version}" type="text/css" media="all" />
+		{block name="style"}{/block}
+	</head>
+
+	<body data-spy="scroll" data-target=".scrollspy">
+		<div id="kratos-wrapper">
+			<div id="kratos-page">
+
+				{block name="header"} 
+					{include file="common/header" /}
+				{/block}
+
+				{block name="page"}
+				<div id="kratos-blog-post" style="background:#f5f5f5">
+					<div class="container">
+						<div class="row">
+							{block name="content"}{/block}
+							
+							{block name="aside"} 
+								{include file="common/aside" /}
+							{/block}
+				
+						</div>
+					</div>
+				</div>
+				{/block}
+				
+				{block name="footer"} 
+					{include file="common/footer" /}
+				{/block}
+
+			</div>
+		</div>
+		<script type="text/javascript" src="{$static_path}/kratos/js/jquery.min.js?_={$site_version}"></script>
+		<script type="text/javascript" src="{$static_path}/kratos/js/jquery.easing.min.js?_={$site_version}"></script>
+		<script type="text/javascript" src="{$static_path}/kratos/js/jquery.qrcode.min.js?_={$site_version}"></script>
+		<script type="text/javascript" src="{$static_path}/kratos/js/modernizr.min.js?_={$site_version}"></script>
+		<script type="text/javascript" src="{$static_path}/kratos/js/bootstrap.min.js?_={$site_version}"></script>
+		<script type="text/javascript" src="{$static_path}/kratos/js/jquery.waypoints.min.js?_={$site_version}"></script>
+		<script type="text/javascript" src="{$static_path}/kratos/js/jquery.stellar.min.js?_={$site_version}"></script>
+		<script type="text/javascript" src="{$static_path}/kratos/js/hoverIntent.min.js?_={$site_version}"></script>
+		<script type="text/javascript" src="{$static_path}/kratos/js/superfish.js?_={$site_version}"></script>
+		<script type="text/javascript" src="{$static_path}/kratos/js/kratos.js?_={$site_version}"></script>
+		<script type="text/javascript" src="{$static_path}/kratos/js/kratos.diy.js?_={$site_version}"></script>
+		<script type="text/javascript">
+			if($("#main").height() > $("#sidebar").height()) {
+				var footerHeight = 0;
+				if($("#page-footer").length > 0) {
+					footerHeight = $("#page-footer").outerHeight(true);
+				}
+				$("#sidebar").affix({
+					offset: {
+						top: $("#sidebar").offset().top - 30,
+						bottom: $("#footer").outerHeight(true) + footerHeight + 6
+					}
+				});
+			}
+		</script>
+		{block name="script"}{/block}
+	</body>
+
+</html>

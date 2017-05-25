@@ -9,6 +9,18 @@ class FileLogic extends Logic
 {
 
     /**
+     * 获取扩展名下拉
+     *
+     * @return array
+     */
+    public function getSelectExtension()
+    {
+        return FileModel::getInstance()->field('file_ext as value, file_ext as name')
+            ->group('file_ext')
+            ->select();
+    }
+
+    /**
      * 删除文件
      *
      * @param integer $id            

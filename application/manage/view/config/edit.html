@@ -9,9 +9,9 @@
 			
 			{$widget->form('text', ['title' => '配置标题', 'name' => 'config_title', 'value' => $_record['config_title']])}
 			
-			{$widget->form('select', ['title' => '配置类型', 'name' => 'config_type', 'value' => $_record['config_type'], 'list' => $type_list])}
+			{$widget->form('select', ['title' => '配置类型', 'name' => 'config_type', 'value' => $_record['config_type'], 'list' => $select_config_type])}
 			
-			{$widget->form('text', ['title' => '配置分组', 'name' => 'config_group', 'value' => $_record['config_group']])}
+			{$widget->form('select', ['title' => '配置分组', 'name' => 'config_gid', 'value' => $_record['config_gid'], 'list' => $select_config_group])}
 			
 			{$widget->form('text', ['title' => '配置排序', 'name' => 'config_sort', 'value' => $_record['config_sort']])}
 			

@@ -22,7 +22,7 @@
 			</div>
 		</div>
 		
-		{$widget->search('select', ['name' => 'uid', 'value' => $uid, 'list' => $user_list])}
+		{$widget->search('select', ['name' => 'uid', 'value' => $uid, 'list' => $select_login_user])}
 		
 		{$widget->search('date', ['name' => 'start_time', 'holder' => '开始日期', 'value' => $start_time])}
 		
@@ -47,10 +47,10 @@
 			<tbody>
 			{volist name="_list" id="vo"}
 				<tr>
-					<td>{$vo.user_nick}</td>
-					<td>{$vo.login_ip}</td>
-					<td>{$vo.login_agent}</td>
-					<td>{$vo.create_time}</td>
+					<td class="am-text-middle">{$vo.user_nick}</td>
+					<td class="am-text-middle">{$vo.login_ip}</td>
+					<td class="am-text-middle">{$vo.login_agent}</td>
+					<td class="am-text-middle">{$vo.create_time}</td>
 				</tr>
 			{/volist}
 			</tbody>

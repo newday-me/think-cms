@@ -1,34 +1,56 @@
 {extend name="common/base" }
 
+{block name="style"}
+<style type="text/css">
+.am-table p{
+	margin: 15px 0px;
+}
+</style>
+{/block}
+
 {block name="content"}
 <div class="am-g">
 	<div class="am-u-sm-12">
 		<form class="am-form auth-form" action="{:url('auth', ['gid' => $gid])}">
 		<table class="am-table am-table-striped am-table-radius am-table-bordered">
-		{volist name="$menu_list['main_menu']" id="main_vo"}
+		{volist name="$menu_list[0]" id="vo"}
 			<tr>
-				<th colspan="2">
+				<th class="am-text-middle" colspan="2">
 					<label class="am-checkbox-inline">
-						<input type="checkbox" name="group_menus[]" {if condition="in_array($main_vo.menu_id, $menu_ids)"}checked{/if} value="{$main_vo.menu_id}" data-am-ucheck> {$main_vo.menu_name}
+						<input type="checkbox" name="group_menus[]" {if condition="in_array($vo.id, $menu_ids)"}checked{/if} value="{$vo.id}" data-am-ucheck> {$vo.menu_name}
 					</label>
 				</th>
 			</tr>
-			{volist name="$menu_list['sub_menu'][$main_vo['menu_id']]" id="sub_vo"}
+			{if condition="isset($menu_list[$vo['id']])"}
+			{volist name="$menu_list[$vo['id']]" id="ko"}
 			<tr>
-				<td width="200px" style="padding-left: 50px;">
+				<td class="am-text-middle" width="200px" style="padding-left: 50px;">
 					<label class="am-checkbox-inline">
-						<input type="checkbox" name="group_menus[]" {if condition="in_array($sub_vo.menu_id, $menu_ids)"}checked{/if} value="{$sub_vo.menu_id}" data-am-ucheck> {$sub_vo.menu_name}
+						<input type="checkbox" name="group_menus[]" {if condition="in_array($ko.id, $menu_ids)"}checked{/if} value="{$ko.id}" data-am-ucheck> {$ko.menu_name}
 					</label>
 				</td>
 				<td>
-					{volist name="$menu_list['sub_sub_menu'][$sub_vo['menu_id']]" id="sub_sub_vo"}
+					{if condition="isset($menu_list[$ko['id']])"}
+					{volist name="$menu_list[$ko['id']]" id="mo"}
+					<p>
 					<label class="am-checkbox-inline">
-						<input type="checkbox" name="group_menus[]" {if condition="in_array($sub_sub_vo.menu_id, $menu_ids)"}checked{/if} value="{$sub_sub_vo.menu_id}" data-am-ucheck> {$sub_sub_vo.menu_name}
+						<input type="checkbox" name="group_menus[]" {if condition="in_array($mo.id, $menu_ids)"}checked{/if} value="{$mo.id}" data-am-ucheck> {$mo.menu_name}
 					</label>
+					{if condition="isset($menu_list[$mo['id']])"}
+						=>
+						{volist name="$menu_list[$mo['id']]" id="no"}
+						<label class="am-checkbox-inline">
+							<input type="checkbox" name="group_menus[]" {if condition="in_array($no.id, $menu_ids)"}checked{/if} value="{$no.id}" data-am-ucheck> {$no.menu_name}
+						</label>
+						{/volist}
+					{/if}
+					</p>
 					{/volist}
+					{/if}
 				</td>
 			</tr>
 			{/volist}
+			{/if}
 		{/volist}
 			<tr>
 				<td colspan="2" class="am-text-center">

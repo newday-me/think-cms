@@ -33,6 +33,7 @@ class LoginService extends Service
             $loginDriver = $this->getLoginDriver();
             $data = [
                 'user_id' => $user['id'],
+                'user_gid' => $group['id'],
                 'manage_url' => Url::build($group['home_page'])
             ];
             $loginDriver->storageLogin(self::LOGIN_KEY, $data);

@@ -2,6 +2,7 @@
 
 {block name="content"}
 <div class="am-g">
+
 	<div class="am-u-sm-12 am-u-md-6">
 		<div class="am-btn-toolbar">
 			<div class="am-btn-group am-btn-group-xs">
@@ -14,50 +15,140 @@
 			</div>
 		</div>
 	</div>
+	
+	<div class="am-u-sm-12 am-u-md-6">
+		<div class="am-btn-toolbar am-fr">
+			<div class="am-btn-group am-btn-group-xs">
+				<a class="am-btn am-btn-default" id="nest_expand">
+					<span class="am-icon-plus"></span> 打开所有
+				</a>
+				<a class="am-btn am-btn-default" id="nest_collapse">
+					<span class="am-icon-minus"></span> 折叠所有
+				</a>
+				<a class="am-btn am-btn-success" id="nest_sort_save">
+					<span class="am-icon-save"></span> 保存排序
+				</a>
+			</div>
+		</div>
+	</div>
+	
 </div>
 <br/>
 
 <div class="am-g">
 	<div class="am-u-sm-12">
-		<table class="am-table am-table-striped am-table-radius am-table-bordered">
-			<thead>
-				<tr>
-					<th>名称</th>
-					<th>排序</th>
-					<th>状态</th>
-					<th>时间</th>
-					<th>操作</th>
-				</tr>
-			</thead>
-			<tbody>
-			{volist name="_list" id="vo"}
-				<tr>
-					<td>{$vo.cate_name}</td>
-					<td class="am-form">
-					   {$widget->row('text', ['value' => $vo['cate_sort'], 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'cate_sort'])])}
-					</td>
-					<td>
-						{$widget->row('select', ['value' => $vo['cate_status'], 'list' => $status_list, 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'cate_status'])])}
-					</td>
-					<td>{$vo.create_time}</td>
-					<td>
-						<div class="am-btn-toolbar">
-							<div class="am-btn-group am-btn-group-xs">
-								{$widget->row('button', ['title' => '查看', 'class' => 'am-text-primary', 'icon' => 'am-icon-eye', 'attr' => 'target="new"', 'url' => url('blog/index/cate', ['name' => $vo['cate_flag']])])}
-                                {$widget->row('button', ['title' => '编辑', 'class' => 'am-text-secondary', 'icon' => 'am-icon-pencil-square-o', 'url' => module_url('edit', ['id' => $vo['id']])])}
-                                {$widget->row('button', ['title' => '删除', 'class' => 'am-text-danger ajax-get ajax-confirm', 'icon' => 'am-icon-trash-o', 'url' => module_url('delete', ['id' => $vo['id']])])}
+	
+		<div class="nd-nest">
+			{if condition="isset($_list[0])"}
+			<ul class="nd-list">
+			{volist name="$_list[0]" id="vo"}
+				<li class="nd-item" data-id="{$vo.id}">
+					<div class="nd-handle am-text-middle am-fl">
+						<a><span class="am-icon-list-ul"></span></a>
+					</div>
+					<div class="nd-area">
+						<a><b>{$vo.cate_title}</b></a>
+						<a class="am-text-success nd-action" href="{:module_url('add', ['pid' => $vo['id']])}">
+							<span class="am-icon-plus"></span>
+						</a>
+						<a class="am-text-primary nd-action" href="{:module_url('edit', ['id' => $vo['id']])}">
+							<span class="am-icon-pencil-square-o"></span>
+						</a>
+						<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:module_url('delete', ['id' => $vo['id']])}">
+							<span class="am-icon-trash"></span>
+						</a>
+					</div>
+					
+					
+					<ul class="nd-list">
+					{if condition="isset($_list[$vo['id']])"}
+					{volist name="$_list[$vo['id']]" id="ko"}
+						<li class="nd-item" data-id="{$ko.id}">
+							<div class="nd-handle am-text-middle am-fl">
+								<a><span class="am-icon-list-ul"></span></a>
 							</div>
-						</div>
-					</td>
-				</tr>
+							<div class="nd-area">
+								{$ko.cate_title}
+								<a class="am-text-primary nd-action" href="{:module_url('edit', ['id' => $ko['id']])}">
+									<span class="am-icon-pencil-square-o"></span>
+								</a>
+								<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:module_url('delete', ['id' => $ko['id']])}">
+									<span class="am-icon-trash"></span>
+								</a>
+							</div>
+						</li>
+					{/volist}
+					{/if}
+					</ul>
+					
+				</li>
 			{/volist}
-			</tbody>
-		</table>
+			</ul>
+			{/if}
+		</div>
 		
-		{if condition="!empty($_page)"}
-            <div class="am-fl">共 {$_total} 条记录</div>
-            <div class="am-fr"> {$_page}</div>
-        {/if}
 	</div>
 </div>
+{/block}
+
+
+{block name="script"}
+<script type="text/javascript">
+$(function(){
+	
+	require(['jquery-nestable'], function(){
+		var jQuery = $, selector = '.nd-nest';
+		
+		jQuery(selector).nestable({
+            listNodeName    : 'ul',
+            itemNodeName    : 'li',
+            rootClass       : 'nd-nest',
+            listClass       : 'nd-list',
+            itemClass       : 'nd-item',
+            dragClass       : 'nd-drage',
+            handleClass     : 'nd-handle',
+            collapsedClass  : 'nd-collapsed',
+            placeClass      : 'nd-placeholder',
+            noDragClass     : 'nd-nodrag',
+            emptyClass      : 'nd-empty',
+            expandBtnHTML   : '<button class="am-btn-link nd-switch am-fl" data-action="expand"><span class="am-icon-angle-double-right"></span></button>',
+            collapseBtnHTML : '<button class="am-btn-link nd-switch am-fl" data-action="collapse"><span class="am-icon-angle-double-down"></span></button>',
+            group           : 0,
+            maxDepth        : 2,
+            threshold       : 0
+        }), jQuery = $;
+		
+		jQuery('#nest_expand').click(function(){
+			jQuery(selector).nestable('expandAll');
+		});
+		
+		jQuery('#nest_collapse').click(function(){
+			jQuery(selector).nestable('collapseAll');
+		});
+		
+	});
+	
+	$('#nest_sort_save').click(function(){
+		var idx = '';
+		$('.nd-nest .nd-item').each(function(){
+			var id = $(this).attr('data-id');
+			if(id){
+				idx && (idx += ',');
+				idx += id;
+			}
+		});
+		$.ajax({
+			url: "{:module_url('sort')}",
+			type: 'post',
+			dataType: 'json',
+			data: {
+				idx: idx
+			},
+			success: ajaxSuccess,
+			error: ajaxError
+		});
+	});
+	
+});
+</script>
 {/block}

@@ -20,15 +20,4 @@ class FileModel extends Model
      */
     protected $autoWriteTimestamp = true;
 
-    /**
-     * 获取扩展名列表
-     *
-     * @return array
-     */
-    public function getExtensionList()
-    {
-        return $this->field('id as value, file_ext as name')
-            ->group('file_ext')
-            ->select();
-    }
 }

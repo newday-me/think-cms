@@ -5,15 +5,17 @@
 	<div class="am-u-sm-12">
 		<form class="am-form ajax-form" method="post" action="{:module_url('add')}">
 		
-			{$widget->form('text', ['title' => '分类名称', 'name' => 'cate_name', 'value' => ''])}
+			{$widget->form('text', ['title' => '分类名称', 'name' => 'cate_title', 'value' => ''])}
 			
-			{$widget->form('text', ['title' => '分类标识', 'name' => 'cate_flag', 'value' => ''])}
+			{$widget->form('text', ['title' => '分类标识', 'name' => 'cate_name', 'value' => ''])}
+			
+			{$widget->form('select', ['title' => '上级分类', 'name' => 'cate_pid', 'value' => $pid, 'list' => $select_cate_list])}
 			
 			{$widget->form('textarea', ['title' => '分类说明', 'name' => 'cate_info', 'value' => ''])}
 			
 			{$widget->form('text', ['title' => '分类排序', 'name' => 'cate_sort', 'value' => 0])}
 			
-			{$widget->form('select', ['title' => '分类状态', 'name' => 'cate_status', 'value' => '', 'list' => $status_list])}
+			{$widget->form('select', ['title' => '分类状态', 'name' => 'cate_status', 'value' => '', 'list' => $select_cate_status])}
 			
 			{$widget->form('submit', ['title' => '用户操作'])}
 			

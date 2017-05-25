@@ -2,79 +2,208 @@
 
 {block name="content"}
 <div class="am-g">
+
 	<div class="am-u-sm-12 am-u-md-6">
 		<div class="am-btn-toolbar">
 			<div class="am-btn-group am-btn-group-xs">
-				<a class="am-btn am-btn-default" href="{:url('add', ['pid' => $pid])}">
+				<a class="am-btn am-btn-default" href="{:url('add')}">
 					<span class="am-icon-plus"></span> 新增
 				</a>
 				<a class="am-btn am-btn-default nd-refresh">
 					<span class="am-icon-refresh"></span> 刷新
 				</a>
-				{if condition="$pid gt 0"}
-				<a class="am-btn am-btn-default nd-backward">
-					<span class="am-icon-reply"></span> 返回
-				</a>
-				{/if}
 			</div>
 		</div>
 	</div>
+	
 	<div class="am-u-sm-12 am-u-md-6">
-		<div class="am-btn-toolbar">
-			<div class="am-btn-group am-btn-group-xs" style="float: right">
-				<a class="am-btn am-btn-default {eq name='group' value=''}nd-group-select{/eq}" href="{:url('index', ['pid' => $pid])}">
-					全部
+		<div class="am-btn-toolbar am-fr">
+			<div class="am-btn-group am-btn-group-xs">
+				<a class="am-btn am-btn-default" id="nest_expand">
+					<span class="am-icon-plus"></span> 打开所有
 				</a>
-			{volist name="group_list" id="vo"}
-				{if condition="!empty($vo.menu_group)"}
-				<a class="am-btn am-btn-default {eq name='group' value='$vo.menu_group'}nd-group-select{/eq}" href="{:url('index', ['pid' => $pid, 'group' => $vo['menu_group']])}">
-					{$vo.menu_group|default='默认'}
+				<a class="am-btn am-btn-default" id="nest_collapse">
+					<span class="am-icon-minus"></span> 折叠所有
 				</a>
-				{/if}
-			{/volist}
+				<a class="am-btn am-btn-success" id="nest_sort_save">
+					<span class="am-icon-save"></span> 保存排序
+				</a>
 			</div>
 		</div>
 	</div>
+	
 </div>
 <br/>
 
 <div class="am-g">
 	<div class="am-u-sm-12">
-		<table class="am-table am-table-striped am-table-radius am-table-bordered">
-			<thead>
-				<tr>
-					<th>名称</th>
-					<th>链接</th>
-					<th>分组</th>
-					<th>排序</th>
-					<th>状态</th>
-					<th>操作</th>
-				</tr>
-			</thead>
-			<tbody>
-			{volist name="_list" id="vo"}
-				<tr>
-					<td><a href="{:url('index', ['pid' => $vo['id']])}">{$vo.menu_name}</a></td>
-					<td title="{$vo.menu_flag}">{$vo.menu_url}</td>
-					<td>{$vo.menu_group}</td>
-					<td class="am-form">
-					   {$widget->row('text', ['value' => $vo['menu_sort'], 'url' => url('modify', ['id' => $vo['id'], 'field' => 'menu_sort'])])}
-					</td>
-					<td>
-					   {$widget->row('select', ['value' => $vo['menu_status'], 'list' => $status_list, 'url' => url('modify', ['id' => $vo['id'], 'field' =>  'menu_status'])])}
-					</td>
-					<td>
-						<div class="am-btn-toolbar">
-							<div class="am-btn-group am-btn-group-xs">
-								{$widget->row('button', ['title' => '编辑', 'class' => 'am-text-secondary', 'icon' => 'am-icon-pencil-square-o', 'url' => url('edit', ['id' => $vo['id']])])}
-								{$widget->row('button', ['title' => '删除', 'class' => 'am-text-danger ajax-get ajax-confirm', 'icon' => 'am-icon-trash-o', 'url' => url('delete', ['id' => $vo['id']])])}
+	
+		<div class="nd-nest">
+			<ul class="nd-list">
+			{volist name="$_list[0]" id="vo"}
+				<li class="nd-item" data-id="{$vo.id}">
+					<div class="nd-handle am-text-middle am-fl">
+						<a><span class="am-icon-list-ul"></span></a>
+					</div>
+					<div class="nd-area">
+						<a><b>{$vo.menu_name}</b></a>
+						<a class="am-text-success nd-action" href="{:url('add', ['pid' => $vo['id']])}">
+							<span class="am-icon-plus"></span>
+						</a>
+						<a class="am-text-primary nd-action" href="{:url('edit', ['id' => $vo['id']])}">
+							<span class="am-icon-pencil-square-o"></span>
+						</a>
+						{if condition="!isset($_list[$vo['id']])"}
+						<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:url('delete', ['id' => $vo['id']])}">
+							<span class="am-icon-trash"></span>
+						</a>
+						{/if}
+					</div>
+					
+					<ul class="nd-list">
+					{if condition="isset($_list[$vo['id']])"}
+					{volist name="$_list[$vo['id']]" id="ko"}
+						<li class="nd-item" data-id="{$ko.id}">
+							<div class="nd-handle am-text-middle am-fl">
+								<a><span class="am-icon-list-ul"></span></a>
 							</div>
-						</div>
-					</td>
-				</tr>
+							<div class="nd-area">
+								<b>{$ko.menu_name}</b>
+								<a class="am-text-success nd-action" href="{:url('add', ['pid' => $ko['id']])}">
+									<span class="am-icon-plus"></span>
+								</a>
+								<a class="am-text-primary nd-action" href="{:url('edit', ['id' => $ko['id']])}">
+									<span class="am-icon-pencil-square-o"></span>
+								</a>
+								{if condition="!isset($_list[$ko['id']])"}
+								<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:url('delete', ['id' => $ko['id']])}">
+									<span class="am-icon-trash"></span>
+								</a>
+								{/if}
+							</div>
+							
+							<ul class="nd-list">
+							{if condition="isset($_list[$ko['id']])"}
+							{volist name="$_list[$ko['id']]" id="po"}
+								<li class="nd-item nd-colse-intend" data-id="{$po.id}">
+									<div class="nd-handle am-text-middle am-fl">
+										<a><span class="am-icon-list-ul"></span></a>
+									</div>
+									<div class="nd-area">
+										<a>{$po.menu_name}</a>
+										<a class="am-text-success nd-action" href="{:url('add', ['pid' => $po['id']])}">
+											<span class="am-icon-plus"></span>
+										</a>
+										<a class="am-text-primary nd-action" href="{:url('edit', ['id' => $po['id']])}">
+											<span class="am-icon-pencil-square-o"></span>
+										</a>
+										{if condition="!isset($_list[$po['id']])"}
+										<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:url('delete', ['id' => $po['id']])}">
+											<span class="am-icon-trash"></span>
+										</a>
+										{/if}
+									</div>
+									
+									<ul class="nd-list">
+									{if condition="isset($_list[$po['id']])"}
+									{volist name="$_list[$po['id']]" id="no"}
+										<li class="nd-item" data-id="{$no.id}">
+											<div class="nd-handle am-text-middle am-fl">
+												<a><span class="am-icon-list-ul"></span></a>
+											</div>
+											<div class="nd-area">
+												{$no.menu_name}
+												<a class="am-text-primary nd-action" href="{:url('edit', ['id' => $no['id']])}">
+													<span class="am-icon-pencil-square-o"></span>
+												</a>
+												<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:url('delete', ['id' => $no['id']])}">
+													<span class="am-icon-trash"></span>
+												</a>
+											</div>
+										</li>
+									{/volist}
+									{/if}
+									</ul>
+					
+								</li>
+							{/volist}
+							{/if}
+							</ul>
+							
+						</li>
+					{/volist}
+					{/if}
+					</ul>
+					
+				</li>
 			{/volist}
-			</tbody>
-		</table>
+			</ul>
+		</div>
+		
 	</div>
 </div>
+{/block}
+
+
+{block name="script"}
+<script type="text/javascript">
+$(function(){
+	
+	require(['jquery-nestable'], function(){
+		var jQuery = $, selector = '.nd-nest';
+		
+		jQuery(selector).nestable({
+            listNodeName    : 'ul',
+            itemNodeName    : 'li',
+            rootClass       : 'nd-nest',
+            listClass       : 'nd-list',
+            itemClass       : 'nd-item',
+            dragClass       : 'nd-drage',
+            handleClass     : 'nd-handle',
+            collapsedClass  : 'nd-collapsed',
+            placeClass      : 'nd-placeholder',
+            noDragClass     : 'nd-nodrag',
+            emptyClass      : 'nd-empty',
+            expandBtnHTML   : '<button class="am-btn-link nd-switch am-fl" data-action="expand"><span class="am-icon-angle-double-right"></span></button>',
+            collapseBtnHTML : '<button class="am-btn-link nd-switch am-fl" data-action="collapse"><span class="am-icon-angle-double-down"></span></button>',
+            group           : 0,
+            maxDepth        : 4,
+            threshold       : 0
+        }), jQuery = $;
+		
+		jQuery('#nest_expand').click(function(){
+			jQuery(selector).nestable('expandAll');
+		});
+		
+		jQuery('#nest_collapse').click(function(){
+			jQuery(selector).nestable('collapseAll');
+		});
+		
+		jQuery('.nd-colse-intend .nd-switch[data-action="collapse"]').click();
+		
+	});
+	
+	$('#nest_sort_save').click(function(){
+		var idx = '';
+		$('.nd-nest .nd-item').each(function(){
+			var id = $(this).attr('data-id');
+			if(id){
+				idx && (idx += ',');
+				idx += id;
+			}
+		});
+		$.ajax({
+			url: "{:url('sort')}",
+			type: 'post',
+			dataType: 'json',
+			data: {
+				idx: idx
+			},
+			success: ajaxSuccess,
+			error: ajaxError
+		});
+	});
+	
+});
+</script>
 {/block}

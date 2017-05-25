@@ -19,35 +19,9 @@ class Menu extends Base
     {
         $this->siteTitle = '菜单管理';
         
-        // 上级
-        $pid = $request->param('pid', 0);
-        $this->assign('pid', $pid);
-        
-        // 查询条件
-        $map = [
-            'menu_pid' => $pid
-        ];
-        
-        // 查询条件-分组
-        $group = $request->param('group', '');
-        if (! empty($group_name)) {
-            $map['menu_group'] = $group;
-        }
-        $this->assign('group', $group);
-        
         // 记录列表
-        $list = MenuModel::getInstance()->where($map)
-            ->order('menu_sort asc')
-            ->select();
-        $this->_list($list);
-        
-        // 分组列表
-        $this->assignGroupList([
-            'menu_pid' => $pid
-        ]);
-        
-        // 状态列表
-        $this->assignStatusList();
+        $list = MenuLogic::getInstance()->getMenuNest();
+        $this->_list($list['tree']);
         
         return $this->fetch();
     }
@@ -65,7 +39,6 @@ class Menu extends Base
                 'menu_name' => $request->param('menu_name'),
                 'menu_url' => $request->param('menu_url'),
                 'menu_pid' => $request->param('menu_pid', 0),
-                'menu_group' => $request->param('menu_group', ''),
                 'menu_sort' => $request->param('menu_sort', 0),
                 'menu_target' => $request->param('menu_target', ''),
                 'menu_build' => $request->param('menu_build', 0),
@@ -84,21 +57,25 @@ class Menu extends Base
         } else {
             $this->siteTitle = '新增菜单';
             
-            // 上级，返回用
+            // pid
             $pid = $request->param('pid', 0);
             $this->assign('pid', intval($pid));
+            
+            // 分组名称
+            $group = $request->param('group', '');
+            $this->assign('group', $group);
             
             // 上级菜单
             $this->assignMenuList();
             
-            // 打开方式
-            $this->assignTargetList();
+            // 菜单打开方式下拉
+            $this->assignSelectMenuTarget();
             
-            // 是否build
-            $this->assignBuildList();
+            // 菜单链接build下拉
+            $this->assignSelectMenuBuild();
             
-            // 菜单状态
-            $this->assignStatusList();
+            // 菜单状态下拉
+            $this->assignSelectMenuStatus();
             
             return $this->fetch();
         }
@@ -117,7 +94,6 @@ class Menu extends Base
                 'menu_name' => $request->param('menu_name'),
                 'menu_url' => $request->param('menu_url'),
                 'menu_pid' => $request->post('menu_pid', 0),
-                'menu_group' => $request->param('menu_group', ''),
                 'menu_sort' => $request->param('menu_sort', 0),
                 'menu_target' => $request->param('menu_target', ''),
                 'menu_build' => $request->param('menu_build', 0),
@@ -142,14 +118,14 @@ class Menu extends Base
             // 上级菜单
             $this->assignMenuList();
             
-            // 打开方式
-            $this->assignTargetList();
+            // 菜单打开方式下拉
+            $this->assignSelectMenuTarget();
             
-            // 是否build
-            $this->assignBuildList();
+            // 菜单链接build下拉
+            $this->assignSelectMenuBuild();
             
-            // 菜单状态
-            $this->assignStatusList();
+            // 菜单状态下拉
+            $this->assignSelectMenuStatus();
             
             return $this->fetch();
         }
@@ -167,6 +143,16 @@ class Menu extends Base
             'menu_status'
         ];
         $this->_modify(MenuModel::class, $fields);
+    }
+
+    /**
+     * 菜单排序
+     *
+     * @return void
+     */
+    public function sort()
+    {
+        $this->_sort(MenuModel::class, 'menu_sort');
     }
 
     /**
@@ -188,62 +174,46 @@ class Menu extends Base
     }
 
     /**
-     * 赋值配置分组
-     *
-     * @return void
-     */
-    protected function assignGroupList($map = [])
-    {
-        $model = MenuModel::getInstance();
-        $groupList = $model->getGroupList($map);
-        $this->assign('group_list', $groupList);
-    }
-
-    /**
      * 赋值菜单列表
      *
      * @return void
      */
     protected function assignMenuList()
     {
-        $logic = MenuLogic::getSingleton();
-        $menuList = $logic->getMenuList();
-        $this->assign('menu_list', $menuList);
+        $selectMenuList = MenuLogic::getSingleton()->getSelectList();
+        $this->assign('select_menu_list', $selectMenuList);
     }
 
     /**
-     * 赋值打开方式列表
+     * 赋值菜单打开方式下拉
      *
      * @return void
      */
-    protected function assignTargetList()
+    protected function assignSelectMenuTarget()
     {
-        $model = MenuModel::getInstance();
-        $targetList = $model->getTargetList();
-        $this->assign('target_list', $targetList);
+        $selectMenuTarget = MenuLogic::getSingleton()->getSelectTarget();
+        $this->assign('select_menu_target', $selectMenuTarget);
     }
 
     /**
-     * 赋值链接Build列表
+     * 赋值菜单链接Build下拉
      *
      * @return void
      */
-    protected function assignBuildList()
+    protected function assignSelectMenuBuild()
     {
-        $model = MenuModel::getInstance();
-        $buildList = $model->getBuildList();
-        $this->assign('build_list', $buildList);
+        $selectMenuBuild = MenuLogic::getSingleton()->getSelectBuild();
+        $this->assign('select_menu_build', $selectMenuBuild);
     }
 
     /**
-     * 赋值状态列表
+     * 赋值菜单状态下拉
      *
      * @return void
      */
-    protected function assignStatusList()
+    protected function assignSelectMenuStatus()
     {
-        $model = MenuModel::getInstance();
-        $statusList = $model->getStatusList();
-        $this->assign('status_list', $statusList);
+        $selectMenuStatus = MenuLogic::getSingleton()->getSelectStatus();
+        $this->assign('select_menu_status', $selectMenuStatus);
     }
 }

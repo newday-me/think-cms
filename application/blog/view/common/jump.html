@@ -1,0 +1,14 @@
+{extend name="common/base"}
+
+{block name="page"}
+<div class="kratos-start">
+	<div class="kratos-overlay"></div>
+	<div class="kratos-cover kratos-topimg text-center" style="background-image: url('{:config('blog_404_background')}')">
+		<div class="desc desc3">
+			<h2>{$msg}</h2>
+			<span>That page can not be found</span>
+			<span><a href="{:url('blog/index/index')}"><div class="btn btn-star">返回首页</div></a></span>
+		</div>
+	</div>
+</div>
+{/block}

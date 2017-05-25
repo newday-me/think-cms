@@ -20,15 +20,15 @@ class User extends Base
     {
         $this->siteTitle = '用户管理';
         
-        // 群组列表
-        $this->assignGroupList();
-        
-        // 状态列表
-        $this->assignStatusList();
-        
         // 分页列表
         $list = UserModel::getInstance()->select();
         $this->_list($list);
+        
+        // 用户群组下拉
+        $this->assignSelectUserGroup();
+        
+        // 用户状态下拉
+        $this->assignSelectUserStatus();
         
         return $this->fetch();
     }
@@ -63,11 +63,11 @@ class User extends Base
         } else {
             $this->siteTitle = '新增用户';
             
-            // 群组列表
-            $this->assignGroupList();
+            // 用户群组下拉
+            $this->assignSelectUserGroup();
             
-            // 状态列表
-            $this->assignStatusList();
+            // 用户状态下拉
+            $this->assignSelectUserStatus();
             
             return $this->fetch();
         }
@@ -104,14 +104,14 @@ class User extends Base
         } else {
             $this->siteTitle = '编辑用户';
             
-            // 用户
+            // 记录
             $this->_record(UserModel::class);
             
-            // 群组列表
-            $this->assignGroupList();
+            // 用户群组下拉
+            $this->assignSelectUserGroup();
             
-            // 状态列表
-            $this->assignStatusList();
+            // 用户状态下拉
+            $this->assignSelectUserStatus();
             
             return $this->fetch();
         }
@@ -138,30 +138,35 @@ class User extends Base
      */
     public function delete()
     {
+        $userId = $this->_id();
+        if (UserLogic::getInstance()->isSuperAdmin($userId)) {
+            $this->error('超级管理员不能被删除');
+        } elseif ($this->userId == $userId) {
+            $this->error('自己不能删除自己');
+        }
+        
         $this->_delete(UserModel::class, false);
     }
 
     /**
-     * 赋值群组列表
+     * 赋值用户群组下拉
      *
      * @return void
      */
-    protected function assignGroupList()
+    protected function assignSelectUserGroup()
     {
-        $logic = UserGroupLogic::getSingleton();
-        $groupList = $logic->getGroupList();
-        $this->assign('group_list', $groupList);
+        $selectUSerGroup = UserGroupLogic::getSingleton()->getSelectList();
+        $this->assign('select_user_group', $selectUSerGroup);
     }
 
     /**
-     * 赋值状态列表
+     * 赋值用户状态下拉
      *
      * @return void
      */
-    protected function assignStatusList()
+    protected function assignSelectUserStatus()
     {
-        $model = UserModel::getInstance();
-        $statusList = $model->getStatusList();
-        $this->assign('status_list', $statusList);
+        $selectUserStatus = UserLogic::getSingleton()->getSelectStatus();
+        $this->assign('select_user_status', $selectUserStatus);
     }
 }

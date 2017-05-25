@@ -3,6 +3,7 @@ namespace app\manage\controller;
 
 use think\Request;
 use core\manage\model\JobModel;
+use core\manage\logic\JobLogic;
 
 class Job extends Base
 {
@@ -53,11 +54,11 @@ class Job extends Base
             }
         });
         
-        // 队列列表
-        $this->assignQueueList();
+        // 任务队列下拉
+        $this->assignSelectJobQueue();
         
-        // 状态列表
-        $this->assignStatusList();
+        // 任务状态下拉
+        $this->assignSelectJobStatus();
         
         return $this->fetch();
     }
@@ -89,7 +90,7 @@ class Job extends Base
             'reserved' => 0,
             'reserved_at' => time() + $time
         ];
-        $this->_edit(JobModel::class, $data);
+        $this->_edit(JobModel::class, $data, null, self::JUMP_REFRESH);
     }
 
     /**
@@ -104,26 +105,24 @@ class Job extends Base
     }
 
     /**
-     * 赋值状态列表
+     * 赋值任务状态下拉
      *
      * @return void
      */
-    protected function assignStatusList()
+    protected function assignSelectJobStatus()
     {
-        $model = JobModel::getInstance();
-        $statusList = $model->getStatusList();
-        $this->assign('status_list', $statusList);
+        $selectJobStatus = JobLogic::getSingleton()->getSelectStatus();
+        $this->assign('select_job_status', $selectJobStatus);
     }
 
     /**
-     * 赋值队列列表
+     * 赋值任务队列下拉
      *
      * @return void
      */
-    protected function assignQueueList()
+    protected function assignSelectJobQueue()
     {
-        $model = JobModel::getInstance();
-        $queueList = $model->getQueueList();
-        $this->assign('queue_list', $queueList);
+        $selectJobQueue = JobLogic::getSingleton()->getSelectQueue();
+        $this->assign('select_job_queue', $selectJobQueue);
     }
 }

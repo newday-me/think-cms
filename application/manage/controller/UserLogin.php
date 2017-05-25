@@ -2,7 +2,7 @@
 namespace app\manage\controller;
 
 use think\Request;
-use core\manage\model\UserModel;
+use core\manage\logic\UserLogic;
 use core\manage\model\UserLoginModel;
 
 class UserLogin extends Base
@@ -72,21 +72,20 @@ class UserLogin extends Base
             }
         });
         
-        // 用户列表
-        $this->assignUserList();
+        // 登录用户下拉
+        $this->assignSelectLoginUser();
         
         return $this->fetch();
     }
 
     /**
-     * 赋值用户列表
+     * 赋值登录用户下拉
      *
      * @return void
      */
-    protected function assignUserList()
+    protected function assignSelectLoginUser()
     {
-        $model = UserModel::getInstance();
-        $userList = $model->getUserList();
-        $this->assign('user_list', $userList);
+        $selectLoginUser = UserLogic::getSingleton()->getSelectList();
+        $this->assign('select_login_user', $selectLoginUser);
     }
 }

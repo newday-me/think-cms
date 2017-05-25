@@ -5,15 +5,17 @@
 	<div class="am-u-sm-12">
 		<form class="am-form ajax-form" method="post" action="{:module_url('edit', ['id' => $_id])}">
 		
-			{$widget->form('text', ['title' => '分类名称', 'name' => 'cate_name', 'value' => $_record['cate_name']])}
+			{$widget->form('text', ['title' => '分类名称', 'name' => 'cate_title', 'value' => $_record['cate_title']])}
 			
-			{$widget->form('text', ['title' => '分类标识', 'name' => 'cate_flag', 'value' => $_record['cate_flag']])}
+			{$widget->form('text', ['title' => '分类标识', 'name' => 'cate_name', 'value' => $_record['cate_name']])}
+			
+			{$widget->form('select', ['title' => '上级分类', 'name' => 'cate_pid', 'value' => $_record['cate_pid'], 'list' => $select_cate_list])}
 			
 			{$widget->form('textarea', ['title' => '分类说明', 'name' => 'cate_info', 'value' => $_record['cate_info']])}
 			
 			{$widget->form('text', ['title' => '分类排序', 'name' => 'cate_sort', 'value' => $_record['cate_sort']])}
 			
-			{$widget->form('select', ['title' => '分类状态', 'name' => 'cate_status', 'value' => $_record['cate_status'], 'list' => $status_list])}
+			{$widget->form('select', ['title' => '分类状态', 'name' => 'cate_status', 'value' => $_record['cate_status'], 'list' => $select_cate_status])}
 			
 			{$widget->form('submit', ['title' => '用户操作'])}
 			

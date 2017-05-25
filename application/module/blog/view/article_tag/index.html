@@ -14,7 +14,7 @@
 		</div>
 	</div>
 	
-	{$widget->search('select', ['name' => 'status', 'value' => $status, 'list' => $status_list, 'md_num' => 3])}
+	{$widget->search('select', ['name' => 'status', 'value' => $status, 'list' => $select_tag_status, 'md_num' => 3])}
 	
 	{$widget->search('keyword', ['name' => 'keyword', 'holder' => '关键词', 'value' => $keyword, 'md_num' => 3])}
 	
@@ -35,13 +35,14 @@
 			<tbody>
 			{volist name="_list" id="vo"}
 				<tr>
-					<td>{$vo.tag_name}</td>
+					<td class="am-text-middle">{$vo.tag_name}</td>
 					<td>
-						{$widget->row('select', ['value' => $vo['tag_status'], 'list' => $status_list, 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'tag_status'])])}
+						{$widget->row('select', ['value' => $vo['tag_status'], 'list' => $select_tag_status, 'url' => module_url('modify', ['id' => $vo['id'], 'field' => 'tag_status'])])}
 					</td>
-					<td>
+					<td class="am-text-middle">
 						<div class="am-btn-toolbar">
 							<div class="am-btn-group am-btn-group-xs">
+								{$widget->row('button', ['title' => '查看', 'class' => 'am-text-primary', 'icon' => 'am-icon-eye', 'attr' => 'target="new"', 'url' => url('blog/index/tag', ['name' => $vo['tag_name']])])}
 								{$widget->row('button', ['title' => '删除', 'class' => 'am-text-danger ajax-get ajax-confirm', 'icon' => 'am-icon-trash-o', 'url' => module_url('delete', ['id' => $vo['id']])])}
 							</div>
 						</div>

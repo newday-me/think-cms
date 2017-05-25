@@ -12,6 +12,7 @@ class ArticleValidate extends Validate
      * @var unknown
      */
     protected $rule = [
+        'article_type' => 'require',
         'article_title' => 'require',
         'article_author' => 'require',
         'article_info' => 'require',
@@ -25,6 +26,7 @@ class ArticleValidate extends Validate
      * @var unknown
      */
     protected $message = [
+        'article_type.require' => '文章类型为空',
         'article_title.require' => '文章标题为空',
         'article_author.require' => '文章作者为空',
         'article_info.require' => '文章简介为空',
@@ -39,6 +41,7 @@ class ArticleValidate extends Validate
      */
     protected $scene = [
         'add' => [
+            'article_type',
             'article_title',
             'article_author',
             'article_info',

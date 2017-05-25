@@ -13,7 +13,7 @@ class ArticleCateValidate extends Validate
      */
     protected $rule = [
         'cate_name' => 'require',
-        'cate_flag' => 'require',
+        'cate_title' => 'require',
         'cate_info' => 'require'
     ];
 
@@ -23,8 +23,8 @@ class ArticleCateValidate extends Validate
      * @var unknown
      */
     protected $message = [
-        'cate_name.require' => '分类名称为空',
-        'cate_flag.require' => '分类标识为空',
+        'cate_name.require' => '分类标识为空',
+        'cate_title.require' => '分类名称为空',
         'cate_info.require' => '分类描述为空'
     ];
 
@@ -36,12 +36,12 @@ class ArticleCateValidate extends Validate
     protected $scene = [
         'add' => [
             'cate_name',
-            'cate_flag',
+            'cate_title',
             'cate_info'
         ],
         'edit' => [
             'cate_name',
-            'cate_flag',
+            'cate_title',
             'cate_info'
         ]
     ];

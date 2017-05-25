@@ -1,0 +1,19 @@
+{extend name="common/base" }
+
+{block name="content"}
+<div class="am-g">
+	<div class="am-u-sm-12">
+		<form class="am-form ajax-form" method="post" action="{:url('add')}">
+		
+			{$widget->form('text', ['title' => '分组名称', 'name' => 'group_name', 'value' => ''])}
+			
+			{$widget->form('textarea', ['title' => '分组说明', 'name' => 'group_info', 'value' => ''])}
+			
+			{$widget->form('text', ['title' => '分组排序', 'name' => 'group_sort', 'value' => 0])}
+			
+			{$widget->form('submit', ['title' => '用户操作'])}
+			
+		</form>
+	</div>
+</div>
+{/block}

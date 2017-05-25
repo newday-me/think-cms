@@ -29,6 +29,13 @@ class Loader
         $moduleViewPath = APP_PATH . 'module/' . _MODULE_ . '/view/';
         define('MODULE_VIEW_PATH', $moduleViewPath);
         
+        // 加载配置
+        $moduleConfigFile = APP_PATH . 'module/' . _MODULE_ . '/config.php';
+        if (is_file($moduleConfigFile)) {
+            $config = require ($moduleConfigFile);
+            $config && Config::set($config);
+        }
+        
         // 执行操作
         $class = 'module\\' . _MODULE_ . '\\controller\\' . \think\Loader::parseName(_CONTROLLER_, 1);
         return App::invokeMethod([

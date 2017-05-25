@@ -1,0 +1,82 @@
+<aside id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm scrollspy">
+	<div id="sidebar">
+		<aside id="kratos_about-3" class="widget amadeus_about clearfix">
+			<div class="photo-background">
+				<div class="photo-background" style="background:url('{:config('blog_head_background')}') no-repeat center center; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;"></div>
+			</div>
+			<div class="photo-wrapper clearfix">
+				<div class="photo-wrapper-tip text-center">
+					<a href="{:url('blog/index/index')}">
+						<img class="about-photo" src="{:config('blog_head')}" />
+					</a>
+				</div>
+			</div>
+			<div class="textwidget">
+				<p>
+					<p class="text-center">{:config('blog_desc')}</p>
+				</p>
+			</div>
+		</aside>
+		<aside class="widget widget_kratos_poststab">
+			<ul id="tabul" class="nav nav-tabs nav-justified visible-lg">
+				<li>
+					<a href="#newest" data-toggle="tab"> 最新文章</a>
+				</li>
+				<li class="active">
+					<a href="#hot" data-toggle="tab"> 热点文章</a>
+				</li>
+				<li>
+					<a href="#rand" data-toggle="tab">随机文章</a>
+				</li>
+			</ul>
+			<ul id="tabul" class="nav nav-tabs nav-justified visible-md">
+				<li>
+					<a href="#newest" data-toggle="tab"> 最新</a>
+				</li>
+				<li class="active">
+					<a href="#hot" data-toggle="tab"> 热点</a>
+				</li>
+				<li>
+					<a href="#rand" data-toggle="tab">随机</a>
+				</li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane fade" id="newest">
+					<ul class="list-group">
+					{volist name="article_list_new" id="vo"}
+						<a class="list-group-item visible-lg" title="{$vo.article_title}" href="{:url('blog/index/show', ['key' => $vo['article_key']])}" rel="bookmark">
+							<i class="fa  fa-book"></i> {$vo.article_title}
+						</a>
+					{/volist}
+					</ul>
+				</div>
+				<div class="tab-pane fade  in active" id="hot">
+					<ul class="list-group">
+					{volist name="article_list_hot" id="vo"}
+						<a class="list-group-item visible-lg" title="{$vo.article_title}" href="{:url('blog/index/show', ['key' => $vo['article_key']])}" rel="bookmark">
+							<i class="fa  fa-book"></i> {$vo.article_title}
+						</a>
+					{/volist}
+					</ul>
+				</div>
+				<div class="tab-pane fade" id="rand">
+					<ul class="list-group">
+					{volist name="article_list_rand" id="vo"}
+						<a class="list-group-item visible-lg" title="{$vo.article_title}" href="{:url('blog/index/show', ['key' => $vo['article_key']])}" rel="bookmark">
+							<i class="fa  fa-book"></i> {$vo.article_title}
+						</a>
+					{/volist}
+					</ul>
+				</div>
+			</div>
+		</aside>
+		<aside id="kratos_tags-2" class="widget widget_kratos_tags clearfix">
+			<h4 class="widget-title">标签聚合</h4>
+			<div class="tag_clouds">
+			{volist name="tag_list" id="vo"}
+				<a href="{:url('blog/index/tag', ['name' => $vo['tag_name']])}" class="tag-link-183 tag-link-position-1" style="font-size: 14px;">{$vo.tag_name}</a>
+			{/volist}
+			</div>
+		</aside>
+	</div>
+</aside>

@@ -4,6 +4,7 @@ namespace module\blog\controller;
 use think\Request;
 use core\blog\model\ArticleCateModel;
 use core\blog\model\ArticleCateLinkModel;
+use core\blog\logic\ArticleCateLogic;
 use core\blog\validate\ArticleCateValidate;
 
 class ArticleCate extends Base
@@ -19,12 +20,8 @@ class ArticleCate extends Base
     {
         $this->siteTitle = '分类列表';
         
-        // 分页列表
-        $model = ArticleCateModel::getInstance()->order('cate_sort asc');
-        $this->_page($model);
-        
-        // 状态列表
-        $this->assignStatusList();
+        $nest = ArticleCateLogic::getInstance()->getCateNest();
+        $this->_list($nest['tree']);
         
         return $this->fetch();
     }
@@ -40,7 +37,8 @@ class ArticleCate extends Base
         if ($request->isPost()) {
             $data = [
                 'cate_name' => $request->param('cate_name'),
-                'cate_flag' => $request->param('cate_flag'),
+                'cate_title' => $request->param('cate_title'),
+                'cate_pid' => $request->param('cate_pid', 0),
                 'cate_info' => $request->param('cate_info'),
                 'cate_sort' => $request->param('cate_sort', 0),
                 'cate_status' => $request->param('cate_status', 0)
@@ -54,8 +52,15 @@ class ArticleCate extends Base
         } else {
             $this->siteTitle = '新增分类';
             
-            // 状态列表
-            $this->assignStatusList();
+            // 上级分类
+            $pid = intval($request->param('pid', 0));
+            $this->assign('pid', $pid);
+            
+            // 分类列表下拉
+            $this->assignSelectCateList();
+            
+            // 分类状态下拉
+            $this->assignSelectCateStatus();
             
             return $this->fetch();
         }
@@ -72,7 +77,8 @@ class ArticleCate extends Base
         if ($request->isPost()) {
             $data = [
                 'cate_name' => $request->param('cate_name'),
-                'cate_flag' => $request->param('cate_flag'),
+                'cate_title' => $request->param('cate_title'),
+                'cate_pid' => $request->param('cate_pid', 0),
                 'cate_info' => $request->param('cate_info'),
                 'cate_sort' => $request->param('cate_sort', 0),
                 'cate_status' => $request->param('cate_status', 0)
@@ -89,26 +95,24 @@ class ArticleCate extends Base
             // 记录
             $this->_record(ArticleCateModel::class);
             
-            // 状态列表
-            $this->assignStatusList();
+            // 分类列表下拉
+            $this->assignSelectCateList();
+            
+            // 分类状态下拉
+            $this->assignSelectCateStatus();
             
             return $this->fetch();
         }
     }
 
     /**
-     * 更改分类
+     * 分类排序
      *
-     * @param Request $request            
-     * @return mixed
+     * @return void
      */
-    public function modify(Request $request)
+    public function sort()
     {
-        $fields = [
-            'cate_sort',
-            'cate_status'
-        ];
-        $this->_modify(ArticleCateModel::class, $fields);
+        $this->_sort(ArticleCateModel::class, 'cate_sort');
     }
 
     /**
@@ -119,25 +123,35 @@ class ArticleCate extends Base
      */
     public function delete(Request $request)
     {
-        // 删除连接
-        $model = ArticleCateLinkModel::getInstance();
+        // 检查关联文章数
         $map = [
             'cate_id' => $this->_id()
         ];
-        $model->where($map)->delete();
+        $count = ArticleCateLinkModel::getInstance()->where($map)->count();
+        $count && $this->error('有' . $count . '篇文章与该分类关联');
         
         $this->_delete(ArticleCateModel::class, false);
     }
 
     /**
-     * 赋值状态列表
+     * 赋值分类列表下拉
      *
      * @return void
      */
-    protected function assignStatusList()
+    protected function assignSelectCateList()
     {
-        $model = ArticleCateModel::getInstance();
-        $statusList = $model->getStatusList();
-        $this->assign('status_list', $statusList);
+        $selectCateList = ArticleCateLogic::getSingleton()->getSelectList();
+        $this->assign('select_cate_list', $selectCateList);
+    }
+
+    /**
+     * 赋值分类状态下拉
+     *
+     * @return void
+     */
+    protected function assignSelectCateStatus()
+    {
+        $selectCateStatus = ArticleCateLogic::getSingleton()->getSelectStatus();
+        $this->assign('select_cate_status', $selectCateStatus);
     }
 }

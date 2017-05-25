@@ -1,9 +1,13 @@
 <?php
 namespace app\manage\controller;
 
+use think\Url;
 use think\Request;
+use cms\Response;
 use core\manage\logic\ConfigLogic;
+use core\manage\logic\ConfigGroupLogic;
 use core\manage\model\ConfigModel;
+use core\manage\model\ConfigGroupModel;
 use core\manage\validate\ConfigValidate;
 
 class Config extends Base
@@ -19,23 +23,30 @@ class Config extends Base
     {
         $this->siteTitle = '配置管理';
         
-        // 查询条件
-        $map = [];
-        
         // 查询条件-分组
-        $group = $request->param('group', '');
-        if (! empty($group)) {
-            $map['config_group'] = $group;
+        $gid = $request->param('gid', '');
+        if (empty($gid)) {
+            $record = ConfigGroupModel::getInstance()->order('group_sort desc')->find();
+            Response::getInstance()->redirect(Url::build('index', [
+                'gid' => $record['id']
+            ]));
         }
-        $this->assign('group', $group);
+        $this->assign('gid', $gid);
         
-        // 分页列表
+        // 查询条件
+        $map = [
+            'config_gid' => $gid
+        ];
+        
+        // 配置列表
         $model = ConfigModel::getInstance();
-        $model = $model->where($map)->order('config_sort asc');
-        $this->_page($model);
+        $model = $model->where($map)
+            ->order('config_sort desc')
+            ->select();
+        $this->_list($model);
         
-        // 分组列表
-        $this->assignGroupList();
+        // 配置分组下拉
+        $this->assignSelectConfigGroup();
         
         return $this->fetch();
     }
@@ -67,8 +78,11 @@ class Config extends Base
         } else {
             $this->siteTitle = '新增配置';
             
-            // 类型列表
-            $this->assignTypeList();
+            // 配置分组下拉
+            $this->assignSelectConfigGroup();
+            
+            // 配置类型下拉
+            $this->assignSelectConfigType();
             
             return $this->fetch();
         }
@@ -104,8 +118,11 @@ class Config extends Base
             // 记录
             $this->_record(ConfigModel::class);
             
-            // 类型列表
-            $this->assignTypeList();
+            // 配置分组下拉
+            $this->assignSelectConfigGroup();
+            
+            // 配置类型下拉
+            $this->assignSelectConfigType();
             
             return $this->fetch();
         }
@@ -119,9 +136,19 @@ class Config extends Base
     public function modify()
     {
         $fields = [
-            'config_sort'
+            'config_gid'
         ];
         $this->_modify(ConfigModel::class, $fields);
+    }
+
+    /**
+     * 配置排序
+     *
+     * @return void
+     */
+    public function sort()
+    {
+        $this->_sort(ConfigModel::class, 'config_sort');
     }
 
     /**
@@ -172,26 +199,24 @@ class Config extends Base
     }
 
     /**
-     * 赋值配置分类
+     * 赋值配置类型下拉
      *
      * @return void
      */
-    protected function assignTypeList()
+    protected function assignSelectConfigType()
     {
-        $model = ConfigModel::getInstance();
-        $typeList = $model->getTypeList();
-        $this->assign('type_list', $typeList);
+        $selectConfigType = ConfigLogic::getSingleton()->getSelectType();
+        $this->assign('select_config_type', $selectConfigType);
     }
 
     /**
-     * 赋值配置分组
+     * 赋值配置分组下拉
      *
      * @return void
      */
-    protected function assignGroupList()
+    protected function assignSelectConfigGroup()
     {
-        $model = ConfigModel::getInstance();
-        $groupList = $model->getGroupList();
-        $this->assign('group_list', $groupList);
+        $selectConfigGroup = ConfigGroupLogic::getSingleton()->getSelectList();
+        $this->assign('select_config_group', $selectConfigGroup);
     }
 }

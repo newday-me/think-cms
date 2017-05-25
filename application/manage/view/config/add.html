@@ -9,9 +9,9 @@
 			
 			{$widget->form('text', ['title' => '配置标题', 'name' => 'config_title', 'value' => ''])}
 			
-			{$widget->form('select', ['title' => '配置类型', 'name' => 'config_type', 'value' => '', 'list' => $type_list])}
+			{$widget->form('select', ['title' => '配置类型', 'name' => 'config_type', 'value' => '', 'list' => $select_config_type])}
 			
-			{$widget->form('text', ['title' => '配置分组', 'name' => 'config_group', 'value' => ''])}
+			{$widget->form('select', ['title' => '配置分组', 'name' => 'config_gid', 'value' => '', 'list' => $select_config_group])}
 			
 			{$widget->form('text', ['title' => '配置排序', 'name' => 'config_sort', 'value' => '0'])}
 			

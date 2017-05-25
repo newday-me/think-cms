@@ -8,6 +8,26 @@ class ArticleLogic extends Logic
 {
 
     /**
+     * 增加访问次数
+     *
+     * @param integer $articleId            
+     * @return integer
+     */
+    public function addVisit($articleId)
+    {
+        $map = [
+            'id' => $articleId
+        ];
+        $data = [
+            'article_visit' => [
+                'exp',
+                'article_visit + 1'
+            ]
+        ];
+        return ArticleModel::getInstance()->where($map)->update($data);
+    }
+
+    /**
      * 获取记录
      *
      * @param integer $articleId            
@@ -134,4 +154,49 @@ class ArticleLogic extends Logic
         return $article->tags()->attach($tagIds);
     }
 
+    /**
+     * 获取类型下拉
+     *
+     * @return array
+     */
+    public function getSelectType()
+    {
+        return [
+            [
+                'name' => '文章',
+                'value' => 'article'
+            ],
+            [
+                'name' => '外链',
+                'value' => 'outer'
+            ],
+            [
+                'name' => '相册',
+                'value' => 'gallery'
+            ],
+            [
+                'name' => '专辑',
+                'value' => 'album'
+            ]
+        ];
+    }
+
+    /**
+     * 获取状态下拉
+     *
+     * @return array
+     */
+    public function getSelectStatus()
+    {
+        return [
+            [
+                'name' => '发布',
+                'value' => 1
+            ],
+            [
+                'name' => '待发布',
+                'value' => 0
+            ]
+        ];
+    }
 }

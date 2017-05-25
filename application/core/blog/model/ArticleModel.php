@@ -36,7 +36,7 @@ class ArticleModel extends Model
      */
     public function cates()
     {
-        return $this->belongsToMany(ArticleCateModel::class, ArticleCateLinkModel::getInstance()->getTableName(), 'cate_id', 'article_id');
+        return $this->belongsToMany(ArticleCateModel::class, ArticleCateLinkModel::getInstance()->getTableShortName(), 'cate_id', 'article_id');
     }
 
     /**
@@ -46,17 +46,7 @@ class ArticleModel extends Model
      */
     public function tags()
     {
-        return $this->belongsToMany(ArticleTagModel::class, ArticleTagLinkModel::getInstance()->getTableName(), 'tag_id', 'article_id');
-    }
-
-    /**
-     * 使用别名
-     *
-     * @param unknown $query            
-     */
-    public function useAlias($query)
-    {
-        return $query->alias('_a_article');
+        return $this->belongsToMany(ArticleTagModel::class, ArticleTagLinkModel::getInstance()->getTableShortName(), 'tag_id', 'article_id');
     }
 
     /**
@@ -64,9 +54,51 @@ class ArticleModel extends Model
      *
      * @return \think\db\Query
      */
-    public function withCates($query)
+    public function withCates()
     {
-        $query = $this->useAlias($query);
+        $query = $this->aliasQuery();
+        return $this->joinCates($query);
+    }
+
+    /**
+     * 连接标签
+     *
+     * @return \think\db\Query
+     */
+    public function withTags()
+    {
+        $query = $this->aliasQuery();
+        return $this->joinTags($query);
+    }
+
+    /**
+     * 连接分类和标签
+     *
+     * @return \think\db\Query
+     */
+    public function withCatesAndTags()
+    {
+        $query = $this->withCates();
+        return $this->joinTags($query);
+    }
+
+    /**
+     * 别名查询
+     *
+     * @return \think\db\Query
+     */
+    protected function aliasQuery()
+    {
+        return $this->alias('_a_article');
+    }
+
+    /**
+     * 连接分类
+     *
+     * @return \think\db\Query
+     */
+    protected function joinCates($query)
+    {
         return $query->join(ArticleCateLinkModel::getInstance()->getTableShortName() . ' _a_cate_link', '_a_article.id = _a_cate_link.article_id')
             ->join(ArticleCateModel::getInstance()->getTableShortName() . ' _a_cate', '_a_cate.id = _a_cate_link.cate_id');
     }
@@ -76,9 +108,8 @@ class ArticleModel extends Model
      *
      * @return \think\db\Query
      */
-    public function withTags($query)
+    protected function joinTags($query)
     {
-        $query = $this->useAlias($query);
         return $query->join(ArticleTagLinkModel::getInstance()->getTableShortName() . ' _a_tag_link', '_a_article.id = _a_tag_link.article_id')
             ->join(ArticleTagModel::getInstance()->getTableShortName() . ' _a_tag', '_a_tag.id = _a_tag_link.tag_id');
     }
@@ -110,24 +141,5 @@ class ArticleModel extends Model
         } else {
             return $this->getNewArticleKey();
         }
-    }
-
-    /**
-     * 获取状态列表
-     *
-     * @return array
-     */
-    public function getStatusList()
-    {
-        return [
-            [
-                'name' => '发布',
-                'value' => 1
-            ],
-            [
-                'name' => '待发布',
-                'value' => 0
-            ]
-        ];
     }
 }

@@ -25,8 +25,8 @@ class UserGroup extends Base
         $list = UserGroupModel::getInstance()->select();
         $this->_list($list);
         
-        // 状态列表
-        $this->assignStatusList();
+        // 群组状态下拉
+        $this->assignSelectGroupStatus();
         
         return $this->fetch();
     }
@@ -55,8 +55,8 @@ class UserGroup extends Base
         } else {
             $this->siteTitle = '新增群组';
             
-            // 状态列表
-            $this->assignStatusList();
+            // 群组状态下拉
+            $this->assignSelectGroupStatus();
             
             return $this->fetch();
         }
@@ -86,11 +86,11 @@ class UserGroup extends Base
         } else {
             $this->siteTitle = '编辑群组';
             
-            // 群组
+            // 记录
             $this->_record(UserGroupModel::class);
             
-            // 状态列表
-            $this->assignStatusList();
+            // 群组状态下拉
+            $this->assignSelectGroupStatus();
             
             return $this->fetch();
         }
@@ -127,7 +127,7 @@ class UserGroup extends Base
             $this->siteTitle = '编辑权限';
             $this->assign('gid', $gid);
             
-            // 群组菜单
+            // 群组菜单IDS
             $this->assignMenuIds($gid);
             
             // 菜单列表
@@ -157,11 +157,11 @@ class UserGroup extends Base
      */
     public function delete()
     {
-        $model = UserModel::getInstance();
+        $groupId = $this->_id();
         $map = [
-            'user_gid' => $this->_id()
+            'user_gid' => $groupId
         ];
-        if ($model->where($map)->find()) {
+        if (UserModel::getInstance()->where($map)->find()) {
             $this->error('请先删除该群组下的账号');
         }
         
@@ -171,11 +171,10 @@ class UserGroup extends Base
     /**
      * 赋值状态列表
      */
-    protected function assignStatusList()
+    protected function assignSelectGroupStatus()
     {
-        $model = UserGroupModel::getInstance();
-        $statusList = $model->getStatusList();
-        $this->assign('status_list', $statusList);
+        $selectGroupStatus = UserGroupLogic::getSingleton()->getSelectStatus();
+        $this->assign('select_group_status', $selectGroupStatus);
     }
 
     /**
@@ -184,8 +183,8 @@ class UserGroup extends Base
     protected function assignMenuList()
     {
         $logic = MenuLogic::getSingleton();
-        $menuList = $logic->getMenuTree();
-        $this->assign('menu_list', $menuList);
+        $menuNest = $logic->getMenuNest();
+        $this->assign('menu_list', $menuNest['tree']);
     }
 
     /**

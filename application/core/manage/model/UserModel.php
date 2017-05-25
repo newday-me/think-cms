@@ -48,23 +48,4 @@ class UserModel extends Model
         return $users;
     }
 
-    /**
-     * 获取状态列表
-     *
-     * @return array
-     */
-    public function getStatusList()
-    {
-        return [
-            [
-                'name' => '启用',
-                'value' => 1
-            ],
-            [
-                'name' => '禁用',
-                'value' => 0
-            ]
-        ];
-    }
-
 }

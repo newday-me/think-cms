@@ -20,22 +20,4 @@ class UserGroupModel extends Model
      */
     protected $autoWriteTimestamp = true;
 
-    /**
-     * 获取状态列表
-     *
-     * @return array
-     */
-    public function getStatusList()
-    {
-        return [
-            [
-                'name' => '启用',
-                'value' => 1
-            ],
-            [
-                'name' => '禁用',
-                'value' => 0
-            ]
-        ];
-    }
 }

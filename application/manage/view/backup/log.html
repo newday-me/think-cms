@@ -16,11 +16,11 @@
 			<tbody>
 			{volist name="_list" id="vo"}
 				<tr>
-					<td>{$vo.create_time}</td>
-					<td>{$vo.user_nick}</td>
-					<td>{$vo.backup_file}</td>
-					<td>{$vo.backup_size}</td>
-					<td>
+					<td class="am-text-middle">{$vo.create_time}</td>
+					<td class="am-text-middle">{$vo.user_nick}</td>
+					<td class="am-text-middle">{$vo.backup_file}</td>
+					<td class="am-text-middle">{$vo.backup_size}</td>
+					<td class="am-text-middle">
 						<div class="am-btn-toolbar">
 							<div class="am-btn-group am-btn-group-xs">
 								{$widget->row('button', ['title' => '删除', 'class' => 'am-text-danger ajax-get ajax-confirm', 'icon' => 'am-icon-trash-o', 'url' => url('delete', ['id' => $vo['id']])])}

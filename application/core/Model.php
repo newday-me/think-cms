@@ -102,7 +102,7 @@ class Model extends \think\Model
      *
      * @return string
      */
-    protected function getDeleteTimeField()
+    public function getDeleteTimeField()
     {
         return isset($this->deleteTime) ? $this->deleteTime : 'delete_time';
     }

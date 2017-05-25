@@ -1,0 +1,16 @@
+{extend name="common/base"}
+
+{block name="content"}
+<section id="main" class="col-md-8">
+	<article>
+		<div class="kratos-hentry kratos-post-inner clearfix">
+			<header class="kratos-entry-header">
+				<h1 class="kratos-entry-title text-center">{$page.page_title}</h1>
+			</header>
+			<div class="kratos-post-content">
+				{$page.page_content}	
+			</div>
+		</div>
+	</article>
+</section>
+{/block}
