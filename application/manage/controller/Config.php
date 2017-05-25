@@ -26,7 +26,7 @@ class Config extends Base
         // 查询条件-分组
         $gid = $request->param('gid', '');
         if (empty($gid)) {
-            $record = ConfigGroupModel::getInstance()->order('group_sort asc')->find();
+            $record = ConfigGroupModel::getInstance()->order('group_sort asc, id asc')->find();
             Response::getInstance()->redirect(Url::build('index', [
                 'gid' => $record['id']
             ]));
