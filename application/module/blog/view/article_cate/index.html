@@ -54,6 +54,9 @@
 						<a class="am-text-primary nd-action" href="{:module_url('edit', ['id' => $vo['id']])}">
 							<span class="am-icon-pencil-square-o"></span>
 						</a>
+						<a class="am-text-primary nd-action" href="{:url('blog/index/cate', ['name' => $vo['cate_name']])}">
+                            <span class="am-icon-eye"></span>
+                        </a>
 						<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:module_url('delete', ['id' => $vo['id']])}">
 							<span class="am-icon-trash"></span>
 						</a>
@@ -72,6 +75,9 @@
 								<a class="am-text-primary nd-action" href="{:module_url('edit', ['id' => $ko['id']])}">
 									<span class="am-icon-pencil-square-o"></span>
 								</a>
+								<a class="am-text-primary nd-action" href="{:url('blog/index/cate', ['name' => $ko['cate_name']])}">
+		                            <span class="am-icon-eye"></span>
+		                        </a>
 								<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:module_url('delete', ['id' => $ko['id']])}">
 									<span class="am-icon-trash"></span>
 								</a>
