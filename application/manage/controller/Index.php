@@ -2,8 +2,12 @@
 namespace app\manage\controller;
 
 use think\Request;
+use core\manage\model\UserModel;
+use core\manage\logic\UserLogic;
+use core\manage\validate\UserValidate;
 use app\manage\service\IndexService;
 use app\manage\service\RuntimeService;
+use app\manage\service\LoginService;
 
 class Index extends Base
 {
@@ -42,7 +46,40 @@ class Index extends Base
      */
     public function account(Request $request)
     {
-        return $this->fetch();
+        if ($request->isPost()) {
+            
+            $data = [
+                'user_nick' => $request->param('user_nick'),
+                'user_passwd' => $request->param('user_passwd'),
+                'user_passwd_confirm' => $request->param('user_passwd_confirm')
+            ];
+            
+            // 验证
+            $this->_validate(UserValidate::class, $data, 'account');
+            
+            // 验证原密码
+            $loginUser = LoginService::getSingleton()->gteLoginUserInfo();
+            $oldPasswd = $request->param('old_passwd');
+            if (empty($oldPasswd)) {
+                $this->error('原密码为空');
+            } else {
+                list ($code, $msg, $user) = UserLogic::getSingleton()->checkLogin($loginUser['user_name'], $oldPasswd);
+                if ($code != 1) {
+                    $this->error($msg);
+                }
+            }
+            
+            // 处理密码
+            $data = UserLogic::getSingleton()->processPasswdData($data);
+            
+            $map = [
+                'id' => $loginUser['id']
+            ];
+            $this->_edit(UserModel::class, $data, $map, self::JUMP_REFRESH);
+        } else {
+            $this->siteTitle = '账号设置';
+            return $this->fetch();
+        }
     }
 
     /**
