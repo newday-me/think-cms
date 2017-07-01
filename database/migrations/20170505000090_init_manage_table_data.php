@@ -404,14 +404,12 @@ class InitManageTableData extends Migrator
                 'group' => [
                     'group_name' => '管理员',
                     'group_info' => '管理网站',
-                    'home_page' => 'manage/index/index',
-                    'group_menus' => implode(',', $menuIds),
-                    'group_status' => 1
+                    'group_menus' => implode(',', $menuIds)
                 ],
                 'users' => [
                     [
                         'user_name' => 'admin',
-                        'user_passwd' => UserLogic::getSingleton()->encryptPasswd('123456'),
+                        'user_passwd' => '123456',
                         'user_nick' => '管理员',
                         'user_status' => 1
                     ]
@@ -422,8 +420,9 @@ class InitManageTableData extends Migrator
             $group = UserGroupModel::getInstance()->create($vo['group']);
             
             foreach ($vo['users'] as $ko) {
-                $ko['user_gid'] = $group['id'];
-                UserModel::getInstance()->create($ko);
+                UserLogic::getSingleton()->addUser($ko, [
+                    $group['id']
+                ]);
             }
         }
     }
@@ -621,7 +620,7 @@ class InitManageTableData extends Migrator
                     ],
                     [
                         'config_name' => 'cms_file',
-                        'config_value' => 'http://static.newday.me/cms/0.0.3.zip',
+                        'config_value' => 'http://static.newday.me/cms/0.0.4.zip',
                         'config_type' => 'file',
                         'config_title' => 'CMS文件',
                         'config_extra' => ''
@@ -745,7 +744,7 @@ class InitManageTableData extends Migrator
                         'config_value' => 'ueditor',
                         'config_type' => 'radio',
                         'config_title' => '编辑器',
-                        'config_extra' => 'wang:wangEditor|ueditor:Ueditor'
+                        'config_extra' => 'wang:wangEditor|ueditor:Ueditor|neditor:Neditor'
                     ]
                 ]
             ]

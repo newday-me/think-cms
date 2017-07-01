@@ -3,7 +3,6 @@ namespace app\manage\service;
 
 use cms\Auth;
 use core\manage\logic\UserLogic;
-use core\manage\logic\UserGroupLogic;
 
 class AuthService extends Auth
 {
@@ -25,7 +24,7 @@ class AuthService extends Auth
         
         // 操作是否授权
         $currentMenu = MenuService::getSingleton()->getCurrentMenu();
-        $menuIds = UserGroupLogic::getSingleton()->getGroupMenuIds($loginUser['user_gid']);
+        $menuIds = UserLogic::getSingleton()->getUserMenuIds($loginUser['user_id']);
         return in_array($currentMenu['id'], $menuIds);
     }
 }

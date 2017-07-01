@@ -97,7 +97,8 @@ class Base extends Controller
         $this->assign('manage_user', $manageUser);
         
         // 管理首页
-        $this->assign('manage_url', $loginUser['manage_url']);
+        $manageUrl = MenuService::getSingleton()->getManageHomeUrl();
+        $this->assign('manage_url', $manageUrl);
     }
 
     /**

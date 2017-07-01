@@ -22,11 +22,8 @@ class UserGroup extends Base
         $this->siteTitle = '用户群组';
         
         // 记录列表
-        $list = UserGroupModel::getInstance()->select();
-        $this->_list($list);
-        
-        // 群组状态下拉
-        $this->assignSelectGroupStatus();
+        $nest = UserGroupLogic::getInstance()->getGroupNest();
+        $this->_list($nest['tree']);
         
         return $this->fetch();
     }
@@ -43,8 +40,7 @@ class UserGroup extends Base
             $data = [
                 'group_name' => $request->param('group_name'),
                 'group_info' => $request->param('group_info', ''),
-                'home_page' => $request->param('home_page', ''),
-                'group_status' => $request->param('group_status', 0)
+                'group_sort' => $request->param('group_sort', 0)
             ];
             
             // 验证
@@ -55,8 +51,12 @@ class UserGroup extends Base
         } else {
             $this->siteTitle = '新增群组';
             
-            // 群组状态下拉
-            $this->assignSelectGroupStatus();
+            // 上级群组
+            $pid = $request->param('pid', 0);
+            $this->assign('pid', intval($pid));
+            
+            // 群组列表下拉
+            $this->assignSelectGroupList();
             
             return $this->fetch();
         }
@@ -74,8 +74,7 @@ class UserGroup extends Base
             $data = [
                 'group_name' => $request->param('group_name'),
                 'group_info' => $request->param('group_info', ''),
-                'home_page' => $request->param('home_page', ''),
-                'group_status' => $request->param('group_status', 0)
+                'group_sort' => $request->param('group_sort', 0)
             ];
             
             // 验证
@@ -89,8 +88,8 @@ class UserGroup extends Base
             // 记录
             $this->_record(UserGroupModel::class);
             
-            // 群组状态下拉
-            $this->assignSelectGroupStatus();
+            // 群组列表下拉
+            $this->assignSelectGroupList();
             
             return $this->fetch();
         }
@@ -131,7 +130,7 @@ class UserGroup extends Base
             $this->assignMenuIds($gid);
             
             // 菜单列表
-            $this->assignMenuList();
+            $this->assignMenuList($gid);
             
             return $this->fetch();
         }
@@ -169,21 +168,37 @@ class UserGroup extends Base
     }
 
     /**
-     * 赋值状态列表
+     * 赋值群组列表下拉
+     *
+     * @return void
      */
-    protected function assignSelectGroupStatus()
+    protected function assignSelectGroupList()
     {
-        $selectGroupStatus = UserGroupLogic::getSingleton()->getSelectStatus();
-        $this->assign('select_group_status', $selectGroupStatus);
+        $selectGroupList = UserGroupLogic::getSingleton()->getSelectList();
+        $this->assign('select_group_list', $selectGroupList);
     }
 
     /**
      * 赋值菜单列表
+     *
+     * @param integer $gid            
+     * @return void
      */
-    protected function assignMenuList()
+    protected function assignMenuList($gid)
     {
+        $map = [];
+        
+        // 父级菜单
+        $menuIds = UserGroupLogic::getSingleton()->getGroupMenuIdsParent($gid);
+        if (count($menuIds)) {
+            $map['id'] = [
+                'in',
+                $menuIds
+            ];
+        }
+        
         $logic = MenuLogic::getSingleton();
-        $menuNest = $logic->getMenuNest();
+        $menuNest = $logic->getMenuNest($map);
         $this->assign('menu_list', $menuNest['tree']);
     }
 
@@ -191,6 +206,7 @@ class UserGroup extends Base
      * 赋值菜单IDS
      *
      * @param integer $gid            
+     * @return void
      */
     protected function assignMenuIds($gid)
     {

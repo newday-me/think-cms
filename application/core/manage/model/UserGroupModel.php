@@ -19,5 +19,4 @@ class UserGroupModel extends Model
      * @var unknown
      */
     protected $autoWriteTimestamp = true;
-
 }

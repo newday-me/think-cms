@@ -21,13 +21,13 @@ class UserModel extends Model
     protected $autoWriteTimestamp = true;
 
     /**
-     * 关联用户
+     * 关联群组
      *
-     * @return \think\model\relation\BelongsTo
+     * @return \think\model\relation\BelongsToMany
      */
-    public function group()
+    public function groups()
     {
-        return $this->belongsTo(UserGroupModel::class, 'user_gid', 'id');
+        return $this->belongsToMany(UserGroupModel::class, UserGroupLinkModel::getInstance()->getTableShortName(), 'group_id', 'user_id');
     }
 
     /**
@@ -47,5 +47,4 @@ class UserModel extends Model
         }
         return $users;
     }
-
 }

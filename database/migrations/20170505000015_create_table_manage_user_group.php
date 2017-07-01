@@ -30,23 +30,23 @@ class CreateTableManageUserGroup extends Migrator
         $groupName = Column::string('group_name', 20)->setDefault('')->setComment('群组名称');
         $table->addColumn($groupName);
         
+        // 上级群组
+        $groupPid = Column::integer('group_pid')->setDefault(0)->setComment('上级群组');
+        $table->addColumn($groupPid);
+        
         // 群组描述
         $groupInfo = Column::string('group_info', 80)->setDefault('')->setComment('群组描述');
         $table->addColumn($groupInfo);
-        
-        // 管理首页
-        $homePage = Column::string('home_page', 150)->setDefault('')->setComment('管理首页');
-        $table->addColumn($homePage);
         
         // 群组菜单
         $groupMenus = Column::string('group_menus', 1000)->setDefault('')->setComment('群组菜单');
         $table->addColumn($groupMenus);
         
-        // 群组状态
-        $groupStatus = Column::integer('group_status')->setLimit(4)
+        // 群组排序上级群组
+        $groupSort = Column::integer('group_sort')->setLimit(4)
             ->setDefault(0)
             ->setComment('群组状态');
-        $table->addColumn($groupStatus);
+        $table->addColumn($groupSort);
         
         // 创建时间
         $createTime = Column::integer('create_time')->setDefault(0)->setComment('创建时间');

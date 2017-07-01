@@ -21,8 +21,16 @@ class User extends Base
         $this->siteTitle = '用户管理';
         
         // 分页列表
-        $list = UserModel::getInstance()->select();
-        $this->_list($list);
+        $list = UserModel::getInstance()->with('groups')->select();
+        $this->_list($list, function (&$list) {
+            foreach ($list as &$vo) {
+                $groupNames = [];
+                foreach ($vo->groups as $group) {
+                    $groupNames[] = $group['group_name'];
+                }
+                $vo['group_names'] = implode(',', $groupNames);
+            }
+        });
         
         // 用户群组下拉
         $this->assignSelectUserGroup();
@@ -47,19 +55,22 @@ class User extends Base
                 'user_nick' => $request->param('user_nick'),
                 'user_passwd' => $request->param('user_passwd'),
                 'user_passwd_confirm' => $request->param('user_passwd_confirm'),
-                'user_gid' => $request->param('user_gid'),
                 'user_status' => $request->param('user_status', 0)
             ];
             
             // 验证
             $this->_validate(UserValidate::class, $data, 'add');
             
-            // 密码
-            $logic = UserLogic::getSingleton();
-            $data = $logic->processPasswdData($data);
+            // 群组
+            $userGids = $request->param('user_gids/a', []);
+            if (empty($userGids)) {
+                $this->error('请至少选择一个用户群组');
+            }
             
-            // 添加
-            $this->_add(UserModel::class, $data);
+            // 添加用户
+            UserLogic::getSingleton()->addUser($data, $userGids);
+            
+            $this->success('添加用户成功', self::JUMP_REFERER);
         } else {
             $this->siteTitle = '新增用户';
             
@@ -87,7 +98,6 @@ class User extends Base
                 'user_nick' => $request->param('user_nick'),
                 'user_passwd' => $request->param('user_passwd'),
                 'user_passwd_confirm' => $request->param('user_passwd_confirm'),
-                'user_gid' => $request->param('user_gid'),
                 'user_status' => $request->param('user_status', 0)
             ];
             
@@ -95,17 +105,32 @@ class User extends Base
             $scene = empty($data['user_passwd']) ? 'edit_info' : 'edit_passwd';
             $this->_validate(UserValidate::class, $data, $scene);
             
-            // 密码
-            $logic = UserLogic::getSingleton();
-            $data = $logic->processPasswdData($data);
+            // 群组
+            $userGids = $request->param('user_gids/a', []);
+            if (empty($userGids)) {
+                $this->error('请至少选择一个用户群组');
+            }
             
-            // 修改
-            $this->_edit(UserModel::class, $data);
+            // 更新账号
+            UserLogic::getSingleton()->saveUser($this->_id(), $data, $userGids);
+            
+            $this->success('更新用户成功', self::JUMP_REFERER);
         } else {
             $this->siteTitle = '编辑用户';
             
             // 记录
-            $this->_record(UserModel::class);
+            $map = [
+                'id' => $this->_id()
+            ];
+            $user = UserModel::getInstance()->where($map)->find();
+            
+            $userGids = [];
+            foreach ($user->groups as $group) {
+                $userGids[] = $group['id'];
+            }
+            $user['user_gids'] = $userGids;
+            
+            $this->assign('_record', $user);
             
             // 用户群组下拉
             $this->assignSelectUserGroup();
@@ -155,7 +180,7 @@ class User extends Base
      */
     protected function assignSelectUserGroup()
     {
-        $selectUSerGroup = UserGroupLogic::getSingleton()->getSelectList();
+        $selectUSerGroup = UserGroupLogic::getSingleton()->getSelectListForUser();
         $this->assign('select_user_group', $selectUSerGroup);
     }
 

@@ -26,22 +26,20 @@ class LoginService extends Service
      */
     public function doLogin($name, $passwd)
     {
-        list ($code, $msg, $user, $group) = UserLogic::getSingleton()->checkLogin($name, $passwd);
+        list ($code, $msg, $user) = UserLogic::getSingleton()->checkLogin($name, $passwd);
         if ($code == 1) {
             
             // 保存登录
             $loginDriver = $this->getLoginDriver();
             $data = [
-                'user_id' => $user['id'],
-                'user_gid' => $group['id'],
-                'manage_url' => Url::build($group['home_page'])
+                'user_id' => $user['id']
             ];
             $loginDriver->storageLogin(self::LOGIN_KEY, $data);
             
             return [
                 true,
                 '登录成功',
-                $data['manage_url']
+                MenuService::getSingleton()->getManageHomeUrl()
             ];
         } else {
             return [

@@ -343,20 +343,32 @@ $(function() {
 		if(CMS.editor == 'wang') {
 			createWangEditor($this, target);
 		} else {
-			createUeditor($this, target);
+			createUeditor($this, target, CMS.editor);
 		}
 	});
 
 	// 创建Ueditor
-	function createUeditor($this, target) {
-		require(['ZeroClipboard', 'baiduEditor'], function(ZeroClipboard) {
+	function createUeditor($this, target, editor) {
+		var editorName, editorHome, editorTheme;
+		if(editor == 'ueditor'){
+			editorName = 'baiduEditor';
+			editorHome = '/ueditor/1.4.3.3/';
+			editorTheme = 'default';
+		}
+		else{
+			editorName = 'neditor';
+			editorHome = '/neditor/1.4.4/';
+			editorTheme = 'notadd';
+		}
+		require(['ZeroClipboard', editorName], function(ZeroClipboard) {
 
 			// 剪切板
 			window.ZeroClipboard = ZeroClipboard;
 
 			var ue = UE.getEditor($this.get(0), {
-				UEDITOR_HOME_URL: CMS.path.lib + '/ueditor/1.4.3.3/',
+				UEDITOR_HOME_URL: CMS.path.lib + editorHome,
 				serverUrl: CMS.api.upload_editor,
+				theme : editorTheme,
 				zIndex: 10000,
 				autoHeightEnabled: false,
 				initialFrameHeight: 520,
@@ -372,7 +384,7 @@ $(function() {
 						'forecolor', 'backcolor', '|',
 						'insertorderedlist', 'insertunorderedlist', '|',
 						'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
-						'customstyle', 'paragraph', 'fontfamily', 'fontsize'
+						'paragraph', 'fontfamily', 'fontsize'
 					],
 					[
 						'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',

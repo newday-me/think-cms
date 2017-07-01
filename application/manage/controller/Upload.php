@@ -11,6 +11,48 @@ use app\common\App;
 use app\common\factories\FileFactory;
 use app\manage\service\EditorService;
 
+class DemoClass
+{
+    
+    use \cms\traits\HookTrait;
+
+    public function hookClass()
+    {
+        $this->callHook('hook_class', [
+            'name' => 'class',
+            'ext' => 'hook class'
+        ]);
+    }
+
+    public function hookClosure()
+    {
+        $this->callHook('hook_closure', [
+            'name' => 'closure',
+            'ext' => 'hook closure'
+        ]);
+    }
+}
+
+class DemoHook
+{
+
+    public static function hook(&$params)
+    {
+        echo 'class<br/>';
+        dump($params);
+    }
+}
+
+$demo = new DemoClass();
+$demo->addHook('hook_class', DemoHook::class);
+$demo->addHook('hook_closure', function (&$params) {
+    echo 'closure<br/>';
+    dump($params);
+});
+
+$demo->hookClass();
+$demo->hookClosure();
+
 class Upload extends Base
 {
 
@@ -137,7 +179,6 @@ class Upload extends Base
                 $reqponse->json($editor->listFile($type, $start, $size));
                 break;
         }
-    
     }
 
     /**

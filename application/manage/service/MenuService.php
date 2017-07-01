@@ -5,7 +5,7 @@ use think\Url;
 use cms\Service;
 use cms\Common;
 use core\manage\logic\MenuLogic;
-use core\manage\logic\UserGroupLogic;
+use core\manage\logic\UserLogic;
 
 class MenuService extends Service
 {
@@ -20,7 +20,7 @@ class MenuService extends Service
         static $nest;
         if (is_null($nest)) {
             $user = LoginService::getSingleton()->getLoginUser();
-            $menuIds = UserGroupLogic::getInstance()->getGroupMenuIds($user['user_gid']);
+            $menuIds = UserLogic::getInstance()->getUserMenuIds($user['user_id']);
             
             $map = [
                 'id' => [
@@ -77,6 +77,21 @@ class MenuService extends Service
             $list[] = $item;
         }
         return $list;
+    }
+
+    /**
+     * 获取后台主页链接
+     *
+     * @return string
+     */
+    public function getManageHomeUrl()
+    {
+        $mainMenu = $this->getMainMenu();
+        if (empty($mainMenu)) {
+            return Url::build('manage/index/index');
+        } else {
+            return $mainMenu[0]['menu_url'];
+        }
     }
 
     /**

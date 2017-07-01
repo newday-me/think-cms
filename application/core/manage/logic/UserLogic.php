@@ -40,6 +40,16 @@ class UserLogic extends Logic
         return $users;
     }
 
+    public function getUserMenuIds($userId)
+    {
+        $user = UserModel::get($userId);
+        $menuIds = [];
+        foreach ($user->groups as $group) {
+            $menuIds = array_merge($menuIds, explode(',', $group['group_menus']));
+        }
+        return array_unique(array_filter($menuIds));
+    }
+
     /**
      * 是否超级管理员
      *
@@ -52,6 +62,63 @@ class UserLogic extends Logic
     }
 
     /**
+     * 添加用户
+     *
+     * @param array $data            
+     * @param mixed $groupIds            
+     * @return void
+     */
+    public function addUser($data, $groupIds)
+    {
+        $data = $this->processPasswdData($data);
+        
+        // 创建用户
+        $user = UserModel::getInstance()->create($data);
+        
+        // 关联群组
+        $this->attachUserGroups($user['id'], $groupIds);
+    }
+
+    /**
+     * 更新用户
+     *
+     * @param integer $userId            
+     * @param array $data            
+     * @param mixed $groupIds            
+     * @return void
+     */
+    public function saveUser($userId, $data, $groupIds)
+    {
+        $data = $this->processPasswdData($data);
+        
+        // 更新用户
+        $map = [
+            'id' => $userId
+        ];
+        UserModel::getInstance()->update($data, $map);
+        
+        // 关联群组
+        $this->attachUserGroups($userId, $groupIds);
+    }
+
+    /**
+     * 关联用户群组
+     *
+     * @param integer $userId            
+     * @param array $groupIds            
+     * @return \think\model\Pivot
+     */
+    public function attachUserGroups($userId, $groupIds)
+    {
+        is_array($groupIds) || $groupIds = array_filter(explode(',', $groupIds));
+        
+        // 保存关联
+        $user = UserModel::get($userId);
+        $user->groups()->detach();
+        return $user->groups()->attach($groupIds);
+    }
+
+    /**
      * 处理密码数据
      *
      * @param array $data            
@@ -60,7 +127,13 @@ class UserLogic extends Logic
     public function processPasswdData($data)
     {
         // 加密密码
-        isset($data['user_passwd']) && $data['user_passwd'] = $this->encryptPasswd($data['user_passwd']);
+        if (isset($data['user_passwd'])) {
+            if (empty($data['user_passwd'])) {
+                unset($data['user_passwd']);
+            } else {
+                $data['user_passwd'] = $this->encryptPasswd($data['user_passwd']);
+            }
+        }
         
         // 移除重复密码
         unset($data['user_passwd_confirm']);
@@ -73,7 +146,7 @@ class UserLogic extends Logic
      *
      * @param string $name            
      * @param string $passwd            
-     * @return array($code, $msg, $user, $group)
+     * @return array($code, $msg, $user)
      */
     public function checkLogin($name, $passwd)
     {
@@ -107,32 +180,13 @@ class UserLogic extends Logic
             ];
         }
         
-        // 群组状态
-        $group = $user->group;
-        if (empty($group)) {
-            return [
-                - 4,
-                '尚未分配用户群组',
-                null,
-                null
-            ];
-        } elseif ($group['group_status'] == 0) {
-            return [
-                - 5,
-                '用户所在群组被禁止登录',
-                null,
-                null
-            ];
-        }
-        
         // 登录次数
         $this->addLoginRecord($user['id']);
         
         return [
             1,
             '登录成功',
-            $user,
-            $group
+            $user
         ];
     }
 
