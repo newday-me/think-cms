@@ -40,7 +40,7 @@ class IndexService extends Service
         $mysqlVersion = Db::query('select version() as version');
         $serverInfo = [
             'ThinkPHP版本' => 'ThinkPHP ' . THINK_VERSION,
-            'CMS信息' => '作者 : <a class="am-text-success" target="new" href="https://www.newday.me">哩呵</a> , GIT : <a class="am-text-success" target="new" href="https://github.com/newday-me/think-cms">NewDayCms</a>。',
+            'CMS信息' => '作者 : <a class="am-text-success" target="new" href="http://www.newday.me">哩呵</a> , GIT : <a class="am-text-success" target="new" href="https://github.com/newday-me/think-cms">NewDayCms</a>。',
             '操作系统' => PHP_OS,
             '主机名信息' => $request->server('SERVER_NAME') . ' (' . $request->server('SERVER_ADDR') . ':' . $request->server('SERVER_PORT') . ')',
             '运行环境' => $request->server('SERVER_SOFTWARE'),
