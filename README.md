@@ -28,18 +28,23 @@ CMS的数据流方向如下图：
 ![](https://raw.githubusercontent.com/newday-me/think-cms/master/public/assets/image/flow.png)
 
 * **modal**
+
 模型层：一个model对应一张表，负责数据库的操作。**数据库操作。**
 
 * **data**
+
 数据层：一个modal对应一个data，实现特定的数据操作。调用model进行数据库操作，调用其他data进行数据库操作，数据的加密等处理。**数据操作，不涉及业务。**
 
 * **logic**
+
 逻辑层：远程数据的管理（如：远程接口调用封装），业务（如：上传，菜单树构建），调用其他逻辑层进行业务操作。**处理业务和精简服务层。**
 
 * **service**
+
 服务层：调用数据层操作数据，调用逻辑层处理业务。**尽量精简，调用为主。**
 
 * **controller**
+
 应用层：接收和输出数据。**输入和输出。**
 
 ## 四、CMS表单
