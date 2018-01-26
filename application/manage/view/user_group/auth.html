@@ -1,66 +1,72 @@
 {extend name="common/base" }
 
-{block name="style"}
-<style type="text/css">
-.am-table p{
-	margin: 15px 0px;
-}
-</style>
+{block name="content-body"}
+<div class="box">
+    <div class="box-body table-responsive">
+        <table id="tree-menu" class="table table-hover">
+            <thead>
+            <tr>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div class="box-footer">
+        <a class="btn btn-primary action-save"><i class="fa fa-save"></i> 保存</a>
+        <a class="btn btn-default nd-back pull-right"><i class="fa fa-rotate-left"></i> 返回</a>
+    </div>
+</div>
 {/block}
 
-{block name="content"}
-<div class="am-g">
-	<div class="am-u-sm-12">
-		<form class="am-form auth-form" action="{:url('auth', ['gid' => $gid])}">
-		<table class="am-table am-table-striped am-table-radius am-table-bordered">
-		{volist name="$menu_list[0]" id="vo"}
-			<tr>
-				<th class="am-text-middle" colspan="2">
-					<label class="am-checkbox-inline">
-						<input type="checkbox" name="group_menus[]" {if condition="in_array($vo.id, $menu_ids)"}checked{/if} value="{$vo.id}" data-am-ucheck> {$vo.menu_name}
-					</label>
-				</th>
-			</tr>
-			{if condition="isset($menu_list[$vo['id']])"}
-			{volist name="$menu_list[$vo['id']]" id="ko"}
-			<tr>
-				<td class="am-text-middle" width="200px" style="padding-left: 50px;">
-					<label class="am-checkbox-inline">
-						<input type="checkbox" name="group_menus[]" {if condition="in_array($ko.id, $menu_ids)"}checked{/if} value="{$ko.id}" data-am-ucheck> {$ko.menu_name}
-					</label>
-				</td>
-				<td>
-					{if condition="isset($menu_list[$ko['id']])"}
-					{volist name="$menu_list[$ko['id']]" id="mo"}
-					<p>
-					<label class="am-checkbox-inline">
-						<input type="checkbox" name="group_menus[]" {if condition="in_array($mo.id, $menu_ids)"}checked{/if} value="{$mo.id}" data-am-ucheck> {$mo.menu_name}
-					</label>
-					{if condition="isset($menu_list[$mo['id']])"}
-						=>
-						{volist name="$menu_list[$mo['id']]" id="no"}
-						<label class="am-checkbox-inline">
-							<input type="checkbox" name="group_menus[]" {if condition="in_array($no.id, $menu_ids)"}checked{/if} value="{$no.id}" data-am-ucheck> {$no.menu_name}
-						</label>
-						{/volist}
-					{/if}
-					</p>
-					{/volist}
-					{/if}
-				</td>
-			</tr>
-			{/volist}
-			{/if}
-		{/volist}
-			<tr>
-				<td colspan="2" class="am-text-center">
-					<button type="button" class="am-btn am-btn-sm am-btn-primary ajax-post" target-form="auth-form" >保存权限</button>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					<button type="button" class="am-btn am-btn-sm am-btn-default nd-backward">取消操作</button>
-				</td>
-			</tr>
-		</table>
-		</form>
-	</div>
-</div>
+{block name="script"}
+<script>
+    var App = {
+        selector: {
+            menuTree: '#tree-menu'
+        }
+    };
+    var treeData = JSON.parse('{:$menu_tree_json}');
+    var actionList = JSON.parse('{:$action_list_json}');
+
+    // tree
+    (function (app) {
+
+        app.buildMenuTree = function (selector, treeData) {
+            $(selector).fancytree({
+                icon: false,
+                checkbox: true,
+                clickFolderMode: 4,
+                extensions: ["table"],
+                table: {
+                    nodeColumnIdx: 0
+                },
+                source: treeData,
+                createNode: function (event, data) {
+                    var item = data.node.data;
+                    $('span.fancytree-title', data.node.span).html('<i class="' + item['menu_icon'] + '"></i> ' + item['menu_name']);
+                }
+            });
+        };
+
+        app.saveGroupMenuNos = function (actionAuth, selectorTree) {
+            var menuNos = CMS.app.getTreeDataNos(selectorTree, 'menu_no');
+            var data = {
+                menu_nos: menuNos
+            };
+            CMS.ajax.request(actionAuth, data);
+        };
+
+    }(App));
+
+    $(function () {
+
+        App.buildMenuTree(App.selector.menuTree, treeData);
+
+        $(document).on('click', '.box-footer .action-save', function () {
+            App.saveGroupMenuNos(actionList.auth, App.selector.menuTree);
+        });
+
+    });
+</script>
 {/block}

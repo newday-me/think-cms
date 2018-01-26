@@ -1,7 +1,4 @@
 .idea
-.settings
-.buildpath
-.project
+composer.lock
 *.log
 thinkphp
-composer.lock

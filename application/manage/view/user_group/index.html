@@ -1,160 +1,192 @@
 {extend name="common/base" }
 
-{block name="content"}
-<div class="am-g">
-
-	<div class="am-u-sm-12 am-u-md-6">
-		<div class="am-btn-toolbar">
-			<div class="am-btn-group am-btn-group-xs">
-				<a class="am-btn am-btn-default" href="{:url('add')}">
-					<span class="am-icon-plus"></span> 新增
-				</a>
-				<a class="am-btn am-btn-default nd-refresh">
-					<span class="am-icon-refresh"></span> 刷新
-				</a>
-			</div>
-		</div>
-	</div>
-	
-	<div class="am-u-sm-12 am-u-md-6">
-		<div class="am-btn-toolbar am-fr">
-			<div class="am-btn-group am-btn-group-xs">
-				<a class="am-btn am-btn-default" id="nest_expand">
-					<span class="am-icon-plus"></span> 打开所有
-				</a>
-				<a class="am-btn am-btn-default" id="nest_collapse">
-					<span class="am-icon-minus"></span> 折叠所有
-				</a>
-				<a class="am-btn am-btn-success" id="nest_sort_save">
-					<span class="am-icon-save"></span> 保存排序
-				</a>
-			</div>
-		</div>
-	</div>
-	
+{block name="content-body"}
+<div class="box">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            <a class="btn btn-primary action-add-root"><i class="fa fa-plus"></i> 新增</a>
+        </h3>
+    </div>
+    <div class="box-body table-responsive">
+        <table id="tree-group" class="table table-hover">
+            <thead>
+            <tr>
+                <th>名称</th>
+                <th>描述</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 </div>
-<br/>
 
-<div class="am-g">
-	<div class="am-u-sm-12">
-	
-		<div class="nd-nest">
-			{if condition="isset($_list[0])"}
-			<ul class="nd-list">
-			{volist name="$_list[0]" id="vo"}
-				<li class="nd-item" data-id="{$vo.id}">
-					<div class="nd-handle am-text-middle am-fl">
-						<a><span class="am-icon-list-ul"></span></a>
-					</div>
-					<div class="nd-area">
-						<a><b>{$vo.group_name}</b></a>
-						<a class="am-text-success nd-action" href="{:url('add', ['pid' => $vo['id']])}">
-							<span class="am-icon-plus"></span>
-						</a>
-						<a class="am-text-primary nd-action" href="{:url('edit', ['id' => $vo['id']])}">
-							<span class="am-icon-pencil-square-o"></span>
-						</a>
-						<a class="am-text-primary nd-action" href="{:url('auth', ['gid' => $vo['id']])}">
-							<span class="am-icon-users"></span>
-						</a>
-						<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:url('delete', ['id' => $vo['id']])}">
-							<span class="am-icon-trash"></span>
-						</a>
-					</div>
-					
-					
-					<ul class="nd-list">
-					{if condition="isset($_list[$vo['id']])"}
-					{volist name="$_list[$vo['id']]" id="ko"}
-						<li class="nd-item" data-id="{$ko.id}">
-							<div class="nd-handle am-text-middle am-fl">
-								<a><span class="am-icon-list-ul"></span></a>
-							</div>
-							<div class="nd-area">
-								{$ko.group_name}
-								<a class="am-text-primary nd-action" href="{:url('edit', ['id' => $ko['id']])}">
-									<span class="am-icon-pencil-square-o"></span>
-								</a>
-								<a class="am-text-primary nd-action" href="{:url('auth', ['gid' => $ko['id']])}">
-									<span class="am-icon-users"></span>
-								</a>
-								<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:url('delete', ['id' => $ko['id']])}">
-									<span class="am-icon-trash"></span>
-								</a>
-							</div>
-						</li>
-					{/volist}
-					{/if}
-					</ul>
-					
-				</li>
-			{/volist}
-			</ul>
-			{/if}
-		</div>
-		
-	</div>
-</div>
+<div class="modal fade" id="modal-add"></div>
+<script type="text/x-template" id="modal-add-template">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">添加群组</h4>
+            </div>
+            <div class="modal-body">
+                <div class="box-body">
+                    <input type="hidden" name="group_pno" v-model="form.group_pno"/>
+                    <div class="form-group">
+                        <label>名称</label>
+                        <input type="text" name="group_name" v-model="form.group_name" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea name="group_info" v-model="form.group_info" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i
+                        class="fa fa-remove"></i> 取消
+                </button>
+                <button type="button" class="btn btn-primary" @click="addRecord"><i class="fa fa-save"></i> 保存</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<div class="modal fade" id="modal-edit"></div>
+<script type="text/x-template" id="modal-edit-template">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">编辑群组</h4>
+            </div>
+            <div class="modal-body">
+                <div class="box-body">
+                    <input type="hidden" name="group_no" v-model="form.group_no"/>
+                    <div class="form-group">
+                        <label>名称</label>
+                        <input type="text" name="group_name" v-model="form.group_name" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea name="group_info" v-model="form.group_info" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i
+                        class="fa fa-remove"></i> 取消
+                </button>
+                <button type="button" class="btn btn-primary" @click="saveRecord"><i class="fa fa-save"></i> 保存</button>
+            </div>
+        </div>
+    </div>
+</script>
 {/block}
 
-
 {block name="script"}
-<script type="text/javascript">
-$(function(){
-	
-	require(['jquery-nestable'], function(){
-		var jQuery = $, selector = '.nd-nest';
-		
-		jQuery(selector).nestable({
-            listNodeName    : 'ul',
-            itemNodeName    : 'li',
-            rootClass       : 'nd-nest',
-            listClass       : 'nd-list',
-            itemClass       : 'nd-item',
-            dragClass       : 'nd-drage',
-            handleClass     : 'nd-handle',
-            collapsedClass  : 'nd-collapsed',
-            placeClass      : 'nd-placeholder',
-            noDragClass     : 'nd-nodrag',
-            emptyClass      : 'nd-empty',
-            expandBtnHTML   : '<button class="am-btn-link nd-switch am-fl" data-action="expand"><span class="am-icon-angle-double-right"></span></button>',
-            collapseBtnHTML : '<button class="am-btn-link nd-switch am-fl" data-action="collapse"><span class="am-icon-angle-double-down"></span></button>',
-            group           : 0,
-            maxDepth        : 2,
-            threshold       : 0
-        }), jQuery = $;
-		
-		jQuery('#nest_expand').click(function(){
-			jQuery(selector).nestable('expandAll');
-		});
-		
-		jQuery('#nest_collapse').click(function(){
-			jQuery(selector).nestable('collapseAll');
-		});
-		
-	});
-	
-	$('#nest_sort_save').click(function(){
-		var idx = '';
-		$('.nd-nest .nd-item').each(function(){
-			var id = $(this).attr('data-id');
-			if(id){
-				idx && (idx += ',');
-				idx += id;
-			}
-		});
-		$.ajax({
-			url: "{:module_url('sort')}",
-			type: 'post',
-			dataType: 'json',
-			data: {
-				idx: idx
-			},
-			success: ajaxSuccess,
-			error: ajaxError
-		});
-	});
-	
-});
+<script>
+    var App = {
+        selector: {
+            groupTree: '#tree-group'
+        }
+    };
+    var actionList = JSON.parse('{:$action_list_json}');
+    var treeData = JSON.parse('{:$group_tree_json}');
+
+    // tree
+    (function (app) {
+
+        app.buildGroupTree = function (actionDrag, selector, treeData) {
+            $(selector).fancytree({
+                icon: false,
+                clickFolderMode: 4,
+                extensions: ['table', 'dnd'],
+                table: {
+                    nodeColumnIdx: 0
+                },
+                source: treeData,
+                createNode: function (event, data) {
+                    var item = data.node.data;
+                    $('span.fancytree-title', data.node.span).html(item['group_name']);
+                },
+                renderColumns: function (event, data) {
+                    var node = data.node, data = node.data, $tdList = $(node.tr).find(">td");
+                    $tdList.eq(1).html(data.group_info);
+
+                    var actionHtml = '<div class="tree-action" data-no="' + data.group_no + '" data-title="' + data.group_name + '">' +
+                        '<a class="action-add"><i class="fa fa-plus"></i>新增</a>' +
+                        '|<a class="action-edit"><i class="fa fa-edit"></i>编辑</a>' +
+                        '|<a class="text-success" href="' + data.auth_link + '"><i class="fa fa-users"></i>权限</a>';
+                    if (!data._children_) {
+                        actionHtml += '|<a class="action-delete text-danger"><i class="fa fa-trash"></i>删除</a>';
+                    }
+                    actionHtml += '</div>';
+                    $tdList.eq(2).html(actionHtml);
+                },
+                dnd: {
+                    autoExpandMS: 400,
+                    focusOnClick: false,
+                    preventVoidMoves: true,
+                    preventRecursiveMoves: true,
+                    dragStart: function (node, data) {
+                        return true;
+                    },
+                    dragEnter: function (node, data) {
+                        return true;
+                    },
+                    dragDrop: function (node, data) {
+                        CMS.ajax.request(actionDrag, {
+                            mode: data.hitMode,
+                            from_group_no: data.otherNode.data.group_no,
+                            to_group_no: node.data.group_no
+                        }, function (result) {
+                            if (result.code === 1) {
+                                data.otherNode.moveTo(node, data.hitMode);
+                            }
+                            else {
+                                CMS.alert.alert(result.msg, 'error');
+                            }
+                        });
+                    }
+                }
+            });
+        };
+
+    }(App));
+
+    $(function () {
+
+        App.buildGroupTree(actionList.drag, App.selector.groupTree, treeData);
+
+        $(document).on('click', '.action-add-root', function () {
+            CMS.app.recordAdd(actionList.add, {
+                group_pno: ''
+            });
+        });
+
+        $(document).on('click', '.tree-action .action-add', function () {
+            var dataNo = $(this).parent().attr('data-no');
+            CMS.app.recordAdd(actionList.add, {
+                group_pno: dataNo
+            });
+        });
+
+        $(document).on('click', '.tree-action .action-edit', function () {
+            var dataNo = $(this).parent().attr('data-no');
+            CMS.app.recordEdit(actionList.edit, dataNo);
+        });
+
+        $(document).on('click', '.tree-action .action-delete', function () {
+            var dataNo = $(this).parent().attr('data-no'),
+                dataTitle = $(this).parent().attr('data-title');
+            CMS.app.recordDelete(actionList.delete, dataNo, dataTitle);
+        });
+
+    });
 </script>
 {/block}

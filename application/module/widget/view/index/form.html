@@ -1,0 +1,43 @@
+{extend name="common/base" }
+
+{block name="content-body"}
+<div class="box">
+    <div class="box-header with-border">
+        <h3 class="box-title">表单组件</h3>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-6">
+                {:$select_html}
+
+                {:$tag_html}
+
+                {:$color_html}
+
+                {:$mask_html}
+
+                {:$date_html}
+
+                {:$date_range_html}
+
+                {:$single_image_html}
+
+                {:$single_file_html}
+
+                {:$multi_image_html}
+
+                {:$multi_file_html}
+            </div>
+            <div class="col-md-6">
+                {:$summer_note_html}
+
+                {:$um_editor_html}
+
+                {:$json_html}
+
+                {:$html_html}
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

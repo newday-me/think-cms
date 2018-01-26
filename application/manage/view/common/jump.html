@@ -1,86 +1,102 @@
 <!DOCTYPE html>
 <html>
 
-	<head>
-		<meta charset="UTF-8">
-		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
-		<meta name="renderer" content="webkit">
-		<title>{$msg}</title>
-		<link rel="stylesheet" href="{$lib_path}/amazeui/2.7.2/css/amazeui.css?_={$site_version}" />
-		<style type="text/css">
-			body {
-				padding: 20px;
-				background-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, #fff), linear-gradient(70deg, #e0f1ff 32%, #fffae3);
-			}
-			
-			.jump-content {
-				max-width: 50rem;
-				margin-top: -2rem;
-				margin-left: auto;
-				margin-right: auto;
-				padding-top: 30rem;
-				padding-top: 50vh;
-			}
-			
-			.jump-content .jump-area {
-				width: 100%;
-				padding: 2rem;
-				background: #fff;
-				text-align: center;
-				border-radius: 0.5rem;
-				transform: translateY(-50%);
-			}
-			
-			.jump-content .jump-area .jump-tip {
-				margin-top: 1rem;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-			
-			.jump-content .jump-area .jump-icon {
-				font-size: 5rem;
-			}
-		</style>
-	</head>
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1"/>
+    <meta name="renderer" content="webkit">
+    <title>{$msg}</title>
+    <link rel="stylesheet" href="{$static_path}/bootstrap/3.3.7/css/bootstrap.min.css?_={$site_version}">
+    <link rel="stylesheet" href="{$static_path}/font-awesome/4.7.0/css/font-awesome.min.css?_={$site_version}">
+    <link rel="stylesheet" href="{$static_path}/adminlte/2.4.2/css/AdminLTE.min.css?_={$site_version}">
+    <style type="text/css">
+        body {
+            padding: 20px;
+            background-image: linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, #fff), linear-gradient(70deg, #e0f1ff 32%, #fffae3)
+        }
 
-	<body>
-		<div class="jump-content" style="max-width: 500px;">
-			<div class="jump-area">
-				<h1><span class="{$code?'am-icon-check-square':'am-icon-times-circle'} am-icon-lg jump-icon {$code?'am-text-success':'am-text-danger'}"></span></h1>
-				<h1 class="jump-tip" title="{$msg}">{$msg}</h1>
-				<p>
-					<a href="javascript:jumpUrl();"><span class="jump-wait">{$wait}</span> 秒后自动跳转链接</a>
-				</p>
-			</div>
-		</div>
-		<script type="text/javascript" src="{$lib_path}/jquery/2.0.0/jquery.min.js?_={$site_version}"></script>
-		<script>
-			var wait = "{$wait}";
-			var url = "{$url}";
+        .jump-content {
+            width: 450px;
+            max-width: 90%;
+            margin-top: -2rem;
+            margin-left: auto;
+            margin-right: auto;
+            padding-top: 50vh;
+        }
 
-			$(function() {
-				countDown();
-			});
+        .jump-content .jump-area {
+            width: 100%;
+            padding: 2rem;
+            background: #fff;
+            text-align: center;
+            border-radius: .5rem;
+            transform: translateY(-50%)
+        }
 
-			function countDown() {
-				$('.jump-wait').text(wait);
-				wait--;
-				if(wait <= 0) {
-					setTimeout(jumpUrl, 1000);
-				} else {
-					setTimeout(countDown, 1000);
-				}
-			}
+        .jump-content .jump-area .jump-icon {
+            font-size: 100px;
+            margin-top: 30px;
+        }
 
-			function jumpUrl() {
-				if(url) {
-					location.href = url;
-				} else {
-					history.go(-1);
-				}
-			}
-		</script>
-	</body>
+        .jump-content .jump-area .jump-tip {
+            font-size: 24px;
+            margin-top: 15px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .jump-content .jump-area .jump-link {
+            font-size: 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="jump-content">
+    <div class="jump-area">
+        <p class="jump-icon">
+            {if condition="$code eq 1"}
+            <i class="fa fa-check-square text-green"></i>
+            {else /}
+            <i class="fa fa-times-circle text-red"></i>
+            {/if}
+        </p>
+        <p class="jump-tip" title=";">
+            {$msg}
+        </p>
+        <p class="jump-link">
+            <a href="javascript:jumpUrl();">
+                <span class="jump-wait" id="jump-wait">{$wait}</span> 秒后自动跳转链接
+            </a>
+        </p>
+    </div>
+</div>
+<script>
+    var wait = '{$wait}';
+    var url = '{$url}';
+    var waitSpan = document.getElementById('jump-wait');
+    function countDown() {
+        waitSpan.innerHTML = wait;
+        wait--;
+        if (wait <= 0) {
+            setTimeout(jumpUrl, 990);
+        } else {
+            setTimeout(countDown, 990);
+        }
+    }
+    function jumpUrl() {
+        if (url) {
+            location.href = url;
+        } else {
+            history.go(-1);
+        }
+    }
+    countDown();
+</script>
+</body>
 </html>

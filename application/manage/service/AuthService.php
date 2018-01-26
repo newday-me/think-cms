@@ -1,30 +1,48 @@
 <?php
+
 namespace app\manage\service;
 
-use cms\Auth;
-use core\manage\logic\UserLogic;
+use core\base\Service;
+use app\manage\logic\MenuLogic;
+use core\db\manage\data\ManageUserData;
 
-class AuthService extends Auth
+class AuthService extends Service
 {
 
     /**
-     * 是否授权的操作
+     * 是否各种操作
      *
-     * @return boolean
+     * @param array $actionList
+     * @return int
      */
-    public function isAuthAction()
+    public function isPublicAction($actionList)
     {
-        // 当前用户
-        $loginUser = LoginService::getSingleton()->getLoginUser();
-        
-        // 超级管理员
-        if (UserLogic::getSingleton()->isSuperAdmin($loginUser['user_id'])) {
+        // 当前操作
+        $currentAction = strtolower(MenuLogic::getSingleton()->getCurrentAction());
+
+        // 匹配规则
+        $actionPattern = '#(^' . implode(')|(^', $actionList) . ')#i';
+
+        return preg_match($actionPattern, $currentAction);
+    }
+
+    /**
+     * 是否授权操作
+     *
+     * @param string $userNo
+     * @return bool
+     */
+    public function isAuthAction($userNo)
+    {
+        $user = ManageUserData::getSingleton()->getUser($userNo);
+        if (empty($user)) {
+            return false;
+        } elseif (ManageUserData::getSingleton()->isSuperUser($user)) {
             return true;
         }
-        
-        // 操作是否授权
-        $currentMenu = MenuService::getSingleton()->getCurrentMenu();
-        $menuIds = UserLogic::getSingleton()->getUserMenuIds($loginUser['user_id']);
-        return in_array($currentMenu['id'], $menuIds);
+
+        $menu = ManageUserData::getSingleton()->getUserMenu($userNo, MenuLogic::getSingleton()->getCurrentAction());
+        return $menu ? true : false;
     }
+
 }

@@ -1,115 +1,185 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
-	<meta name="renderer" content="webkit">
-	<title>{$site_title}</title>
-	<link rel="stylesheet" href="{$lib_path}/amazeui/2.7.2/css/amazeui.css?_={$site_version}" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{$site_title}</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{$static_path}/bootstrap/3.3.7/css/bootstrap.min.css?_={$site_version}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{$static_path}/font-awesome/4.7.0/css/font-awesome.min.css?_={$site_version}">
+    <!-- AdminLTE -->
+    <link rel="stylesheet" href="{$static_path}/adminlte/2.4.2/css/AdminLTE.min.css?_={$site_version}">
+    <link rel="stylesheet" href="{$static_path}/adminlte/2.4.2/css/skins/skin-blue-light.min.css?_={$site_version}">
+    <!-- Pretty Checkbox -->
+    <link rel="stylesheet" href="{$static_path}/pretty-checkbox/3.0.3/pretty-checkbox.min.css?_={$site_version}">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="{$static_path}/sweetalert2/7.1.0/sweetalert2.min.css?_={$site_version}">
+    <!-- Jquery FancyTree -->
+    <link rel="stylesheet" href="{$static_path}/jquery-fancytree/2.27.0/skin-win8-n/ui.fancytree.min.css?_={$site_version}">
+    <!-- Custom -->
+    <link rel="stylesheet" href="{$assets_path}/manage/cms.css?_={$site_version}">
+    {block name="style"}{/block}
 </head>
-<body class="theme-white">
-<link rel="stylesheet" href="{$static_path}/manage/common.css?_={$site_version}">
-{block name="style"}{/block}
 {block name="body"}
-<div class="am-g tpl-g">
-	{block name="header"}
-		{include file="manage@common/header" /}
-	{/block}
-	{block name="siderbar"}
-		{include file="manage@common/siderbar" /}
-	{/block}
-	<div class="tpl-content-wrapper">
-		<div class="row-content am-cf">
-			<div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
-				{block name="content"}{/block}
-			</div>
-		</div>
-	</div>
+<body class="hold-transition skin-blue-light sidebar-mini">
+<div class="wrapper">
+    {block name="header"}
+    {include file="common/header" /}
+    {/block}
+
+    {block name="sidebar"}
+    {include file="common/sidebar" /}
+    {/block}
+
+    <div class="content-wrapper">
+        <section class="content">
+            {block name="content-body"}{/block}
+        </section>
+    </div>
+
+    {block name="footer"}
+    {include file="common/footer" /}
+    {/block}
 </div>
+</body>
 {/block}
-<script type="text/javascript" src="{$lib_path}/jquery/2.0.0/jquery.min.js?_={$site_version}"></script>
-<script type="text/javascript" src="{$lib_path}/require/2.3.1/require.js?_={$site_version}"></script>
-<script type="text/javascript" >
-var CMS = {
-	'version' : '{$site_version}',
-	'editor' : '{$manage_editor}',
-	'path' : {
-		'lib' : '{$lib_path}',
-		'static' : '{$static_path}'
-	},
-	'api' : {
-		'upload' : '{:url("manage/upload/upload")}',
-		'upload_editor' : '{:url("manage/upload/editor")}'
-	}
-};
-require.config({
-	'baseUrl' : CMS.path.lib,
-	'urlArgs' : '_=' + CMS.version,
-	'packages' : [
-		{
-			'name' : "codemirror",
-			'location' : CMS.path.lib + '/code.mirror/5.25.0',
-			'main' : "lib/codemirror"
-	    }
-	],
-	'paths' : {
-		'jquery' : 'jquery/2.0.0/jquery.min',
-		'amazeui' : 'amazeui/2.7.2/js/amazeui.min',
-		'alertify' : 'alertify.js/1.8.0/alertify.min',
-		'color-picker' : 'color.picker/1.0/colorPicker',
-		'wangEditor' : 'wang.editor/2.1.23/js/wangEditor',
-		'beautify' : 'js.beautify/1.6.4/beautify.min',
-		'beautify-css' : 'js.beautify/1.6.4/beautify-css.min',
-		'beautify-html' : 'js.beautify/1.6.4/beautify-html.min',
-		'json-editor' : 'json.editor/5.5.11/jsoneditor-minimalist.min',
-		'tag-editor' : 'tag.editor/1.0.20/jquery.tag-editor.min',
-		'baiduEditor' : 'ueditor/1.4.3.3/ueditor.all.min',
-		'neditor' : 'neditor/1.4.4/neditor.all.min',
-		'ZeroClipboard' : 'zeroclipboard/2.2.0/ZeroClipboard.min',
-		'jquery-nestable' : 'jquery.nestable/jquery.nestable',
-		'jquery-sortable' : 'jquery.sortable/0.9.13/jquery-sortable-min'
-	},
-    'shim' : {
-    	'alertify' : [
-    		'css!alertify.js/1.8.0/css/alertify.min',
-    		'css!alertify.js/1.8.0/css/themes/default.min'
-    	],
-    	'color-picker' : [
-    		'color.picker/1.0/colors',
-    		'color.picker/1.0/colorPicker.data',
-    		'color.picker/1.0/jqColor'
-    	],
-    	'wangEditor': [
-    		'css!wang.editor/2.1.23/css/wangEditor.min',
-    		'css!code.mirror/5.25.0/lib/codemirror'
-    	],
-    	'json-editor' : [
-    		'css!json.editor/5.5.11/jsoneditor.min'
-    	],
-    	'tag-editor' : [
-    		'css!tag.editor/1.0.20/jquery.tag-editor',
-    		'tag.editor/1.0.20/jquery.caret.min'
-    	]
-    },
-	'map' : {
-        '*': {
-            'css': 'require.css/0.1.8/css'
-        }
-    },
-    'waitSeconds' : 10
-});
-require(['amazeui'], function(amazeui, alertify){
-	$.AMUI.progress.start();
-	require(['alertify', CMS.path.static + '/manage/common.js'], function(alertify){
-		
-		// 发现alertify与wangEditor冲突，原因待查
-		window.alertify = alertify;
-		
-		$.AMUI.progress.done();
-	});
-});
+<!-- jQuery -->
+<script src="{$static_path}/jquery/3.2.1/jquery.min.js?_={$site_version}"></script>
+<!-- Bootstrap -->
+<script src="{$static_path}/bootstrap/3.3.7/js/bootstrap.min.js?_={$site_version}"></script>
+<!-- SlimScroll -->
+<script src="{$static_path}/jquery-slimscroll/1.3.8/jquery.slimscroll.min.js?_={$site_version}"></script>
+<!-- FastClick -->
+<script src="{$static_path}/fastclick/1.0.6/fastclick.js?_={$site_version}"></script>
+<!-- AdminLTE App -->
+<script src="{$static_path}/adminlte/2.4.2/js/adminlte.min.js?_={$site_version}"></script>
+<!-- SweetAlert2 -->
+<script src="{$static_path}/sweetalert2/7.1.0/sweetalert2.min.js?_={$site_version}"></script>
+<!-- Jquery FancyTree -->
+<script src="{$static_path}/jquery-ui/1.12.1/jquery-ui.min.js?_={$site_version}"></script>
+<script src="{$static_path}/jquery-fancytree/2.27.0/jquery.fancytree-all.min.js?_={$site_version}"></script>
+<!-- Vue -->
+<script src="{$static_path}/vue/2.5.13/vue.min.js?_={$site_version}"></script>
+<!-- Require Js -->
+<script src="{$static_path}/require-js/2.3.5/require.min.js?_={$site_version}"></script>
+<!-- Custom -->
+<script src="{$assets_path}/manage/cms.js?_={$site_version}"></script>
+<script>
+    CMS.site = {
+        'version': '{$site_version}',
+        'static_path': '{$static_path}',
+        'assets_path': '{$assets_path}'
+    };
+    CMS.api = {
+        'upload': '{:url("manage/upload/upload")}',
+        'upload_delete': '{:url("manage/upload/delete")}'
+    };
+    require.config({
+        'baseUrl': CMS.site.static_path,
+        'urlArgs': '_=' + CMS.site.version,
+        'packages': [
+            {
+                'name': 'codemirror',
+                'location': 'codemirror/5.33.0',
+                'main': 'lib/codemirror'
+            },
+            {
+                'name': 'moment',
+                'location': 'moment/2.20.1',
+                'main': 'moment'
+            },
+            {
+                'name': 'beautify-html',
+                'location': 'js-beautify/1.7.5',
+                'main': 'beautify-html'
+            }
+        ],
+        'paths': {
+            'jquery': 'jquery/3.2.1/jquery.min',
+            'jquery-loading-overlay': 'jquery-loading-overlay/1.5.4/loadingoverlay.min',
+            'jquery-select2': 'select2/4.0.4/js/select2.full.min',
+            'jquery-input-mask': 'jquery-inputmask/3.3.11/jquery.inputmask.bundle.min',
+            'jquery-base64': 'jquery-base64/jquery.base64.min',
+
+            'spark-md5': 'spark-md5/3.0.0/spark-md5.min',
+            'js-cookie': 'js-cookie/2.2.0/js.cookie.min',
+
+            'bootstrap-date-picker': 'bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.zh-CN.min',
+            'bootstrap-date-range-picker': 'bootstrap-daterangepicker/2.1.27/daterangepicker.min',
+            'bootstrap-color-picker': 'bootstrap-colorpicker/2.5.1/js/bootstrap-colorpicker.min',
+            'bootstrap-tag-input': 'bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min',
+            'bootstrap-file-input': ['bootstrap-fileinput/4.4.7/themes/explorer-fa/theme.min'],
+            'bootstrap-file-input-lang': ['bootstrap-fileinput/4.4.7/js/zh'],
+
+            'jsonlint': 'json-lint/1.6.0/jsonlint',
+            'htmlhint': 'html-hint/0.9.12/htmlhint',
+            'code-mirror': 'blank/code-mirror',
+            'code-html': 'blank/code-html',
+            'code-json': 'blank/code-json',
+            'summer-note': 'summernote/0.8.9/summernote-zh-CN',
+            'um-editor': 'umeditor/1.2.3/umeditor.config'
+        },
+        'shim': {
+            'jquery-select2': [
+                'css!select2/4.0.4/css/select2.min'
+            ],
+            'bootstrap-date-picker': [
+                'css!bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min',
+                'bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min'
+            ],
+            'bootstrap-date-range-picker': [
+                'css!bootstrap-daterangepicker/2.1.27/daterangepicker.min',
+                'moment/moment.min',
+                'moment/zh-cn'
+            ],
+            'bootstrap-color-picker': [
+                'css!bootstrap-colorpicker/2.5.1/css/bootstrap-colorpicker.min'
+            ],
+            'bootstrap-tag-input': [
+                'css!bootstrap-tagsinput/0.8.0/bootstrap-tagsinput'
+            ],
+            'bootstrap-file-input': [
+                'css!bootstrap-fileinput/4.4.7/css/fileinput',
+                'css!bootstrap-fileinput/4.4.7/themes/explorer-fa/theme.min',
+                'bootstrap-fileinput/4.4.7/js/fileinput'
+            ],
+            'code-mirror': [
+                'css!codemirror/lib/codemirror',
+                'css!codemirror/theme/eclipse.css',
+                'css!codemirror/addon/lint/lint',
+                'codemirror/addon/lint/lint'
+            ],
+            'code-html': [
+                'code-mirror',
+                'codemirror/mode/htmlmixed/htmlmixed',
+                'codemirror/addon/lint/javascript-lint',
+                'codemirror/addon/lint/html-lint'
+            ],
+            'code-json': [
+                'code-mirror',
+                'jsonlint',
+                'codemirror/addon/lint/json-lint'
+            ],
+            'summer-note': [
+                'css!summernote/0.8.9/summernote',
+                'code-html',
+                'summernote/0.8.9/summernote',
+            ],
+            'um-editor': [
+                'css!umeditor/1.2.3/themes/default/css/umeditor',
+                'umeditor/1.2.3/umeditor.min'
+            ]
+        },
+        'map': {
+            '*': {
+                'css': 'require-css/0.1.10/css.min'
+            }
+        },
+        'waitSeconds': 10
+    });
+    window.UMEDITOR_HOME_URL = CMS.site.static_path + '/umeditor/1.2.3/';
 </script>
 {block name="script"}{/block}
-</body>
 </html>

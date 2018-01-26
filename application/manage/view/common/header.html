@@ -1,47 +1,80 @@
-<header>
-	<!-- logo -->
-	<div class="am-fl tpl-header-logo">
-		<a href="{$manage_url}">
-			<img src="{$module_path}/image/logo_manage_black.png">
-		</a>
-	</div>
-	<!-- 右侧内容 -->
-	<div class="tpl-header-fluid">
-		<!-- 侧边切换 -->
-		<div class="am-fl tpl-header-switch-button am-icon-navicon">
-			<span></span>
-		</div>
-		
-		<!-- 主菜单 -->
-		<div class="am-fl tpl-header-navbar main-menu">
-			<ul>
-				{foreach name="main_menu" id="vo"}
-					<li class="{if condition='$vo.menu_active'}active{/if}">
-						<a target="{$vo.menu_target}" href="{$vo.menu_url}"> {$vo.menu_name} </a>
-					</li>
-				{/foreach}
-			</ul>
-		</div>
+<header class="main-header">
+    <a class="logo">
+        <span class="logo-mini"><b>N</b>D</span>
+        <span class="logo-lg"><b>NewDay</b>Cms</span>
+    </a>
 
-		<!-- 账号 -->
-		<div class="am-fr tpl-header-navbar">
-			<ul>
-				<li class="am-dropdown" data-am-dropdown>
-					<a class="am-dropdown-toggle" data-am-dropdown-toggle href="javascript:;">
-						<i class="am-icon-user am-icon-fw"></i> {$manage_user.user_nick}({$manage_user.user_name})
-						<span class="am-icon-caret-down"></span>
-					</a>
-					<ul class="am-dropdown-content">
-						<li>
-							<a href="{:url('manage/index/account')}"><i class="am-icon-cog am-icon-fw"></i> 账号设置 </a>
-						</li>
-						<li>
-							<a href="{:url('manage/start/logout')}"><i class="am-icon-power-off am-icon-fw"></i> 安全退出 </a>
-						</li>
-					</ul>
-				</li>
-			</ul>
-		</div>
+    <nav class="navbar navbar-static-top">
 
-	</div>
+        <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+            <span class="sr-only">Toggle</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </a>
+
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                <li class="dropdown user user-menu">
+                    <a id="dropdown-user-info" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span>欢迎，{$manage_user.user_nick}</span>
+                        <b><i class="fa fa-caret-down"></i></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#modal-account">
+                                <i class="ace-icon fa fa-cog"></i>
+                                账号设置
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="{:Url::build('manage/start/logout')}">
+                                <i class="ace-icon fa fa-power-off"></i>
+                                安全退出
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+    </nav>
 </header>
+
+<div class="modal fade" id="modal-account">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">账号设置</h4>
+            </div>
+            <div class="modal-body">
+                <form action="{:Url::build('manage/user/account')}" method="post" class="account-form">
+                    <div class="form-group">
+                        <label>用户名</label>
+                        <input type="text" class="form-control" value="{$manage_user.user_name}" disabled/>
+                    </div>
+                    <div class="form-group">
+                        <label>昵称</label>
+                        <input type="text" class="form-control" name="user_nick" value="{$manage_user.user_nick}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>密码</label>
+                        <input type="password" class="form-control" name="user_password" placeholder="为空则不修改"/>
+                    </div>
+                    <div class="form-group">
+                        <label>确认</label>
+                        <input type="password" class="form-control" name="user_password_confirm" placeholder=""/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i class="fa fa-remove"></i> 取消</button>
+                <button type="button" class="btn btn-primary ajax-post" target-form=".account-form"><i class="fa fa-save"></i> 保存</button>
+            </div>
+        </div>
+    </div>
+</div>

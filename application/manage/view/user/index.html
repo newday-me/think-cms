@@ -1,65 +1,308 @@
 {extend name="common/base" }
 
-{block name="content"}
-<div class="am-g">
-	<div class="am-u-sm-12 am-u-md-6">
-		<div class="am-btn-toolbar">
-			<div class="am-btn-group am-btn-group-xs">
-				<a class="am-btn am-btn-default" href="{:url('add')}">
-					<span class="am-icon-plus"></span> 新增
-				</a>
-				<a class="am-btn am-btn-default nd-refresh">
-					<span class="am-icon-refresh"></span> 刷新
-				</a>
-			</div>
-		</div>
-	</div>
+{block name="content-body"}
+<div class="box">
+    <div class="box-header with-border">
+        <form class="nd-search-form" action="{$action_list.search}">
+            <div class="col-sm-6 nd-search-item">
+                <a class="btn btn-primary action-add"><i class="fa fa-plus"></i> 新增</a>
+            </div>
+            <div class="col-sm-3 nd-search-item">
+                {:$user_status_html}
+            </div>
+            <div class="col-sm-3 nd-search-item">
+                {:$keyword_html}
+            </div>
+        </form>
+    </div>
+    <div class="box-body table-responsive">
+        <table id="menu-tree" class="table table-hover">
+            <thead>
+            <tr>
+                <th>用户名</th>
+                <th>昵称</th>
+                <th>群组</th>
+                <th>登录次数</th>
+                <th>登录IP</th>
+                <th>登录时间</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {volist name="list" id="vo"}
+            <tr>
+                <td>{$vo.user_name}</td>
+                <td>{$vo.user_nick}</td>
+                <td>
+                    <div data-no="{$vo.user_no}">
+                        <a href="javascript:void(0)" class="action-auth">{$vo.group_name_str}</a>
+                    </div>
+                </td>
+                <td>{$vo.login_count}</td>
+                <td>{$vo.login_ip}</td>
+                <td>{$vo.login_time_str}</td>
+                <td>{:$vo.user_status_html}</td>
+                <td>
+                    <div class="nd-action" data-no="{$vo.user_no}" data-title="{$vo.user_nick}">
+                        <a class="action-edit"><i class="fa fa-edit"></i> 编辑</a>
+                        {if condition="!$vo.is_super"}
+                        | <a class="text-danger action-delete"><i class="fa fa-trash-o"></i> 删除</a>
+                        {/if}
+                    </div>
+                </td>
+            </tr>
+            {/volist}
+            </tbody>
+        </table>
+    </div>
+    {if condition="$page"}
+    <div class="box-footer">
+        {:$page}
+    </div>
+    {/if}
 </div>
-<br/>
 
-<div class="am-g">
-	<div class="am-u-sm-12">
-		<table class="am-table am-table-striped am-table-radius am-table-bordered">
-			<thead>
-				<tr>
-					<th>用户名</th>
-					<th>登录IP</th>
-					<th>登录次数</th>
-					<th>登录时间</th>
-					<th>分组</th>
-					<th>状态</th>
-					<th>操作</th>
-				</tr>
-			</thead>
-			<tbody>
-			{volist name="_list" id="vo"}
-				<tr>
-					<td class="am-text-middle">{$vo.user_name}</td>
-					<td class="am-text-middle">{$vo.login_ip}</td>
-					<td class="am-text-middle">{$vo.login_count}</td>
-					<td class="am-text-middle">{$vo.login_time|date='Y-m-d H:i:s',###}</td>
-					<td class="am-text-middle">{$vo.group_names}</td>
-					<td class="am-text-middle">
-						{$widget->row('select', ['value' => $vo['user_status'], 'list' => $select_user_status, 'url' => url('modify', ['id' => $vo['id'], 'field' =>  'user_status'])])}
-					</td>
-					<td class="am-text-middle">
-						<div class="am-btn-toolbar">
-							<div class="am-btn-group am-btn-group-xs">
-								{$widget->row('button', ['title' => '日志', 'class' => 'am-text-success', 'icon' => 'am-icon-table', 'url' => url('user_login/index', ['uid' => $vo['id']])])}
-                                {$widget->row('button', ['title' => '编辑', 'class' => 'am-text-secondary', 'icon' => 'am-icon-pencil-square-o', 'url' => url('edit', ['id' => $vo['id']])])}
-                                {$widget->row('button', ['title' => '删除', 'class' => 'am-text-danger ajax-get ajax-confirm', 'icon' => 'am-icon-trash-o', 'url' => url('delete', ['id' => $vo['id']])])}
-							</div>
-						</div>
-					</td>
-				</tr>
-			{/volist}
-			</tbody>
-		</table>
-		
-		{if condition="!empty($_page)"}
-            <div class="am-fl">共 {$_total} 条记录</div>
-            <div class="am-fr">{$_page}</div>
-        {/if}
-	</div>
-</div>
+<div class="modal fade" id="modal-add"></div>
+<script type="text/x-template" id="modal-add-template">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">添加用户</h4>
+            </div>
+            <div class="modal-body">
+                <div class="box-body">
+                    <div class="form-group">
+                        <label>用户名</label>
+                        <input type="text" name="user_name" v-model="form.user_name" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>昵称</label>
+                        <input type="text" name="user_nick" v-model="form.user_nick" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>密码</label>
+                        <input type="password" name="user_password" v-model="form.user_password"
+                               class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>重复密码</label>
+                        <input type="password" name="user_password_confirm" v-model="form.user_password_confirm"
+                               class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>状态</label>
+                        <div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.user_status" name="user_status" value="1"/>
+                                <div class="state p-primary">
+                                    <label>启用</label>
+                                </div>
+                            </div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.user_status" name="user_status" value="0"/>
+                                <div class="state p-primary">
+                                    <label>禁用</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i
+                        class="fa fa-remove"></i> 取消
+                </button>
+                <button type="button" class="btn btn-primary" @click="addRecord"><i class="fa fa-save"></i> 保存</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<div class="modal fade" id="modal-edit"></div>
+<script type="text/x-template" id="modal-edit-template">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">编辑用户</h4>
+            </div>
+            <div class="modal-body">
+                <div class="box-body">
+                    <input type="hidden" name="user_no" v-model="form.user_no"/>
+                    <div class="form-group">
+                        <label>用户名</label>
+                        <input type="text" name="user_name" v-model="form.user_name" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>昵称</label>
+                        <input type="text" name="user_nick" v-model="form.user_nick" class="form-control"
+                               placeholder="为空则不修改"/>
+                    </div>
+                    <div class="form-group">
+                        <label>密码</label>
+                        <input type="password" name="user_password" v-model="form.user_password"
+                               class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>重复密码</label>
+                        <input type="password" name="user_password_confirm" v-model="form.user_password_confirm"
+                               class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>状态</label>
+                        <div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.user_status" name="user_status" value="1"/>
+                                <div class="state p-primary">
+                                    <label>启用</label>
+                                </div>
+                            </div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.user_status" name="user_status" value="0"/>
+                                <div class="state p-primary">
+                                    <label>禁用</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i
+                        class="fa fa-remove"></i> 取消
+                </button>
+                <button type="button" class="btn btn-primary" @click="saveRecord"><i class="fa fa-save"></i> 保存</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<div class="modal fade" id="modal-auth"></div>
+<script type="text/x-template" id="modal-auth-template">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">选择群组</h4>
+            </div>
+            <div class="modal-body">
+                <table id="tree-auth" class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i
+                        class="fa fa-remove"></i> 取消
+                </button>
+                <button type="button" class="btn btn-primary" @click="saveAuth"><i class="fa fa-save"></i> 保存</button>
+            </div>
+        </div>
+    </div>
+</script>
+{/block}
+
+{block name="script"}
+<script>
+    var App = {
+        selector: {
+            authModal: '#modal-auth',
+            authTree: '#tree-auth'
+        }
+    };
+    var actionList = JSON.parse('{:$action_list_json}');
+
+    // auth
+    (function (app) {
+
+        app.buildAuthModal = function (actionAuth, dataNo, selectorModal, selectorTree) {
+            CMS.ui.template(selectorModal);
+            new Vue({
+                el: selectorModal,
+                created: function () {
+                    var data = {
+                        action: 'get',
+                        data_no: dataNo
+                    };
+                    CMS.ajax.request(actionAuth, data, function (result) {
+                        if (result.code === 1) {
+                            app.buildAuthTree(selectorTree, result.data);
+                            CMS.ui.showModal(selectorModal);
+                        }
+                        else {
+                            CMS.alert.ajaxAlert(result);
+                        }
+                    });
+                },
+                methods: {
+                    saveAuth: function () {
+                        var groupNos = CMS.app.getTreeDataNos(selectorTree, 'group_no');
+                        var data = {
+                            action: 'save',
+                            data_no: dataNo,
+                            group_nos: groupNos
+                        };
+                        CMS.ajax.request(actionAuth, data);
+                    }
+                }
+            });
+        };
+
+        app.buildAuthTree = function (selector, treeData) {
+            $(selector).fancytree({
+                icon: false,
+                checkbox: true,
+                clickFolderMode: 4,
+                extensions: ['table'],
+                table: {
+                    nodeColumnIdx: 0
+                },
+                source: treeData,
+                createNode: function (event, data) {
+                    var item = data.node.data;
+                    $('span.fancytree-title', data.node.span).html(item['group_name']);
+                }
+            });
+        };
+
+    }(App));
+
+    $(function () {
+
+        $(document).on('click', '.action-add', function () {
+            CMS.app.recordAdd(actionList.add, {
+                user_status: 1
+            });
+        });
+
+        $(document).on('click', '.action-edit', function () {
+            var dataNo = $(this).parent().attr('data-no');
+            CMS.app.recordEdit(actionList.edit, dataNo);
+        });
+
+        $(document).on('click', '.action-auth', function () {
+            var dataNo = $(this).parent().attr('data-no');
+            App.buildAuthModal(actionList.auth, dataNo, App.selector.authModal, App.selector.authTree);
+        });
+
+        $(document).on('click', '.action-delete', function () {
+            var dataNo = $(this).parent().attr('data-no'),
+                dataTitle = $(this).parent().attr('data-title');
+            CMS.app.recordDelete(actionList.delete, dataNo, dataTitle);
+        });
+
+    });
+</script>
 {/block}

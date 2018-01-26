@@ -1,15 +1,13 @@
 <?php
+
 namespace app\index\controller;
 
-use think\Config;
+use think\facade\Url;
 use cms\Controller;
-use cms\Response;
-use app\manage\service\ViewService;
-use app\common\App;
+use cms\facade\Response;
 
 class Index extends Controller
 {
-
     /**
      * 首页
      *
@@ -17,13 +15,14 @@ class Index extends Controller
      */
     public function index()
     {
-        $site_info = [
-            'site_title' => Config::get('site_title'),
-            'site_keyword' => Config::get('site_keyword'),
-            'site_description' => Config::get('site_description')
+        $siteInfo = [
+            'site_title' => 'NewDayCms - 哩呵后台管理系统',
+            'site_keyword' => '哩呵,CMS,ThinkPHP,后台,管理系统',
+            'site_description' => 'NewdayCms ，简单的方式管理数据。期待你的参与，共同打造一个功能更强大的通用后台管理系统。',
+            'manage_url' => Url::build('manage/index/index')
         ];
-        $this->assign('site_info', $site_info);
-        
+        $this->assign('site_info', $siteInfo);
+
         return $this->fetch();
     }
 
@@ -34,20 +33,7 @@ class Index extends Controller
      */
     public function download()
     {
-        $downloadUrl = Config::get('cms_file');
-        $downloadUrl || $downloadUrl = 'https://github.com/newday-me/think-cms/archive/master.zip';
+        $downloadUrl = 'http://static.newday.me/cms/1.0.0.zip';
         Response::getSingleton()->redirect($downloadUrl, false);
     }
-
-    /**
-     *
-     * {@inheritdoc}
-     *
-     * @see Controller::getView()
-     */
-    protected function getView()
-    {
-        return ViewService::getSingleton()->getView();
-    }
 }
- 

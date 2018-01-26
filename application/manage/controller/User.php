@@ -1,197 +1,213 @@
 <?php
+
 namespace app\manage\controller;
 
-use think\Request;
-use core\manage\logic\UserLogic;
-use core\manage\model\UserModel;
-use core\manage\validate\UserValidate;
-use core\manage\logic\UserGroupLogic;
+use think\facade\Url;
+use core\db\manage\constant\ManageUserConstant;
+use app\manage\logic\WidgetLogic;
+use app\manage\service\UserService;
 
 class User extends Base
 {
 
     /**
-     * 用户列表
+     * 用户管理
      *
-     * @param Request $request            
      * @return string
      */
-    public function index(Request $request)
+    public function index()
     {
-        $this->siteTitle = '用户管理';
-        
-        // 分页列表
-        $list = UserModel::getInstance()->with('groups')->select();
-        $this->_list($list, function (&$list) {
-            foreach ($list as &$vo) {
-                $groupNames = [];
-                foreach ($vo->groups as $group) {
-                    $groupNames[] = $group['group_name'];
-                }
-                $vo['group_names'] = implode(',', $groupNames);
-            }
-        });
-        
-        // 用户群组下拉
-        $this->assignSelectUserGroup();
-        
-        // 用户状态下拉
-        $this->assignSelectUserStatus();
-        
+        $this->assign('site_title', '用户管理');
+        $widget = WidgetLogic::getSingleton()->getWidget();
+
+        // 状态
+        $userStatus = $this->request->param('user_status');
+        if (!is_null($userStatus)) {
+            $userStatus = intval($userStatus);
+        }
+        $userStatusHtml = $widget->search('select', [
+            'title' => '状态',
+            'name' => 'user_status',
+            'value' => $userStatus,
+            'list' => [
+                [
+                    'name' => '不限',
+                    'value' => ''
+                ],
+                [
+                    'name' => '启用',
+                    'value' => ManageUserConstant::STATUS_ENABLE
+                ],
+                [
+                    'name' => '禁用',
+                    'value' => ManageUserConstant::STATUS_DISABLE
+                ]
+            ]
+        ]);
+        $this->assign('user_status_html', $userStatusHtml);
+
+        // 关键字
+        $keyword = $this->request->param('keyword');
+        $keywordHtml = $widget->search('keyword', [
+            'name' => 'keyword',
+            'value' => $keyword,
+            'holder' => '关键字...'
+        ]);
+        $this->assign('keyword_html', $keywordHtml);
+
+        $nowPage = $this->request->param('page', 1);
+        list($list, $page) = UserService::getSingleton()->getUserListPage($userStatus, $keyword, $nowPage, 10);
+        $this->assign('list', $list);
+        $this->assign('page', $page);
+
+        // 操作
+        $actionList = [
+            'search' => Url::build('index'),
+            'add' => Url::build('add'),
+            'edit' => Url::build('edit'),
+            'auth' => Url::build('auth'),
+            'delete' => Url::build('delete')
+        ];
+        $this->assign('action_list', $actionList);
+        $this->assign('action_list_json', json_encode($actionList));
+
         return $this->fetch();
     }
 
     /**
-     * 添加用户
-     *
-     * @param Request $request            
-     * @return string|void
+     * 账号设置
      */
-    public function add(Request $request)
+    public function account()
     {
-        if ($request->isPost()) {
-            $data = [
-                'user_name' => $request->param('user_name'),
-                'user_nick' => $request->param('user_nick'),
-                'user_passwd' => $request->param('user_passwd'),
-                'user_passwd_confirm' => $request->param('user_passwd_confirm'),
-                'user_status' => $request->param('user_status', 0)
-            ];
-            
-            // 验证
-            $this->_validate(UserValidate::class, $data, 'add');
-            
-            // 群组
-            $userGids = $request->param('user_gids/a', []);
-            if (empty($userGids)) {
-                $this->error('请至少选择一个用户群组');
-            }
-            
-            // 添加用户
-            UserLogic::getSingleton()->addUser($data, $userGids);
-            
-            $this->success('添加用户成功', self::JUMP_REFERER);
-        } else {
-            $this->siteTitle = '新增用户';
-            
-            // 用户群组下拉
-            $this->assignSelectUserGroup();
-            
-            // 用户状态下拉
-            $this->assignSelectUserStatus();
-            
-            return $this->fetch();
+        $data = [
+            'user_nick' => $this->request->param('user_nick'),
+            'user_password' => $this->request->param('user_password')
+        ];
+
+        $userPasswordConfirm = $this->request->param('user_password_confirm');
+        if ($userPasswordConfirm != $data['user_password']) {
+            $this->error('两次输入的密码不一致');
         }
+
+        $return = UserService::getSingleton()->updateAccount($data);
+        $this->response($return);
+    }
+
+    /**
+     * 添加用户
+     */
+    public function add()
+    {
+        $data = [
+            'user_name' => $this->request->param('user_name'),
+            'user_nick' => $this->request->param('user_nick'),
+            'user_password' => $this->request->param('user_password'),
+            'user_status' => $this->request->param('user_status')
+        ];
+
+        $return = UserService::getSingleton()->createUser($data);
+        $this->response($return);
     }
 
     /**
      * 编辑用户
-     *
-     * @param Request $request            
-     * @return string|void
      */
-    public function edit(Request $request)
+    public function edit()
     {
-        if ($request->isPost()) {
-            $data = [
-                'user_name' => $request->param('user_name'),
-                'user_nick' => $request->param('user_nick'),
-                'user_passwd' => $request->param('user_passwd'),
-                'user_passwd_confirm' => $request->param('user_passwd_confirm'),
-                'user_status' => $request->param('user_status', 0)
-            ];
-            
-            // 验证
-            $scene = empty($data['user_passwd']) ? 'edit_info' : 'edit_passwd';
-            $this->_validate(UserValidate::class, $data, $scene);
-            
-            // 群组
-            $userGids = $request->param('user_gids/a', []);
-            if (empty($userGids)) {
-                $this->error('请至少选择一个用户群组');
-            }
-            
-            // 更新账号
-            UserLogic::getSingleton()->saveUser($this->_id(), $data, $userGids);
-            
-            $this->success('更新用户成功', self::JUMP_REFERER);
-        } else {
-            $this->siteTitle = '编辑用户';
-            
-            // 记录
-            $map = [
-                'id' => $this->_id()
-            ];
-            $user = UserModel::getInstance()->where($map)->find();
-            
-            $userGids = [];
-            foreach ($user->groups as $group) {
-                $userGids[] = $group['id'];
-            }
-            $user['user_gids'] = $userGids;
-            
-            $this->assign('_record', $user);
-            
-            // 用户群组下拉
-            $this->assignSelectUserGroup();
-            
-            // 用户状态下拉
-            $this->assignSelectUserStatus();
-            
-            return $this->fetch();
+        $userNo = $this->request->param('data_no');
+        if (empty($userNo)) {
+            $this->error('用户编号为空');
+        }
+
+        $action = $this->request->param('action');
+        switch ($action) {
+            case 'get':
+                $return = UserService::getSingleton()->getUser($userNo);
+                $this->response($return);
+                break;
+            case 'save':
+                $data = [
+                    'user_name' => $this->request->param('user_name'),
+                    'user_nick' => $this->request->param('user_nick'),
+                    'user_password' => $this->request->param('user_password'),
+                    'user_status' => $this->request->param('user_status')
+                ];
+                $return = UserService::getSingleton()->updateUser($userNo, $data);
+                $this->response($return);
+                break;
+            default:
+                $this->error('未知操作');
+        }
+    }
+
+    /**
+     * 用户群组
+     */
+    public function auth()
+    {
+        $userNo = $this->request->param('data_no');
+        if (empty($userNo)) {
+            $this->error('用户编号为空');
+        }
+
+        $action = $this->request->param('action');
+        switch ($action) {
+            case 'get':
+                $groupTree = UserService::getSingleton()->getUserGroupTree($userNo);
+                $this->success('获取成功', '', $groupTree);
+                break;
+            case 'save':
+                $groupNos = $this->request->param('group_nos');
+                if ($groupNos) {
+                    $groupNos = explode(',', $groupNos);
+                } else {
+                    $groupNos = [];
+                }
+
+                UserService::getSingleton()->saveUserAuth($userNo, $groupNos);
+                $this->success('保存成功');
+                break;
+            default:
+                $this->error('未知操作');
         }
     }
 
     /**
      * 更改用户
-     *
-     * @return void
      */
     public function modify()
     {
-        $fields = [
-            'user_gid',
-            'user_status'
-        ];
-        $this->_modify(UserModel::class, $fields);
+        $userNo = $this->request->param('data_no');
+        if (empty($userNo)) {
+            $this->error('用户编号为空');
+        }
+
+        $field = $this->request->param('field');
+        if (empty($field)) {
+            $this->error('字段名为空');
+        }
+
+        $value = $this->request->param('value');
+        if (is_null($value)) {
+            $this->error('值为空');
+        }
+
+        $return = UserService::getSingleton()->modifyUser($userNo, $field, $value);
+        $this->response($return);
     }
 
     /**
      * 删除用户
-     *
-     * @return void
      */
     public function delete()
     {
-        $userId = $this->_id();
-        if (UserLogic::getInstance()->isSuperAdmin($userId)) {
-            $this->error('超级管理员不能被删除');
-        } elseif ($this->userId == $userId) {
-            $this->error('自己不能删除自己');
+        $userNo = $this->request->param('data_no');
+        if (empty($userNo)) {
+            $this->error('用户编号为空');
         }
-        
-        $this->_delete(UserModel::class, false);
+
+        $return = UserService::getSingleton()->deleteUser($userNo);
+        $this->response($return);
     }
 
-    /**
-     * 赋值用户群组下拉
-     *
-     * @return void
-     */
-    protected function assignSelectUserGroup()
-    {
-        $selectUSerGroup = UserGroupLogic::getSingleton()->getSelectListForUser();
-        $this->assign('select_user_group', $selectUSerGroup);
-    }
-
-    /**
-     * 赋值用户状态下拉
-     *
-     * @return void
-     */
-    protected function assignSelectUserStatus()
-    {
-        $selectUserStatus = UserLogic::getSingleton()->getSelectStatus();
-        $this->assign('select_user_status', $selectUserStatus);
-    }
 }

@@ -1,0 +1,30 @@
+<aside class="main-sidebar">
+    <section class="sidebar">
+        <ul class="sidebar-menu" data-widget="tree">
+            <?php function build_tree($menuTree){ ?>
+            {volist name="menuTree" id="vo"}
+            {if condition="isset($vo['children'])"}
+            <li class="treeview {if condition='$vo.menu_active'}active{/if}">
+                <a href="javascript:void(0);">
+                    <i class="{$vo.menu_icon}"></i> <span>{$vo.menu_name}</span>
+                    <span class="pull-right-container">
+                      <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    {:build_tree($vo['children'])}
+                </ul>
+            </li>
+            {else /}
+            <li class="{if condition='$vo.menu_active'}active{/if}">
+                <a target="{$vo.menu_target}" href="{$vo.menu_link}">
+                    <i class="{$vo.menu_icon}"></i> {$vo.menu_name}
+                </a>
+            </li>
+            {/if}
+            {/volist}
+            <?php } ?>
+            <?php build_tree($menu_tree); ?>
+        </ul>
+    </section>
+</aside>

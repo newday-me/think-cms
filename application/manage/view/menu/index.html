@@ -1,209 +1,325 @@
 {extend name="common/base" }
 
-{block name="content"}
-<div class="am-g">
-
-	<div class="am-u-sm-12 am-u-md-6">
-		<div class="am-btn-toolbar">
-			<div class="am-btn-group am-btn-group-xs">
-				<a class="am-btn am-btn-default" href="{:url('add')}">
-					<span class="am-icon-plus"></span> 新增
-				</a>
-				<a class="am-btn am-btn-default nd-refresh">
-					<span class="am-icon-refresh"></span> 刷新
-				</a>
-			</div>
-		</div>
-	</div>
-	
-	<div class="am-u-sm-12 am-u-md-6">
-		<div class="am-btn-toolbar am-fr">
-			<div class="am-btn-group am-btn-group-xs">
-				<a class="am-btn am-btn-default" id="nest_expand">
-					<span class="am-icon-plus"></span> 打开所有
-				</a>
-				<a class="am-btn am-btn-default" id="nest_collapse">
-					<span class="am-icon-minus"></span> 折叠所有
-				</a>
-				<a class="am-btn am-btn-success" id="nest_sort_save">
-					<span class="am-icon-save"></span> 保存排序
-				</a>
-			</div>
-		</div>
-	</div>
-	
+{block name="content-body"}
+<div class="box">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            <a class="btn btn-primary add-root-menu"><i class="fa fa-plus"></i> 新增</a>
+        </h3>
+    </div>
+    <div class="box-body table-responsive">
+        <table id="tree-menu" class="table table-hover">
+            <thead>
+            <tr>
+                <th>名称</th>
+                <th>链接</th>
+                <th>目标</th>
+                <th>类型</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 </div>
-<br/>
 
-<div class="am-g">
-	<div class="am-u-sm-12">
-	
-		<div class="nd-nest">
-			<ul class="nd-list">
-			{volist name="$_list[0]" id="vo"}
-				<li class="nd-item" data-id="{$vo.id}">
-					<div class="nd-handle am-text-middle am-fl">
-						<a><span class="am-icon-list-ul"></span></a>
-					</div>
-					<div class="nd-area">
-						<a><b>{$vo.menu_name}</b></a>
-						<a class="am-text-success nd-action" href="{:url('add', ['pid' => $vo['id']])}">
-							<span class="am-icon-plus"></span>
-						</a>
-						<a class="am-text-primary nd-action" href="{:url('edit', ['id' => $vo['id']])}">
-							<span class="am-icon-pencil-square-o"></span>
-						</a>
-						{if condition="!isset($_list[$vo['id']])"}
-						<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:url('delete', ['id' => $vo['id']])}">
-							<span class="am-icon-trash"></span>
-						</a>
-						{/if}
-					</div>
-					
-					<ul class="nd-list">
-					{if condition="isset($_list[$vo['id']])"}
-					{volist name="$_list[$vo['id']]" id="ko"}
-						<li class="nd-item" data-id="{$ko.id}">
-							<div class="nd-handle am-text-middle am-fl">
-								<a><span class="am-icon-list-ul"></span></a>
-							</div>
-							<div class="nd-area">
-								<b>{$ko.menu_name}</b>
-								<a class="am-text-success nd-action" href="{:url('add', ['pid' => $ko['id']])}">
-									<span class="am-icon-plus"></span>
-								</a>
-								<a class="am-text-primary nd-action" href="{:url('edit', ['id' => $ko['id']])}">
-									<span class="am-icon-pencil-square-o"></span>
-								</a>
-								{if condition="!isset($_list[$ko['id']])"}
-								<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:url('delete', ['id' => $ko['id']])}">
-									<span class="am-icon-trash"></span>
-								</a>
-								{/if}
-							</div>
-							
-							<ul class="nd-list">
-							{if condition="isset($_list[$ko['id']])"}
-							{volist name="$_list[$ko['id']]" id="po"}
-								<li class="nd-item nd-colse-intend" data-id="{$po.id}">
-									<div class="nd-handle am-text-middle am-fl">
-										<a><span class="am-icon-list-ul"></span></a>
-									</div>
-									<div class="nd-area">
-										<a>{$po.menu_name}</a>
-										<a class="am-text-success nd-action" href="{:url('add', ['pid' => $po['id']])}">
-											<span class="am-icon-plus"></span>
-										</a>
-										<a class="am-text-primary nd-action" href="{:url('edit', ['id' => $po['id']])}">
-											<span class="am-icon-pencil-square-o"></span>
-										</a>
-										{if condition="!isset($_list[$po['id']])"}
-										<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:url('delete', ['id' => $po['id']])}">
-											<span class="am-icon-trash"></span>
-										</a>
-										{/if}
-									</div>
-									
-									<ul class="nd-list">
-									{if condition="isset($_list[$po['id']])"}
-									{volist name="$_list[$po['id']]" id="no"}
-										<li class="nd-item" data-id="{$no.id}">
-											<div class="nd-handle am-text-middle am-fl">
-												<a><span class="am-icon-list-ul"></span></a>
-											</div>
-											<div class="nd-area">
-												{$no.menu_name}
-												<a class="am-text-primary nd-action" href="{:url('edit', ['id' => $no['id']])}">
-													<span class="am-icon-pencil-square-o"></span>
-												</a>
-												<a class="am-text-danger nd-action ajax-get ajax-confirm" href="{:url('delete', ['id' => $no['id']])}">
-													<span class="am-icon-trash"></span>
-												</a>
-											</div>
-										</li>
-									{/volist}
-									{/if}
-									</ul>
-					
-								</li>
-							{/volist}
-							{/if}
-							</ul>
-							
-						</li>
-					{/volist}
-					{/if}
-					</ul>
-					
-				</li>
-			{/volist}
-			</ul>
-		</div>
-		
-	</div>
-</div>
+<div class="modal fade" id="modal-add"></div>
+<script type="text/x-template" id="modal-add-template">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">添加菜单</h4>
+            </div>
+            <div class="modal-body">
+                <div class="box-body">
+                    <input type="hidden" name="menu_pno" v-model="form.menu_pno"/>
+                    <div class="form-group">
+                        <label>名称</label>
+                        <input type="text" name="menu_name" v-model="form.menu_name" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>链接</label>
+                        <input type="text" name="menu_url" v-model="form.menu_url" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>目标</label>
+                        <input type="text" v-model="form.menu_target" name="menu_target" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>图标</label>
+                        <input type="text" name="menu_icon" v-model="form.menu_icon" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>类型</label>
+                        <div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_type" name="menu_type" value="1"/>
+                                <div class="state p-primary">
+                                    <label>菜单</label>
+                                </div>
+                            </div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_type" name="menu_type" value="2"/>
+                                <div class="state p-primary">
+                                    <label>行为</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>处理</label>
+                        <div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_build" name="menu_build" value="1"/>
+                                <div class="state p-primary">
+                                    <label>构造</label>
+                                </div>
+                            </div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_build" name="menu_build" value="0"/>
+                                <div class="state p-primary">
+                                    <label>不变</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>状态</label>
+                        <div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_status" name="menu_status" value="1"/>
+                                <div class="state p-primary">
+                                    <label>启用</label>
+                                </div>
+                            </div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_status" name="menu_status" value="0"/>
+                                <div class="state p-primary">
+                                    <label>禁用</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i
+                        class="fa fa-remove"></i> 取消
+                </button>
+                <button type="button" class="btn btn-primary" @click="addRecord"><i class="fa fa-save"></i> 保存</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<div class="modal fade" id="modal-edit"></div>
+<script type="text/x-template" id="modal-edit-template">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">编辑菜单</h4>
+            </div>
+            <div class="modal-body">
+                <div class="box-body">
+                    <input type="hidden" name="menu_no" v-model="form.menu_no"/>
+                    <div class="form-group">
+                        <label>名称</label>
+                        <input type="text" name="menu_name" v-model="form.menu_name" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>链接</label>
+                        <input type="text" name="menu_url" v-model="form.menu_url" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>目标</label>
+                        <input type="text" v-model="form.menu_target" name="menu_target" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>图标</label>
+                        <input type="text" name="menu_icon" v-model="form.menu_icon" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label>类型</label>
+                        <div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_type" name="menu_type" value="1"/>
+                                <div class="state p-primary">
+                                    <label>菜单</label>
+                                </div>
+                            </div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_type" name="menu_type" value="2"/>
+                                <div class="state p-primary">
+                                    <label>行为</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>处理</label>
+                        <div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_build" name="menu_build" value="1"/>
+                                <div class="state p-primary">
+                                    <label>构造</label>
+                                </div>
+                            </div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_build" name="menu_build" value="0"/>
+                                <div class="state p-primary">
+                                    <label>不变</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>状态</label>
+                        <div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_status" name="menu_status" value="1"/>
+                                <div class="state p-primary">
+                                    <label>启用</label>
+                                </div>
+                            </div>
+                            <div class="pretty p-default p-round p-smooth">
+                                <input type="radio" v-model="form.menu_status" name="menu_status" value="0"/>
+                                <div class="state p-primary">
+                                    <label>禁用</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><i
+                        class="fa fa-remove"></i> 取消
+                </button>
+                <button type="button" class="btn btn-primary" @click="saveRecord"><i class="fa fa-save"></i> 保存</button>
+            </div>
+        </div>
+    </div>
+</script>
 {/block}
 
-
 {block name="script"}
-<script type="text/javascript">
-$(function(){
-	
-	require(['jquery-nestable'], function(){
-		var jQuery = $, selector = '.nd-nest';
-		
-		jQuery(selector).nestable({
-            listNodeName    : 'ul',
-            itemNodeName    : 'li',
-            rootClass       : 'nd-nest',
-            listClass       : 'nd-list',
-            itemClass       : 'nd-item',
-            dragClass       : 'nd-drage',
-            handleClass     : 'nd-handle',
-            collapsedClass  : 'nd-collapsed',
-            placeClass      : 'nd-placeholder',
-            noDragClass     : 'nd-nodrag',
-            emptyClass      : 'nd-empty',
-            expandBtnHTML   : '<button class="am-btn-link nd-switch am-fl" data-action="expand"><span class="am-icon-angle-double-right"></span></button>',
-            collapseBtnHTML : '<button class="am-btn-link nd-switch am-fl" data-action="collapse"><span class="am-icon-angle-double-down"></span></button>',
-            group           : 0,
-            maxDepth        : 4,
-            threshold       : 0
-        }), jQuery = $;
-		
-		jQuery('#nest_expand').click(function(){
-			jQuery(selector).nestable('expandAll');
-		});
-		
-		jQuery('#nest_collapse').click(function(){
-			jQuery(selector).nestable('collapseAll');
-		});
-		
-		jQuery('.nd-colse-intend .nd-switch[data-action="collapse"]').click();
-		
-	});
-	
-	$('#nest_sort_save').click(function(){
-		var idx = '';
-		$('.nd-nest .nd-item').each(function(){
-			var id = $(this).attr('data-id');
-			if(id){
-				idx && (idx += ',');
-				idx += id;
-			}
-		});
-		$.ajax({
-			url: "{:url('sort')}",
-			type: 'post',
-			dataType: 'json',
-			data: {
-				idx: idx
-			},
-			success: ajaxSuccess,
-			error: ajaxError
-		});
-	});
-	
-});
+<script>
+    var App = {
+        selector: {
+            menuTree: '#tree-menu'
+        }
+    };
+    var actionList = JSON.parse('{:$action_list_json}');
+    var treeDataContent = '{:$menu_tree_base}';
+
+    // tree
+    (function (app) {
+
+        app.buildMenuTree = function (selector, treeData) {
+            $(selector).fancytree({
+                icon: false,
+                clickFolderMode: 1,
+                extensions: ["table", "dnd"],
+                table: {
+                    nodeColumnIdx: 0
+                },
+                source: treeData,
+                createNode: function (event, data) {
+                    var item = data.node.data;
+                    $("span.fancytree-title", data.node.span).html('<i class="' + item['menu_icon'] + '"></i> ' + item['menu_name']);
+                },
+                renderColumns: function (event, data) {
+                    var node = data.node, data = node.data, $tdList = $(node.tr).find(">td");
+                    $tdList.eq(1).html(data.menu_url);
+                    $tdList.eq(2).text(data.menu_target);
+                    $tdList.eq(3).html(data.menu_type_html);
+                    $tdList.eq(4).html(data.menu_status_html);
+
+                    var actionHtml = '<div class="tree-action" data-no="' + data.menu_no + '" data-title="' + data.menu_name + '">' +
+                        '<a class="action-add"><i class="fa fa-plus"></i>新增</a>' +
+                        '|<a class="action-edit"><i class="fa fa-edit"></i>编辑</a>';
+                    if (!data._children_) {
+                        actionHtml += '|<a class="action-delete text-danger"><i class="fa fa-trash"></i>删除</a>';
+                    }
+                    actionHtml += '</div>';
+                    $tdList.eq(5).html(actionHtml);
+                },
+                dnd: {
+                    autoExpandMS: 400,
+                    focusOnClick: false,
+                    preventVoidMoves: true,
+                    preventRecursiveMoves: true,
+                    dragStart: function (node, data) {
+                        return true;
+                    },
+                    dragEnter: function (node, data) {
+                        return true;
+                    },
+                    dragDrop: function (node, data) {
+                        CMS.ajax.request(actionList.drag, {
+                            mode: data.hitMode,
+                            from_no: data.otherNode.data.menu_no,
+                            to_no: node.data.menu_no
+                        }, function (result) {
+                            if (result.code === 1) {
+                                data.otherNode.moveTo(node, data.hitMode);
+                            }
+                            else {
+                                CMS.alert.ajaxAlert(result);
+                            }
+                        });
+                    }
+                }
+            });
+        };
+
+    }(App));
+
+    $(function () {
+
+        CMS.util.base64Decode(treeDataContent, function (treeDataJson) {
+            App.buildMenuTree(App.selector.menuTree, JSON.parse(treeDataJson));
+        });
+
+        $(document).on('click', '.add-root-menu', function () {
+            CMS.app.recordAdd(actionList.add, {
+                menu_pno: '',
+                menu_target: '_self',
+                menu_type: 1,
+                menu_build: 1,
+                menu_status: 1
+            });
+        });
+
+        $(document).on('click', '.tree-action .action-add', function () {
+            var dataNo = $(this).parent().attr('data-no');
+            CMS.app.recordAdd(actionList.add, {
+                menu_pno: dataNo,
+                menu_target: '_self',
+                menu_type: 1,
+                menu_build: 1,
+                menu_status: 1
+            });
+        });
+
+        $(document).on('click', '.tree-action .action-edit', function () {
+            var dataNo = $(this).parent().attr('data-no');
+            CMS.app.recordEdit(actionList.edit, dataNo);
+        });
+
+        $(document).on('click', '.tree-action .action-delete', function () {
+            var dataNo = $(this).parent().attr('data-no'),
+                dataTitle = $(this).parent().attr('data-title');
+            CMS.app.recordDelete(actionList.delete, dataNo, dataTitle);
+        });
+
+    });
 </script>
 {/block}

@@ -1,21 +1,93 @@
 {extend name="common/base" }
 
-{block name="content"}
-<div class="am-g">
-    <div class="am-u-sm-12">
-        <form class="am-form ajax-form" method="post" action="{:url('runtime')}">
-            
-            {$widget->form('checkbox', ['title' => '清除范围', 'name' => 'path[]', 'inline' => false, 'list' => $path_list, 'r_style' => 'margin-top:-8px'])}
-            
-            {$widget->form('radio', ['title' => '空文件夹', 'name' => 'delete_empty', 'value' => 1, 'list' => $empty_list])}
-            
-            {$widget->form('date', ['title' => '开始日期', 'name' => 'start_time', 'r_md_num' => 4, 'tip' => '不删除修改日期小于该日期的文件，不填则不限'])}
-            
-            {$widget->form('date', ['title' => '结束日期', 'name' => 'end_time', 'r_md_num' => 4, 'tip' => '不删除修改日期大于该日期的文件，不填则不限'])}
-            
-            {$widget->form('submit', ['title' => '用户操作'])}
-            
-        </form>
+{block name="style"}
+<style type="text/css">
+    .input-item {
+        margin-top: 8px;
+    }
+</style>
+{/block}
+
+{block name="content-body"}
+<div class="box">
+    <div class="box-header with-border">
+        <h3 class="box-title">清理缓存</h3>
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+
+                <form class="ajax-form" action="{:url('runtime')}">
+                    <div class="form-group">
+                        <label>清理范围</label>
+                        <div class="input-item">
+                            <div class="pretty p-default">
+                                <input type="checkbox" name="path[]" value="cache"/>
+                                <div class="state p-primary">
+                                    <label>缓存：数据库、变量等缓存</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-item">
+                            <div class="pretty p-default">
+                                <input type="checkbox" name="path[]" value="log"/>
+                                <div class="state p-primary">
+                                    <label>日志：访问、错误、SQL等日志</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-item">
+                            <div class="pretty p-default">
+                                <input type="checkbox" name="path[]" value="template"/>
+                                <div class="state p-primary">
+                                    <label>临时：视图模板等临时文件</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-item">
+                            <div class="pretty p-default">
+                                <input type="checkbox" name="path[]" value="file"/>
+                                <div class="state p-primary">
+                                    <label>文件：上传的临时文件</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>空文件夹</label>
+                        <div class="input-item">
+                            <div class="pretty p-default p-round p-thick">
+                                <input type="radio" name="delete_empty" checked value="0"/>
+                                <div class="state p-primary">
+                                    <label>保留</label>
+                                </div>
+                            </div>
+                            <div class="pretty p-default p-round p-thick">
+                                <input type="radio" name="delete_empty" value="1"/>
+                                <div class="state p-primary">
+                                    <label>删除</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>开始日期</label>
+                        <input type="text" class="form-control nd-date" name="start_time" data-date-format="yyyy-mm-dd" placeholder="删除修改日期不小于该日期的文件"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label>结束日期</label>
+                        <input type="text" class="form-control nd-date" name="end_time" data-date-format="yyyy-mm-dd" placeholder="删除修改日期不大于该日期的文件"/>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="box-footer">
+        <a class="btn btn-primary ajax-post"><i class="fa fa-trash"></i> 清理</a>
     </div>
 </div>
 {/block}

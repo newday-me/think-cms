@@ -1,217 +1,152 @@
 <?php
+
 namespace app\manage\controller;
 
-use think\Request;
-use core\manage\logic\MenuLogic;
-use core\manage\model\UserModel;
-use core\manage\logic\UserGroupLogic;
-use core\manage\model\UserGroupModel;
-use core\manage\validate\UserGroupValidate;
+use app\manage\logic\MenuLogic;
+use think\facade\Url;
+use app\manage\service\UserGroupService;
 
 class UserGroup extends Base
 {
 
     /**
-     * 群组列表
+     * 群组管理
      *
-     * @param Request $request            
      * @return string
      */
-    public function index(Request $request)
+    public function index()
     {
-        $this->siteTitle = '用户群组';
-        
-        // 记录列表
-        $nest = UserGroupLogic::getInstance()->getGroupNest();
-        $this->_list($nest['tree']);
-        
+        $this->assign('site_title', '群组管理');
+
+        $groupTree = UserGroupService::getSingleton()->getGroupTree();
+        $this->assign('group_tree_json', json_encode($groupTree));
+
+        // 操作
+        $actionList = [
+            'add' => Url::build('add'),
+            'edit' => Url::build('edit'),
+            'drag' => Url::build('drag'),
+            'delete' => Url::build('delete')
+        ];
+        $this->assign('action_list_json', json_encode($actionList));
+
         return $this->fetch();
     }
 
     /**
-     * 添加群组
+     *  群组权限
      *
-     * @param Request $request            
-     * @return mixed
+     * @return string
      */
-    public function add(Request $request)
+    public function auth()
     {
-        if ($request->isPost()) {
-            $data = [
-                'group_name' => $request->param('group_name'),
-                'group_info' => $request->param('group_info', ''),
-                'group_sort' => $request->param('group_sort', 0)
-            ];
-            
-            // 验证
-            $this->_validate(UserGroupValidate::class, $data, 'add');
-            
-            // 添加
-            $this->_add(UserGroupModel::class, $data);
+        $groupNo = $this->request->param('data_no');
+        if (empty($groupNo)) {
+            $this->error('群组编号为空');
+        }
+
+        if ($this->request->isPost()) {
+            $menuNos = $this->request->param('menu_nos');
+            if ($menuNos) {
+                $menuNos = explode(',', $menuNos);
+            } else {
+                $menuNos = [];
+            }
+
+            $return = UserGroupService::getSingleton()->saveGroupAuth($groupNo, $menuNos);
+            $this->response($return);
         } else {
-            $this->siteTitle = '新增群组';
-            
-            // 上级群组
-            $pid = $request->param('pid', 0);
-            $this->assign('pid', intval($pid));
-            
-            // 群组列表下拉
-            $this->assignSelectGroupList();
-            
+            $this->assign('site_title', '群组权限');
+
+            // 菜单树
+            $return = UserGroupService::getSingleton()->getGroupMenuTree($groupNo);
+            if (!$return->isSuccess()) {
+                $this->error($return->getMsg());
+            }
+            $this->assign('menu_tree_json', json_encode($return->getData()));
+
+            // 操作
+            $actionList = [
+                'auth' => Url::build('auth', ['data_no' => $groupNo])
+            ];
+            $this->assign('action_list_json', json_encode($actionList));
+
             return $this->fetch();
         }
+    }
+
+    /**
+     * 创建群组
+     */
+    public function add()
+    {
+        $data = [
+            'group_pno' => $this->request->param('group_pno'),
+            'group_name' => $this->request->param('group_name'),
+            'group_info' => $this->request->param('group_info', '')
+        ];
+        $return = UserGroupService::getSingleton()->createGroup($data);
+        $this->response($return);
     }
 
     /**
      * 编辑群组
-     *
-     * @param Request $request            
-     * @return mixed
      */
-    public function edit(Request $request)
+    public function edit()
     {
-        if ($request->isPost()) {
-            $data = [
-                'group_name' => $request->param('group_name'),
-                'group_info' => $request->param('group_info', ''),
-                'group_sort' => $request->param('group_sort', 0)
-            ];
-            
-            // 验证
-            $this->_validate(UserGroupValidate::class, $data, 'edit');
-            
-            // 保存
-            $this->_edit(UserGroupModel::class, $data);
-        } else {
-            $this->siteTitle = '编辑群组';
-            
-            // 记录
-            $this->_record(UserGroupModel::class);
-            
-            // 群组列表下拉
-            $this->assignSelectGroupList();
-            
-            return $this->fetch();
+        $groupNo = $this->request->param('data_no');
+        if (empty($groupNo)) {
+            $this->error('群组编号为空');
+        }
+
+        $action = $this->request->param('action');
+        switch ($action) {
+            case 'get':
+                $return = UserGroupService::getSingleton()->getGroup($groupNo);
+                $this->response($return);
+                break;
+            case 'save':
+                $data = [
+                    'group_pno' => $this->request->param('group_pno'),
+                    'group_name' => $this->request->param('group_name'),
+                    'group_info' => $this->request->param('group_info', '')
+                ];
+                $return = UserGroupService::getSingleton()->updateGroup($groupNo, $data);
+                $this->response($return);
+                break;
+            default:
+                $this->error('未知操作');
         }
     }
 
     /**
-     * 编辑权限
-     *
-     * @param Request $request            
-     * @return mixed
+     * 拖动群组
      */
-    public function auth(Request $request)
+    public function drag()
     {
-        $gid = $request->param('gid');
-        if (empty($gid)) {
-            $this->error('群组ID为空');
+        $mode = $this->request->param('mode');
+        $fromGroupNo = $this->request->param('from_group_no');
+        $toGroupNo = $this->request->param('to_group_no');
+        if (empty($fromGroupNo) || empty($toGroupNo)) {
+            $this->error('数据不完整');
         }
-        
-        if ($request->isPost()) {
-            $groupMenus = $request->param('group_menus/a');
-            if (empty($groupMenus) || count($groupMenus) == 0) {
-                $this->error('权限菜单为空');
-            }
-            
-            // 保存
-            $map = [
-                'id' => $gid
-            ];
-            $data = [
-                'group_menus' => implode(',', $groupMenus)
-            ];
-            $this->_edit(UserGroupModel::class, $data, $map);
-        } else {
-            $this->siteTitle = '编辑权限';
-            $this->assign('gid', $gid);
-            
-            // 群组菜单IDS
-            $this->assignMenuIds($gid);
-            
-            // 菜单列表
-            $this->assignMenuList($gid);
-            
-            return $this->fetch();
-        }
-    }
 
-    /**
-     * 更改群组
-     *
-     * @return void
-     */
-    public function modify()
-    {
-        $fields = [
-            'group_status'
-        ];
-        $this->_modify(UserGroupModel::class, $fields);
+        $return = UserGroupService::getSingleton()->dragGroup($mode, $fromGroupNo, $toGroupNo);
+        $this->response($return);
     }
 
     /**
      * 删除群组
-     *
-     * @return void
      */
     public function delete()
     {
-        $groupId = $this->_id();
-        $map = [
-            'user_gid' => $groupId
-        ];
-        if (UserModel::getInstance()->where($map)->find()) {
-            $this->error('请先删除该群组下的账号');
+        $groupNo = $this->request->param('data_no');
+        if (empty($groupNo)) {
+            $this->error('群组编号为空');
         }
-        
-        $this->_delete(UserGroupModel::class, false);
+
+        $return = UserGroupService::getSingleton()->deleteGroup($groupNo);
+        $this->response($return);
     }
 
-    /**
-     * 赋值群组列表下拉
-     *
-     * @return void
-     */
-    protected function assignSelectGroupList()
-    {
-        $selectGroupList = UserGroupLogic::getSingleton()->getSelectList();
-        $this->assign('select_group_list', $selectGroupList);
-    }
-
-    /**
-     * 赋值菜单列表
-     *
-     * @param integer $gid            
-     * @return void
-     */
-    protected function assignMenuList($gid)
-    {
-        $map = [];
-        
-        // 父级菜单
-        $menuIds = UserGroupLogic::getSingleton()->getGroupMenuIdsParent($gid);
-        if (count($menuIds)) {
-            $map['id'] = [
-                'in',
-                $menuIds
-            ];
-        }
-        
-        $logic = MenuLogic::getSingleton();
-        $menuNest = $logic->getMenuNest($map);
-        $this->assign('menu_list', $menuNest['tree']);
-    }
-
-    /**
-     * 赋值菜单IDS
-     *
-     * @param integer $gid            
-     * @return void
-     */
-    protected function assignMenuIds($gid)
-    {
-        $logic = UserGroupLogic::getSingleton();
-        $menuIds = $logic->getGroupMenuIds($gid);
-        $this->assign('menu_ids', $menuIds);
-    }
 }

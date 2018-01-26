@@ -1,23 +1,29 @@
 {
-    "name": "newday-me/think-cms",
-    "description": "CMS应用",
-    "type": "project",
-    "homepage": "http://cms.newday.me/",
-    "license": "Apache-2.0",
-    "authors": [
-        {
-            "name": "哩呵",
-            "email": "newday_me@163.com"
-        }
-    ],
-    "require": {
-        "newday-me/think-cms-framework": "0.0.3"
-    },
-    "minimum-stability": "RC",
-    "extra": {
-        "think-path": "thinkphp"
-    },
-    "config": {
-        "preferred-install": "dist"
+  "name": "newday-me/think-cms",
+  "description": "CMS应用",
+  "type": "project",
+  "homepage": "http://cms.newday.me/",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "哩呵",
+      "email": "newday_me@163.com"
     }
+  ],
+  "require": {
+    "php": ">=5.6.0",
+    "topthink/framework": "5.1.0",
+    "topthink/think-captcha": "2.0.2",
+    "topthink/think-image": "1.0.7",
+    "topthink/think-migration": "2.0.3",
+    "newday-me/think-cms-framework": "1.0.0",
+    "upyun/sdk": "3.3.0"
+  },
+  "minimum-stability": "RC",
+  "extra": {
+    "think-path": "thinkphp"
+  },
+  "config": {
+    "preferred-install": "dist"
+  }
 }

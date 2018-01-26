@@ -1,219 +1,149 @@
 <?php
+
 namespace app\manage\controller;
 
-use think\Request;
-use core\manage\logic\MenuLogic;
-use core\manage\model\MenuModel;
-use core\manage\validate\MenuValidate;
+use think\facade\Url;
+use app\manage\service\MenuService;
 
 class Menu extends Base
 {
 
     /**
-     * 菜单列表
+     * 菜单管理
      *
-     * @param Request $request            
      * @return string
      */
-    public function index(Request $request)
+    public function index()
     {
-        $this->siteTitle = '菜单管理';
-        
-        // 记录列表
-        $list = MenuLogic::getInstance()->getMenuNest();
-        $this->_list($list['tree']);
-        
+        $this->assign('site_title', '菜单管理');
+
+        // 菜单树
+        $menuTree = MenuService::getSingleton()->getMenuTree();
+        $this->assign('menu_tree_base', base64_encode(json_encode($menuTree)));
+
+        // 操作
+        $actionList = [
+            'add' => Url::build('add'),
+            'edit' => Url::build('edit'),
+            'modify' => Url::build('modify'),
+            'drag' => Url::build('drag'),
+            'delete' => Url::build('delete')
+        ];
+        $this->assign('action_list_json', json_encode($actionList));
+
         return $this->fetch();
     }
 
     /**
-     * 添加菜单
-     *
-     * @param Request $request            
-     * @return string|void
+     * 新增菜单
      */
-    public function add(Request $request)
+    public function add()
     {
-        if ($request->isPost()) {
-            $data = [
-                'menu_name' => $request->param('menu_name'),
-                'menu_url' => $request->param('menu_url'),
-                'menu_pid' => $request->param('menu_pid', 0),
-                'menu_sort' => $request->param('menu_sort', 0),
-                'menu_target' => $request->param('menu_target', ''),
-                'menu_build' => $request->param('menu_build', 0),
-                'menu_status' => $request->param('menu_status', 0)
-            ];
-            
-            // 验证
-            $this->_validate(MenuValidate::class, $data, 'add');
-            
-            // 处理数据
-            $logic = MenuLogic::getSingleton();
-            $data = $logic->processMenuData($data);
-            
-            // 添加
-            $this->_add(MenuModel::class, $data);
-        } else {
-            $this->siteTitle = '新增菜单';
-            
-            // pid
-            $pid = $request->param('pid', 0);
-            $this->assign('pid', intval($pid));
-            
-            // 分组名称
-            $group = $request->param('group', '');
-            $this->assign('group', $group);
-            
-            // 上级菜单
-            $this->assignMenuList();
-            
-            // 菜单打开方式下拉
-            $this->assignSelectMenuTarget();
-            
-            // 菜单链接build下拉
-            $this->assignSelectMenuBuild();
-            
-            // 菜单状态下拉
-            $this->assignSelectMenuStatus();
-            
-            return $this->fetch();
-        }
+        $data = [
+            'menu_pno' => $this->request->param('menu_pno', ''),
+            'menu_name' => $this->request->param('menu_name'),
+            'menu_url' => $this->request->param('menu_url', ''),
+            'menu_icon' => $this->request->param('menu_icon', ''),
+            'menu_type' => $this->request->param('menu_type'),
+            'menu_build' => $this->request->param('menu_build'),
+            'menu_target' => $this->request->param('menu_target'),
+            'menu_show' => $this->request->param('menu_show')
+        ];
+        $return = MenuService::getSingleton()->createMenu($data);
+        $this->response($return);
     }
 
     /**
      * 编辑菜单
-     *
-     * @param Request $request            
-     * @return string|void
      */
-    public function edit(Request $request)
+    public function edit()
     {
-        if ($request->isPost()) {
-            $data = [
-                'menu_name' => $request->param('menu_name'),
-                'menu_url' => $request->param('menu_url'),
-                'menu_pid' => $request->post('menu_pid', 0),
-                'menu_sort' => $request->param('menu_sort', 0),
-                'menu_target' => $request->param('menu_target', ''),
-                'menu_build' => $request->param('menu_build', 0),
-                'menu_status' => $request->param('menu_status', 0)
-            ];
-            
-            // 验证
-            $this->_validate(MenuValidate::class, $data, 'edit');
-            
-            // 处理数据
-            $logic = MenuLogic::getSingleton();
-            $data = $logic->processMenuData($data);
-            
-            // 修改
-            $this->_edit(MenuModel::class, $data);
-        } else {
-            $this->siteTitle = '编辑菜单';
-            
-            // 记录
-            $this->_record(MenuModel::class);
-            
-            // 上级菜单
-            $this->assignMenuList();
-            
-            // 菜单打开方式下拉
-            $this->assignSelectMenuTarget();
-            
-            // 菜单链接build下拉
-            $this->assignSelectMenuBuild();
-            
-            // 菜单状态下拉
-            $this->assignSelectMenuStatus();
-            
-            return $this->fetch();
+        $menuNo = $this->request->param('data_no');
+        if (empty($menuNo)) {
+            $this->error('菜单编号为空');
+        }
+
+        $action = $this->request->param('action');
+        switch ($action) {
+            case 'get':
+                $return = MenuService::getSingleton()->getMenu($menuNo);
+                $this->response($return);
+                break;
+            case 'save':
+                $data = [
+                    'menu_name' => $this->request->param('menu_name'),
+                    'menu_url' => $this->request->param('menu_url', ''),
+                    'menu_icon' => $this->request->param('menu_icon', ''),
+                    'menu_type' => $this->request->param('menu_type'),
+                    'menu_build' => $this->request->param('menu_build'),
+                    'menu_target' => $this->request->param('menu_target'),
+                    'menu_show' => $this->request->param('menu_show')
+                ];
+                $return = MenuService::getSingleton()->updateMenu($menuNo, $data);
+                $this->response($return);
+                break;
+            default:
+                $this->error('未知操作');
         }
     }
 
     /**
      * 更改菜单
-     *
-     * @return void
      */
     public function modify()
     {
-        $fields = [
-            'menu_sort',
-            'menu_status'
-        ];
-        $this->_modify(MenuModel::class, $fields);
+        $menuNo = $this->request->param('data_no');
+        if (empty($menuNo)) {
+            $this->error('菜单编号为空');
+        }
+
+        $field = $this->request->param('field');
+        if (empty($field)) {
+            $this->error('字段名为空');
+        }
+
+        $value = $this->request->param('value');
+        if (is_null($value)) {
+            $this->error('值为空');
+        }
+
+        $return = MenuService::getSingleton()->modifyMenu($menuNo, $field, $value);
+        $this->response($return);
     }
 
     /**
-     * 菜单排序
-     *
-     * @return void
+     * 拖拽菜单
      */
-    public function sort()
+    public function drag()
     {
-        $this->_sort(MenuModel::class, 'menu_sort');
+        $mode = $this->request->param('mode');
+
+        $fromNo = $this->request->param('from_no');
+        if (empty($fromNo)) {
+            $this->error('来源菜单编号为空');
+        }
+
+        $toNo = $this->request->param('to_no');
+        if (empty($toNo)) {
+            $this->error('目标菜单编号为空');
+        }
+
+        $return = MenuService::getSingleton()->dragMenu($mode, $fromNo, $toNo);
+        $this->response($return);
     }
 
     /**
      * 删除菜单
-     *
-     * @return void
      */
     public function delete()
     {
-        $model = MenuModel::getInstance();
-        $map = [
-            'menu_pid' => $this->_id()
-        ];
-        if ($model->where($map)->find()) {
-            $this->error('请先删除该菜单下的子菜单');
+        $menuNo = $this->request->param('data_no');
+        if (empty($menuNo)) {
+            $this->error('菜单编号为空');
         }
-        
-        $this->_delete(MenuModel::class, false);
+
+        $return = MenuService::getSingleton()->deleteMenu($menuNo);
+        $this->response($return);
     }
 
-    /**
-     * 赋值菜单列表
-     *
-     * @return void
-     */
-    protected function assignMenuList()
-    {
-        $selectMenuList = MenuLogic::getSingleton()->getSelectList();
-        $this->assign('select_menu_list', $selectMenuList);
-    }
-
-    /**
-     * 赋值菜单打开方式下拉
-     *
-     * @return void
-     */
-    protected function assignSelectMenuTarget()
-    {
-        $selectMenuTarget = MenuLogic::getSingleton()->getSelectTarget();
-        $this->assign('select_menu_target', $selectMenuTarget);
-    }
-
-    /**
-     * 赋值菜单链接Build下拉
-     *
-     * @return void
-     */
-    protected function assignSelectMenuBuild()
-    {
-        $selectMenuBuild = MenuLogic::getSingleton()->getSelectBuild();
-        $this->assign('select_menu_build', $selectMenuBuild);
-    }
-
-    /**
-     * 赋值菜单状态下拉
-     *
-     * @return void
-     */
-    protected function assignSelectMenuStatus()
-    {
-        $selectMenuStatus = MenuLogic::getSingleton()->getSelectStatus();
-        $this->assign('select_menu_status', $selectMenuStatus);
-    }
 }

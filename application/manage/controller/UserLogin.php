@@ -1,91 +1,51 @@
 <?php
+
 namespace app\manage\controller;
 
-use think\Request;
-use core\manage\logic\UserLogic;
-use core\manage\model\UserLoginModel;
+use app\manage\logic\WidgetLogic;
+use app\manage\service\UserLoginService;
+use think\facade\Url;
 
 class UserLogin extends Base
 {
 
     /**
      * 登录日志
-     *
-     * @param Request $request            
-     * @return string
      */
-    public function index(Request $request)
+    public function index()
     {
-        $this->siteTitle = '登录日志';
-        
-        $map = [];
-        
-        // 查询条件-用户
-        $uid = $request->param('uid/d', 0);
-        $uid && $map['login_uid'] = $uid;
-        $this->assign('uid', $uid);
-        
-        // 查询条件-开始时间
-        $start_time = $request->param('start_time', '');
-        $this->assign('start_time', $start_time);
-        
-        // 查询条件-结束时间
-        $end_time = $request->param('end_time', '');
-        $this->assign('end_time', $end_time);
-        
-        // 查询条件-时间
-        if (! empty($start_time) && ! empty($end_time)) {
-            $map['create_time'] = [
-                'between',
-                [
-                    strtotime($start_time),
-                    strtotime($end_time)
-                ]
-            ];
-        } elseif (! empty($start_time)) {
-            $map['create_time'] = [
-                'egt',
-                strtotime($start_time)
-            ];
-        } elseif (! empty($end_time)) {
-            $map['create_time'] = [
-                'elt',
-                strtotime($end_time)
-            ];
-        }
-        
-        // 关键词
-        $keyword = $request->param('keyword', '');
-        if (! empty($keyword)) {
-            $map['login_ip|login_agent'] = [
-                'like',
-                '%' . $keyword . '%'
-            ];
-        }
-        $this->assign('keyword', $keyword);
-        
-        // 分页列表
-        $model = UserLoginModel::getInstance()->with('user')->where($map);
-        $this->_page($model, null, function (&$list) {
-            foreach ($list as $co => $vo) {
-                $vo['user_nick'] = $vo->user ? $vo->user['user_nick'] : '未知';
-            }
-        });
-        
-        // 登录用户下拉
-        $this->assignSelectLoginUser();
-        
-        return $this->fetch();
-    }
+        $this->assign('site_title', '登录日志');
+        $widget = WidgetLogic::getSingleton()->getWidget();
 
-    /**
-     * 赋值登录用户下拉
-     *
-     * @return void
-     */
-    protected function assignSelectLoginUser()
-    {
-        $selectLoginUser = UserLogic::getSingleton()->getSelectList();
-        $this->assign('select_login_user', $selectLoginUser);
+        // 时间段
+        $dateRange = $this->request->param('date_range', '');
+        $dateRangeHtml = $widget->search('date_range', [
+            'name' => 'date_range',
+            'value' => $dateRange,
+            'holder' => '时间段'
+        ]);
+        $this->assign('date_rage_html', $dateRangeHtml);
+
+        // 关键字
+        $keyword = $this->request->param('keyword');
+        $keywordHtml = $widget->search('keyword', [
+            'name' => 'keyword',
+            'value' => $keyword,
+            'holder' => '关键字...'
+        ]);
+        $this->assign('keyword_html', $keywordHtml);
+
+        $nowPage = $this->request->param('page', 1);
+        list($list, $page) = UserLoginService::getSingleton()->getLogListPage($dateRange, $keyword, $nowPage, 10);
+        $this->assign('list', $list);
+        $this->assign('page', $page);
+
+        // 操作
+        $actionList = [
+            'search' => Url::build('index')
+        ];
+        $this->assign('action_list', $actionList);
+
+        return $this->fetch();
     }
 }

@@ -1,222 +1,93 @@
 <?php
+
 namespace app\manage\controller;
 
-use think\Config;
-use think\Request;
-use cms\Response;
-use cms\upload\validates\ExtensionVaildate;
-use cms\upload\processes\CropProcess;
-use cms\upload\processes\OrientationProcess;
-use app\common\App;
-use app\common\factories\FileFactory;
-use app\manage\service\EditorService;
-
-class DemoClass
-{
-    
-    use \cms\traits\HookTrait;
-
-    public function hookClass()
-    {
-        $this->callHook('hook_class', [
-            'name' => 'class',
-            'ext' => 'hook class'
-        ]);
-    }
-
-    public function hookClosure()
-    {
-        $this->callHook('hook_closure', [
-            'name' => 'closure',
-            'ext' => 'hook closure'
-        ]);
-    }
-}
-
-class DemoHook
-{
-
-    public static function hook(&$params)
-    {
-        echo 'class<br/>';
-        dump($params);
-    }
-}
-
-$demo = new DemoClass();
-$demo->addHook('hook_class', DemoHook::class);
-$demo->addHook('hook_closure', function (&$params) {
-    echo 'closure<br/>';
-    dump($params);
-});
-
-$demo->hookClass();
-$demo->hookClosure();
+use cms\facade\Response;
+use app\manage\service\UploadService;
 
 class Upload extends Base
 {
 
     /**
      * 上传文件
-     *
-     * @param Request $request            
-     *
-     * @return void
      */
-    public function upload(Request $request)
+    public function upload()
     {
-        $option = $request->param('upload_option');
-        $option && $option = json_decode($option, true);
-        $option || $option = [];
-        
-        // 文件是否存在
-        $file = isset($_FILES['upload_file']) ? $_FILES['upload_file'] : null;
-        if (empty($file)) {
-            $this->error('上传文件不存在');
+        $source = $this->request->param('source');
+        switch ($source) {
+            case 'file-input':
+                $this->fileInputUpload();
+                break;
+            case 'um-editor':
+                $this->umEditorUpload();
+                break;
+            case 'summer-note':
+            default:
+                $this->normalUpload();
         }
-        
-        $result = $this->uploadFile($file, $option);
-        $this->success('上传成功', '', $result);
     }
 
     /**
-     * 编辑器上传
-     *
-     * @param Request $request            
-     *
-     * @return void
+     * FileInput上传
      */
-    public function editor(Request $request)
+    protected function fileInputUpload()
     {
-        // 图片大小
-        $option = [
-            'width' => 1920,
-            'height' => 1080
-        ];
-        
-        $reqponse = Response::getSingleton();
-        $action = $request->param('action', '');
-        switch ($action) {
-            case 'wang':
-                // 文件是否存在
-                $file = isset($_FILES['upload_file']) ? $_FILES['upload_file'] : null;
-                if (empty($file)) {
-                    return 'error|上传文件不存在';
-                }
-                
-                // 上传文件
-                try {
-                    $result = $this->uploadFile($file, $option);
-                    return $result['url'];
-                } catch (\Exception $e) {
-                    return 'error|' . $e->getMessage();
-                }
-                break;
-            case 'config':
-                $editor = EditorService::getSingleton();
-                $reqponse->json($editor->getUeditorConfig());
-                break;
-            case 'uploadscrawl':
-                // 内容是否存在
-                $content = base64_decode($request->param('upfile', ''));
-                if (empty($content)) {
-                    $reqponse->json([
-                        'state' => '上传文件不存在'
-                    ]);
-                }
-                
-                // 上传文件
-                try {
-                    $result = $this->uploadFile($content, $option);
-                    $data = [
-                        'state' => 'SUCCESS',
-                        'url' => $result['url'],
-                        'title' => $result['name'],
-                        'original' => $result['name']
-                    ];
-                } catch (\Exception $e) {
-                    $data = [
-                        'state' => $e->getMessage()
-                    ];
-                }
-                $reqponse->json($data);
-                break;
-            case 'uploadimage':
-            case 'uploadvideo':
-            case 'uploadfile':
-                
-                // 文件是否存在
-                $file = isset($_FILES['upfile']) ? $_FILES['upfile'] : null;
-                if (empty($file)) {
-                    $reqponse->json([
-                        'state' => '上传文件不存在'
-                    ]);
-                }
-                
-                // 上传文件
-                try {
-                    $result = $this->uploadFile($file, $option);
-                    $data = [
-                        'state' => 'SUCCESS',
-                        'url' => $result['url'],
-                        'title' => $file['name'],
-                        'original' => $file['name']
-                    ];
-                } catch (\Exception $e) {
-                    $data = [
-                        'state' => $e->getMessage()
-                    ];
-                }
-                $reqponse->json($data);
-                break;
-            case 'listfile':
-            case 'listimage':
-                $start = $request->param('start', 0);
-                $size = $request->param('size', 20);
-                $type = $action == 'listfile' ? EditorService::TYPE_FILE : EditorService::TYPE_IMAGE;
-                
-                $editor = EditorService::getSingleton();
-                $reqponse->json($editor->listFile($type, $start, $size));
-                break;
+        if (!isset($_FILES['file_data'])) {
+            $this->error('上传文件不存在');
         }
+
+        $uploadFile = $_FILES['file_data'];
+        $this->response($this->doUpload($uploadFile));
+    }
+
+    /**
+     * UmEditor上传
+     */
+    protected function umEditorUpload()
+    {
+        if (!isset($_FILES['upfile'])) {
+            $data = [
+                'state' => '上传文件为空'
+            ];
+            Response::data(json_encode($data), '', 200);
+        }
+
+        $uploadFile = $_FILES['upfile'];
+        $return = $this->doUpload($uploadFile);
+        if ($return->isSuccess()) {
+            $data = $return->getData();
+            $data['state'] = 'SUCCESS';
+            Response::data(json_encode($data), '', 200);
+        } else {
+            $data = [
+                'state' => $return->getMsg()
+            ];
+            Response::data(json_encode($data), '', 200);
+        }
+    }
+
+    /**
+     * 普通上传
+     */
+    protected function normalUpload()
+    {
+        if (!isset($_FILES['upload_file'])) {
+            $this->error('上传文件为空');
+        }
+
+        $uploadFile = $_FILES['upload_file'];
+        $this->response($this->doUpload($uploadFile));
     }
 
     /**
      * 上传文件
      *
-     * @param array $file            
-     * @param array $option            
-     *
-     * @return array
+     * @param array $uploadFile
+     * @return \cms\core\objects\ReturnObject
      */
-    protected function uploadFile($file, $option)
+    protected function doUpload($uploadFile)
     {
-        // 上传文件
-        $type = is_array($file) ? FileFactory::TYPE_UPLOAD : FileFactory::TYPE_STREAM;
-        $upfile = FileFactory::make($type);
-        $upfile->load($file);
-        
-        // 上传对象
-        $upload = App::getSingleton()->upload;
-        
-        // 文件后缀
-        $extensions = Config::get('upload_extensions');
-        if (! empty($extensions)) {
-            $option = [
-                'extensions' => $extensions
-            ];
-            $upload->addValidate(new ExtensionVaildate($option));
-        }
-        
-        // 图片重力
-        $upload->addProcesser(new OrientationProcess());
-        
-        // 图片大小
-        if (isset($option['width']) || isset($option['height'])) {
-            $upload->addProcesser(new CropProcess($option));
-        }
-        
-        // 上传文件
-        return $upload->upload($upfile);
+        return UploadService::getSingleton()->upload($uploadFile);
     }
+
 }

@@ -1,0 +1,132 @@
+a {
+    cursor: pointer;
+}
+
+.main-header {
+    z-index: 1000;
+}
+
+.content .box-header {
+    min-height: 55px;
+}
+
+.navbar-nav > .user-menu > .dropdown-menu {
+    width: auto;
+    left: 0 !important;
+    right: 0 !important;
+}
+
+.navbar-nav > .user-menu > .dropdown-menu > li > a {
+    line-height: 2.6rem !important;
+    color: #000 !important;
+}
+
+.navbar-nav > .user-menu > .dropdown-menu > li.divider {
+    margin: 0;
+    background-color: #eee !important;
+}
+
+/* fancytree start */
+
+.fancytree-container span.fancytree-node {
+    padding: 6px;
+}
+
+.fancytree-container span.fancytree-checkbox {
+    margin-top: 3px;
+}
+
+.fancytree-container td {
+    padding: 4px !important;
+    vertical-align: middle !important;
+}
+
+.fancytree-container td .tree-action a {
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.fancytree-container td .tree-action a i {
+    margin-right: 2px;
+}
+
+.fancytree-unselectable .fancytree-title {
+    color: #dbdedb;
+}
+
+.treeview .treeview-menu {
+    padding-left: 20px;
+}
+
+/* fancytree end */
+/* select2 start */
+
+.select2-container .select2-selection--single {
+    height: 34px !important;
+    border-color: #d2d6de;
+}
+
+/* select2 end */
+/* bootstrap-file-input start */
+
+.file-zoom-dialog .explorer-frame .file-other-icon {
+    font-size: 22em !important;
+}
+
+.file-zoom-fullscreen .explorer-frame .file-other-icon {
+    font-size: 50vmin !important;
+}
+
+/* bootstrap-file-input end */
+/* um-editor start */
+
+.edui-dialog-image .edui-image-searchBar .edui-image-searchTxt {
+    height: auto !important;
+}
+
+.edui-dialog-video #eduiVideoUrl {
+    height: auto !important;
+}
+
+/* um-editor end */
+/* code-mirror start */
+
+.CodeMirror {
+    border: 1px solid #d4d4d4;
+}
+
+/* code-mirror end */
+/* jquery-tags-input start */
+
+.bootstrap-tagsinput {
+    width: 100%;
+}
+
+/* jquery-tags-input end */
+/* jquery-loading-overlay start */
+
+.loading-overlay-icon {
+    font-size: 80px;
+}
+
+.loading-overlay-text {
+    font-size: 18px;
+    text-align: center;
+}
+
+/* jquery-loading-overlay end */
+
+.nd-action a {
+    cursor: pointer;
+}
+
+.nd-umeditor {
+    width: 100%;
+}
+
+@media (max-width: 767px) {
+    .nd-search-form .nd-search-item {
+        margin-bottom: 10px;
+    }
+}

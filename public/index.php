@@ -1,13 +1,9 @@
 <?php
+// [ 应用入口文件 ]
+namespace think;
 
-// WEB目录
-define('WEB_PATH', __DIR__ . DIRECTORY_SEPARATOR);
+// 加载基础文件
+require dirname(__DIR__) . '/thinkphp/base.php';
 
-// 跟目录
-define('ROOT_PATH', dirname(WEB_PATH) . DIRECTORY_SEPARATOR);
-
-// 应用目录
-define('APP_PATH', ROOT_PATH . 'application' . DIRECTORY_SEPARATOR);
-
-// 框架引导文件
-require ROOT_PATH . 'thinkphp' . DIRECTORY_SEPARATOR . 'start.php';
+// 执行应用并响应
+Container::get('app')->run()->send();
