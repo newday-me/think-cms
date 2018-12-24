@@ -11,7 +11,7 @@
 
 * **使用[Composer](http://www.phpcomposer.com/ "Composer")安装**
 
-运行【composer create-project newday-me/think-cms C:/www/cms 1.0.0】
+运行【composer create-project newday-me/think-cms C:/www/cms 2.0.0】
 
 *  **下载完整代码包**
 
