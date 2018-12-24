@@ -2,41 +2,25 @@
 
 namespace core\base;
 
-use cms\core\traits\InstanceTrait;
+use think\Collection;
+use core\traits\InstanceTrait;
 
 class Data
 {
-    // 实例trait
     use InstanceTrait;
 
     /**
-     * 列表转数组
-     *
-     * @param array $list
-     * @return array
-     */
-    protected function listToArray($list)
-    {
-        $result = [];
-        foreach ($list as $vo) {
-            $result[] = $this->recordToArray($vo);
-        }
-        return $result;
-    }
-
-    /**
-     * 记录转数组
+     * 转换为数组
      *
      * @param mixed $record
      * @return array|null
      */
-    public function recordToArray($record)
+    protected function transToArray($record)
     {
-        if ($record && is_object($record)) {
+        if ($record instanceof Collection || $record instanceof Model) {
             return $record->toArray();
         } else {
             return $record;
         }
     }
-
 }

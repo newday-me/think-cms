@@ -89,8 +89,12 @@ class User extends Base
             $this->error('两次输入的密码不一致');
         }
 
-        $return = UserService::getSingleton()->updateAccount($data);
-        $this->response($return);
+        $result = UserService::getSingleton()->updateAccount($data);
+        if ($result) {
+            $this->success('更新账号成功');
+        } else {
+            $this->error(UserService::getSingleton()->getErrorInfo());
+        }
     }
 
     /**
@@ -105,8 +109,12 @@ class User extends Base
             'user_status' => $this->request->param('user_status')
         ];
 
-        $return = UserService::getSingleton()->createUser($data);
-        $this->response($return);
+        $result = UserService::getSingleton()->createUser($data);
+        if ($result) {
+            $this->success('创建用户成功');
+        } else {
+            $this->error(UserService::getSingleton()->getErrorInfo());
+        }
     }
 
     /**
@@ -122,8 +130,12 @@ class User extends Base
         $action = $this->request->param('action');
         switch ($action) {
             case 'get':
-                $return = UserService::getSingleton()->getUser($userNo);
-                $this->response($return);
+                $user = UserService::getSingleton()->getUser($userNo);
+                if ($user) {
+                    $this->success('获取成功', '', $user);
+                } else {
+                    $this->error(UserService::getSingleton()->getErrorInfo());
+                }
                 break;
             case 'save':
                 $data = [
@@ -132,8 +144,12 @@ class User extends Base
                     'user_password' => $this->request->param('user_password'),
                     'user_status' => $this->request->param('user_status')
                 ];
-                $return = UserService::getSingleton()->updateUser($userNo, $data);
-                $this->response($return);
+                $result = UserService::getSingleton()->updateUser($userNo, $data);
+                if ($result) {
+                    $this->success('保存成功');
+                } else {
+                    $this->error(UserService::getSingleton()->getErrorInfo());
+                }
                 break;
             default:
                 $this->error('未知操作');
@@ -192,8 +208,12 @@ class User extends Base
             $this->error('值为空');
         }
 
-        $return = UserService::getSingleton()->modifyUser($userNo, $field, $value);
-        $this->response($return);
+        $result = UserService::getSingleton()->modifyUser($userNo, $field, $value);
+        if ($result) {
+            $this->success('保存成功');
+        } else {
+            $this->error(UserService::getSingleton()->getErrorInfo());
+        }
     }
 
     /**
@@ -206,8 +226,12 @@ class User extends Base
             $this->error('用户编号为空');
         }
 
-        $return = UserService::getSingleton()->deleteUser($userNo);
-        $this->response($return);
+        $result = UserService::getSingleton()->deleteUser($userNo);
+        if ($result) {
+            $this->success('删除用户成功');
+        } else {
+            $this->error(UserService::getSingleton()->getErrorInfo());
+        }
     }
 
 }

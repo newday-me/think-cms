@@ -35,13 +35,16 @@ class UserGroupLogic extends DragLogic
      * 获取群组的菜单树
      *
      * @param string $groupNo
-     * @return \cms\core\objects\ReturnObject
+     * @return array|null
      */
     public function getGroupMenuTree($groupNo)
     {
+        $this->resetError();
+
         $group = ManageUserGroupData::getSingleton()->getGroup($groupNo);
         if (empty($group)) {
-            return $this->returnError('群组不存在');
+            $this->setError(self::ERROR_CODE_DEFAULT, '群组不存在');
+            return null;
         }
 
         $isRootGroup = $group['group_pno'] === ManageUserGroupConstant::ROOT_PNO_VALUE;
@@ -62,7 +65,7 @@ class UserGroupLogic extends DragLogic
             }
         });
 
-        return $this->returnSuccess('获取成功', $menuTree);
+        return $menuTree;
     }
 
     /**
@@ -73,6 +76,8 @@ class UserGroupLogic extends DragLogic
      */
     public function onDragOver($fromNo, $toNo)
     {
+        $this->resetError();
+
         $manageUserGroupData = ManageUserGroupData::getSingleton();
         $groupSort = $manageUserGroupData->getMaxGroupSort($toNo);
         $data = [
@@ -80,9 +85,10 @@ class UserGroupLogic extends DragLogic
             'group_sort' => $groupSort + 1
         ];
         if ($manageUserGroupData->updateGroup($fromNo, $data)) {
-            return $this->returnSuccess('操作成功');
+            return true;
         } else {
-            return $this->returnError('操作失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '操作失败');
+            return null;
         }
     }
 
@@ -94,12 +100,15 @@ class UserGroupLogic extends DragLogic
      */
     public function onDragSide($before, $fromNo, $toNo)
     {
+        $this->resetError();
+
         $manageUserGroupData = ManageUserGroupData::getSingleton();
 
         // 查找目标群组
         $toGroup = $manageUserGroupData->getGroup($toNo);
         if (empty($toGroup)) {
-            return $this->returnError('目标群组不存在');
+            $this->setError(self::ERROR_CODE_DEFAULT, '目标群组不存在');
+            return null;
         }
 
         // 更新上级群组
@@ -122,7 +131,7 @@ class UserGroupLogic extends DragLogic
             }
         }
 
-        return $this->returnSuccess('操作成功');
+        return true;
     }
 
 }

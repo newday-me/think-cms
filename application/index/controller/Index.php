@@ -3,8 +3,8 @@
 namespace app\index\controller;
 
 use think\facade\Url;
-use cms\Controller;
-use cms\facade\Response;
+use core\support\Controller;
+use core\support\Response;
 
 class Index extends Controller
 {
@@ -33,7 +33,7 @@ class Index extends Controller
      */
     public function download()
     {
-        $downloadUrl = 'http://static.newday.me/cms/1.0.0.zip';
+        $downloadUrl = 'http://static.newday.me/cms/2.0.0.zip';
         Response::getSingleton()->redirect($downloadUrl, false);
     }
 }

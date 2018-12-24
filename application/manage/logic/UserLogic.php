@@ -43,12 +43,24 @@ class UserLogic extends Logic
         return ManageUserLoginData::getSingleton()->addLog($userNo);
     }
 
+    /**
+     * 获取主页链接
+     *
+     * @param string $userNo
+     * @return string
+     */
     public function getHomeUrl($userNo)
     {
         $menuTree = MenuLogic::getSingleton()->getSideMenu($userNo);
         return $this->getMenuTreeCurrentUrl($menuTree);
     }
 
+    /**
+     * 获取菜单树头链接
+     *
+     * @param array $menuTree
+     * @return string
+     */
     public function getMenuTreeCurrentUrl($menuTree)
     {
         if (empty($menuTree)) {

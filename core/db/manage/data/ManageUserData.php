@@ -2,8 +2,8 @@
 
 namespace core\db\manage\data;
 
-use think\facade\Request;
 use core\base\Data;
+use think\facade\Request;
 use core\db\manage\constant\ManageMenuConstant;
 use core\db\manage\model\ManageUserModel;
 use core\db\manage\view\ManageUserView;
@@ -20,7 +20,7 @@ class ManageUserData extends Data
     public function createUser($data)
     {
         $record = ManageUserModel::create($data);
-        return $this->recordToArray($record);
+        return $this->transToArray($record);
     }
 
     /**
@@ -39,14 +39,15 @@ class ManageUserData extends Data
      *
      * @param string $userNo
      * @return array|null
+     * @throws
      */
     public function getUser($userNo)
     {
         $map = [
             'user_no' => $userNo
         ];
-        $record = ManageUserModel::get($map);
-        return $this->recordToArray($record);
+        $record = ManageUserModel::getInstance()->get($map);
+        return $this->transToArray($record);
     }
 
     /**
@@ -54,14 +55,15 @@ class ManageUserData extends Data
      *
      * @param string $userName
      * @return array|null
+     * @throws
      */
     public function getUserByUserName($userName)
     {
         $map = [
             'user_name' => $userName
         ];
-        $record = ManageUserModel::get($map);
-        return $this->recordToArray($record);
+        $record = ManageUserModel::getInstance()->get($map);
+        return $this->transToArray($record);
     }
 
     /**
@@ -71,11 +73,12 @@ class ManageUserData extends Data
      * @param int $page
      * @param int $pageSize
      * @return array|null
+     * @throws
      */
     public function getUserListPage($closure, $page, $pageSize)
     {
         $list = ManageUserModel::getInstance()->with('groups')->where($closure)->page($page, $pageSize)->select();
-        return $this->listToArray($list);
+        return $this->transToArray($list);
     }
 
     /**
@@ -134,8 +137,8 @@ class ManageUserData extends Data
             'login_time' => time(),
             'login_ip' => Request::ip(),
             'login_count' => [
-                'exp',
-                'login_count+1'
+                'inc',
+                1
             ]
         ];
         return $this->updateUser($userNo, $data);
@@ -146,6 +149,7 @@ class ManageUserData extends Data
      *
      * @param string $userNo
      * @return int
+     * @throws
      */
     public function deleteUser($userNo)
     {
@@ -161,6 +165,7 @@ class ManageUserData extends Data
      * @param string $userNo
      * @param string $menuAction
      * @return array|null
+     * @throws
      */
     public function getUserMenu($userNo, $menuAction)
     {
@@ -173,7 +178,7 @@ class ManageUserData extends Data
             'e.*'
         ];
         $record = ManageUserView::getSingleton()->menuQuery()->where($map)->field($field)->find();
-        return $this->recordToArray($record);
+        return $this->transToArray($record);
     }
 
     /**
@@ -181,6 +186,7 @@ class ManageUserData extends Data
      *
      * @param string $userNo
      * @return array
+     * @throws
      */
     public function getUserMenuList($userNo)
     {
@@ -193,7 +199,7 @@ class ManageUserData extends Data
             'e.*'
         ];
         $list = ManageUserView::getSingleton()->menuQuery()->where($map)->field($field)->group('e.menu_no')->order('e.menu_sort asc, e.id asc')->select();
-        return $this->listToArray($list);
+        return $this->transToArray($list);
     }
 
     /**

@@ -3,9 +3,8 @@
 namespace core\logic\upload\process;
 
 use think\Image;
-use cms\upload\Process;
-use cms\core\interfaces\FileInterface;
-use cms\core\interfaces\FileProcessInterface;
+use newday\upload\core\base\Process;
+use newday\upload\core\interfaces\FileInterface;
 
 class CropProcess extends Process
 {

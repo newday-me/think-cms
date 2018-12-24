@@ -3,10 +3,10 @@
 namespace core\logic\upload;
 
 use core\base\Logic;
-use cms\upload\file\LocalFile;
-use cms\upload\file\StreamFile;
-use cms\upload\file\RemoteFile;
-use cms\upload\file\UploadFile;
+use newday\upload\file\LocalFile;
+use newday\upload\file\RemoteFile;
+use newday\upload\file\StreamFile;
+use newday\upload\file\UploadFile;
 
 class FileLogic extends Logic
 {

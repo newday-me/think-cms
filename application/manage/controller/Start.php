@@ -2,9 +2,8 @@
 
 namespace app\manage\controller;
 
-use app\manage\logic\LoginLogic;
-use app\manage\service\CaptchaService;
 use think\facade\Url;
+use app\manage\service\CaptchaService;
 use app\manage\service\StartService;
 
 class Start extends Base
@@ -51,12 +50,11 @@ class Start extends Base
             $this->error('验证码错误');
         }
 
-        $return = StartService::getSingleton()->login($userName, $userPassword);
-        if ($return->isSuccess()) {
-            $data = $return->getData();
-            $this->success($return->getMsg(), $data['home_url']);
+        $data = StartService::getSingleton()->login($userName, $userPassword);
+        if ($data) {
+            $this->success('登录成功', $data['home_url']);
         } else {
-            $this->error($return->getMsg());
+            $this->error(StartService::getSingleton()->getErrorInfo());
         }
     }
 

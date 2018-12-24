@@ -31,6 +31,7 @@ class ManageUserGroupLinkData extends Data
      *
      * @param string $userNo
      * @return array
+     * @throws
      */
     public function getUserGroupNos($userNo)
     {
@@ -68,6 +69,7 @@ class ManageUserGroupLinkData extends Data
      * @param string $userNo
      * @param array $groupNos
      * @return int
+     * @throws
      */
     public function deleteLinkBatch($userNo, $groupNos)
     {

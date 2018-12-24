@@ -2,6 +2,7 @@
 
 namespace app\manage\widget;
 
+use core\traits\InstanceTrait;
 use app\manage\widget\form\ColorForm;
 use app\manage\widget\form\DateForm;
 use app\manage\widget\form\DateRangeForm;
@@ -13,11 +14,9 @@ use app\manage\widget\form\MaskForm;
 use app\manage\widget\form\SelectForm;
 use app\manage\widget\form\SummerNoteForm;
 use app\manage\widget\form\TagForm;
-use app\manage\widget\form\TextAreaForm;
 use app\manage\widget\form\TextForm;
 use app\manage\widget\form\UmEditorForm;
 use app\manage\widget\search\MaskSearch;
-use cms\core\traits\InstanceTrait;
 use app\manage\widget\table\SwitchColumn;
 use app\manage\widget\table\RadioColumn;
 use app\manage\widget\table\SelectColumn;
@@ -57,7 +56,6 @@ class Widget
     protected $mapping = [
         self::TYPE_FORM => [
             'text' => TextForm::class,
-            'textarea' => TextAreaForm::class,
             'select' => SelectForm::class,
             'tag' => TagForm::class,
             'color' => ColorForm::class,

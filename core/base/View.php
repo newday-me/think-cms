@@ -2,7 +2,7 @@
 
 namespace core\base;
 
-use cms\core\traits\InstanceTrait;
+use core\traits\InstanceTrait;
 
 class View
 {

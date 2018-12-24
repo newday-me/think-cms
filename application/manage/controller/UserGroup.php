@@ -2,7 +2,6 @@
 
 namespace app\manage\controller;
 
-use app\manage\logic\MenuLogic;
 use think\facade\Url;
 use app\manage\service\UserGroupService;
 
@@ -53,26 +52,26 @@ class UserGroup extends Base
                 $menuNos = [];
             }
 
-            $return = UserGroupService::getSingleton()->saveGroupAuth($groupNo, $menuNos);
-            $this->response($return);
-        } else {
-            $this->assign('site_title', '群组权限');
-
-            // 菜单树
-            $return = UserGroupService::getSingleton()->getGroupMenuTree($groupNo);
-            if (!$return->isSuccess()) {
-                $this->error($return->getMsg());
-            }
-            $this->assign('menu_tree_json', json_encode($return->getData()));
-
-            // 操作
-            $actionList = [
-                'auth' => Url::build('auth', ['data_no' => $groupNo])
-            ];
-            $this->assign('action_list_json', json_encode($actionList));
-
-            return $this->fetch();
+            UserGroupService::getSingleton()->saveGroupAuth($groupNo, $menuNos);
+            $this->success('操作成功');
         }
+
+        $this->assign('site_title', '群组权限');
+
+        // 菜单树
+        $menuTree = UserGroupService::getSingleton()->getGroupMenuTree($groupNo);
+        if (empty($menuTree)) {
+            $this->error(UserGroupService::getSingleton());
+        }
+        $this->assign('menu_tree_json', json_encode($menuTree));
+
+        // 操作
+        $actionList = [
+            'auth' => Url::build('auth', ['data_no' => $groupNo])
+        ];
+        $this->assign('action_list_json', json_encode($actionList));
+
+        return $this->fetch();
     }
 
     /**
@@ -85,8 +84,12 @@ class UserGroup extends Base
             'group_name' => $this->request->param('group_name'),
             'group_info' => $this->request->param('group_info', '')
         ];
-        $return = UserGroupService::getSingleton()->createGroup($data);
-        $this->response($return);
+        $result = UserGroupService::getSingleton()->createGroup($data);
+        if ($result) {
+            $this->success('创建群组成功');
+        } else {
+            $this->error(UserGroupService::getSingleton()->getErrorInfo());
+        }
     }
 
     /**
@@ -102,8 +105,12 @@ class UserGroup extends Base
         $action = $this->request->param('action');
         switch ($action) {
             case 'get':
-                $return = UserGroupService::getSingleton()->getGroup($groupNo);
-                $this->response($return);
+                $group = UserGroupService::getSingleton()->getGroup($groupNo);
+                if ($group) {
+                    $this->success('获取成功', '', $group);
+                } else {
+                    $this->error(UserGroupService::getSingleton()->getErrorInfo());
+                }
                 break;
             case 'save':
                 $data = [
@@ -111,8 +118,12 @@ class UserGroup extends Base
                     'group_name' => $this->request->param('group_name'),
                     'group_info' => $this->request->param('group_info', '')
                 ];
-                $return = UserGroupService::getSingleton()->updateGroup($groupNo, $data);
-                $this->response($return);
+                $result = UserGroupService::getSingleton()->updateGroup($groupNo, $data);
+                if ($result) {
+                    $this->success('保存成功');
+                } else {
+                    $this->error(UserGroupService::getSingleton()->getErrorInfo());
+                }
                 break;
             default:
                 $this->error('未知操作');
@@ -131,8 +142,12 @@ class UserGroup extends Base
             $this->error('数据不完整');
         }
 
-        $return = UserGroupService::getSingleton()->dragGroup($mode, $fromGroupNo, $toGroupNo);
-        $this->response($return);
+        $result = UserGroupService::getSingleton()->dragGroup($mode, $fromGroupNo, $toGroupNo);
+        if ($result) {
+            $this->success('操作成功');
+        } else {
+            $this->error(UserGroupService::getSingleton()->getErrorInfo());
+        }
     }
 
     /**
@@ -145,8 +160,12 @@ class UserGroup extends Base
             $this->error('群组编号为空');
         }
 
-        $return = UserGroupService::getSingleton()->deleteGroup($groupNo);
-        $this->response($return);
+        $result = UserGroupService::getSingleton()->deleteGroup($groupNo);
+        if ($result) {
+            $this->success('删除群组成功');
+        } else {
+            $this->error(UserGroupService::getSingleton()->getErrorInfo());
+        }
     }
 
 }

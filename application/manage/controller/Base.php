@@ -3,7 +3,7 @@
 namespace app\manage\controller;
 
 use think\facade\Url;
-use cms\Controller;
+use core\support\Controller;
 use app\manage\service\AuthService;
 use app\manage\service\LoginService;
 use app\manage\service\MenuService;
@@ -42,8 +42,12 @@ class Base extends Controller
             $menuTree = MenuService::getSingleton()->getSideMenu($userNo);
             $this->assign('menu_tree', $menuTree);
 
-            $return = UserService::getSingleton()->getUser($userNo);
-            $this->assign('manage_user', $return->getData());
+            $user = UserService::getSingleton()->getUser($userNo);
+            if (empty($user)) {
+                $this->error('用户不存在');
+            } else {
+                $this->assign('manage_user', $user);
+            }
         }
     }
 

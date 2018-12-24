@@ -4,11 +4,10 @@ namespace core\logic\upload\storage;
 
 use Upyun\Upyun;
 use Upyun\Config;
-use cms\support\Util;
-use cms\upload\Storage;
-use cms\core\interfaces\FileInterface;
+use newday\upload\core\base\Storage;
+use newday\upload\core\interfaces\FileInterface;
 
-class UpyunStorage extends Storage
+class UpYunStorage extends Storage
 {
 
     /**
@@ -16,17 +15,29 @@ class UpyunStorage extends Storage
      *
      * @var Upyun
      */
-    protected $upyun;
+    protected $upYun;
 
     /**
      *
      * {@inheritdoc}
      *
      * @see Storage::exists()
+     * @throws
      */
     public function exists($path)
     {
-        return $this->upyun()->has($path);
+        return $this->getUpYun()->has($path);
+    }
+
+    /**
+     *
+     * {@inheritdoc}
+     *
+     * @see Storage::url()
+     */
+    public function url($path)
+    {
+        return $this->getOption('base_url') . $path;
     }
 
     /**
@@ -34,14 +45,15 @@ class UpyunStorage extends Storage
      * {@inheritdoc}
      *
      * @see Storage::save()
+     * @throws
      */
-    public function save(FileInterface $file, $path)
+    public function save(FileInterface $file, $path, $copy = false)
     {
         $params = [
             'return_url' => $this->getOption('return_url'),
             'notify_url' => $this->getOption('notify_url')
         ];
-        return $this->upyun()->write($path, $file->getContent(), $params);
+        return $this->getUpYun()->write($path, $file->getContent(), $params);
     }
 
     /**
@@ -49,10 +61,11 @@ class UpyunStorage extends Storage
      * {@inheritdoc}
      *
      * @see Storage::read()
+     * @throws
      */
     public function read($path)
     {
-        return $this->upyun()->read($path);
+        return $this->getUpYun()->read($path);
     }
 
     /**
@@ -60,10 +73,11 @@ class UpyunStorage extends Storage
      * {@inheritdoc}
      *
      * @see Storage::delete()
+     * @throws
      */
     public function delete($path)
     {
-        return $this->upyun()->delete($path);
+        return $this->getUpYun()->delete($path);
     }
 
     /**
@@ -71,23 +85,49 @@ class UpyunStorage extends Storage
      *
      * @return Upyun
      */
-    protected function upyun()
+    public function getUpYun()
     {
-        if (is_null($this->upyun)) {
+        if (is_null($this->upYun)) {
             $bucket = $this->getOption('bucket');
             $user = $this->getOption('user');
             $password = $this->getOption('password');
             $apiKey = $this->getOption('api_key');
             $boundarySize = $this->getOption('boundary_size') ? $this->getOption('boundary_size') : '5M';
 
-            $util = Util::getSingleton();
             $config = new Config($bucket, $user, $password);
             $config->setFormApiKey($apiKey);
-            $config->sizeBoundary = $util->translateBytes($boundarySize);
+            $config->sizeBoundary = $this->translateBytes($boundarySize);
 
-            $this->upyun = new Upyun($config);
+            $this->upYun = new Upyun($config);
         }
-        return $this->upyun;
+        return $this->upYun;
+    }
+
+    /**
+     * 转换文件大小
+     *
+     * @param string $size
+     *
+     * @return integer
+     */
+    public function translateBytes($size)
+    {
+        $units = [
+            'k' => 1,
+            'm' => 2,
+            'g' => 3,
+            't' => 4,
+            'p' => 5
+        ];
+        $size = strtolower($size);
+        $bytes = intval($size);
+        foreach ($units as $key => $value) {
+            if (strpos($size, $key)) {
+                $bytes = $bytes * pow(1024, $value);
+                break;
+            }
+        }
+        return $bytes;
     }
 
 }

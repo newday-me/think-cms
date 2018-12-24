@@ -30,6 +30,7 @@ class ManageMenuLinkData extends Data
      *
      * @param string $groupNo
      * @return array
+     * @throws
      */
     public function getGroupMenuNos($groupNo)
     {
@@ -67,6 +68,7 @@ class ManageMenuLinkData extends Data
      * @param string $groupNo
      * @param array $menuNos
      * @return int
+     * @throws
      */
     public function deleteLinkBatch($groupNo, $menuNos)
     {

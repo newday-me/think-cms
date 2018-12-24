@@ -2,12 +2,13 @@
 
 namespace app\manage\service;
 
-use cms\Upload;
 use core\base\Service;
 use core\logic\upload\FileLogic;
 use core\logic\upload\StorageLogic;
-use cms\upload\process\OrientationProcess;
 use core\logic\upload\process\CropProcess;
+use newday\upload\Upload;
+use newday\upload\core\objects\FileInfo;
+use newday\upload\process\OrientationProcess;
 
 class UploadService extends Service
 {
@@ -16,18 +17,17 @@ class UploadService extends Service
      * 上传文件
      *
      * @param array $uploadFile
-     * @return \cms\core\objects\ReturnObject
+     * @return FileInfo|null
      */
     public function upload($uploadFile)
     {
+        $this->resetError();
+        
         try {
             $file = FileLogic::getSingleton()->upload($uploadFile);
             $storage = StorageLogic::getSingleton()->local();
 
-            $option = [
-                'dir' => '/'
-            ];
-            $upload = new Upload($option);
+            $upload = new Upload();
             $upload->setStorage($storage);
 
             // 图片重力
@@ -39,10 +39,11 @@ class UploadService extends Service
                 'height' => 1080
             ]));
 
-            $info = $upload->upload($file);
-            return $this->returnSuccess('上传成功', $info);
+            $path = '/{Y}{m}{d}/{ext}/{hash}.{ext}';
+            return $upload->upload($file, $path);
         } catch (\Exception $e) {
-            return $this->returnError($e->getMessage());
+            $this->setError(self::ERROR_CODE_DEFAULT, $e->getMessage());
+            return null;
         }
     }
 

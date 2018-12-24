@@ -9,7 +9,9 @@ use think\facade\Cache;
 class LoginLogic extends Logic
 {
     /**
-     * 用户令牌Cookie名称
+     * cookie名称
+     *
+     * @var mixed
      */
     const COOKIE_NAME_USER_TOKEN = 'user_token';
 
@@ -66,7 +68,7 @@ class LoginLogic extends Logic
      * 生成用户令牌
      *
      * @param string $userNo
-     * @return string
+     * @return mixed
      */
     protected function generateUserToken($userNo)
     {

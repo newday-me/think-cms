@@ -2,13 +2,14 @@
 
 namespace app\manage\logic;
 
-use core\db\manage\constant\ManageMenuConstant;
-use core\logic\support\DragLogic;
+use think\Loader;
 use think\facade\Url;
-use cms\support\Util;
+use think\facade\Request;
+use core\logic\support\DragLogic;
 use core\db\manage\data\ManageMenuData;
 use core\db\manage\data\ManageUserData;
 use core\logic\support\TreeLogic;
+use core\db\manage\constant\ManageMenuConstant;
 
 class MenuLogic extends DragLogic
 {
@@ -155,7 +156,7 @@ class MenuLogic extends DragLogic
         if (defined('_MODULE_')) {
             return 'module' . '/' . _MODULE_ . '/' . _CONTROLLER_ . '/' . _ACTION_;
         } else {
-            return Util::getSingleton()->getCurrentAction();
+            return Request::module() . '/' . Loader::parseName(Request::controller()) . '/' . Request::action();
         }
     }
 
@@ -167,17 +168,15 @@ class MenuLogic extends DragLogic
      */
     public function onDragOver($fromNo, $toNo)
     {
+        $this->resetError();
+
         $manageMenuData = ManageMenuData::getSingleton();
         $menuSort = $manageMenuData->getMaxMenuSort($toNo);
         $data = [
             'menu_pno' => $toNo,
             'menu_sort' => $menuSort + 1
         ];
-        if ($manageMenuData->updateMenu($fromNo, $data)) {
-            return $this->returnSuccess('操作成功');
-        } else {
-            return $this->returnError('操作失败');
-        }
+        return $manageMenuData->updateMenu($fromNo, $data);
     }
 
     /**
@@ -188,12 +187,15 @@ class MenuLogic extends DragLogic
      */
     public function onDragSide($before, $fromNo, $toNo)
     {
+        $this->resetError();
+
         $manageMenuData = ManageMenuData::getSingleton();
 
         // 查找目标菜单
         $toMenu = $manageMenuData->getMenu($toNo);
         if (empty($toMenu)) {
-            return $this->returnError('目标菜单不存在');
+            $this->setError(self::ERROR_CODE_DEFAULT, '目标菜单不存在');
+            return null;
         }
 
         // 更新上级菜单
@@ -216,7 +218,7 @@ class MenuLogic extends DragLogic
             }
         }
 
-        return $this->returnSuccess('操作成功');
+        return true;
     }
 
 }

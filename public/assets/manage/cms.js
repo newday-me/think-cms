@@ -198,12 +198,13 @@ var CMS = {};
         editModal: '#modal-edit'
     };
 
-    app.recordAdd = function (actionAdd, form, selector) {
+    app.recordAdd = function (actionAdd, form, mixin, selector) {
         form || (form = {});
+        mixin || (mixin = {});
         selector || (selector = app.selector.addModal);
         cms.ui.template(selector);
         new Vue({
-            mixins: [cms.mixin.add()],
+            mixins: [cms.mixin.add(), mixin],
             el: selector,
             data: {
                 selector: selector,
@@ -213,11 +214,12 @@ var CMS = {};
         });
     };
 
-    app.recordEdit = function (actionEdit, dataNo, selector) {
+    app.recordEdit = function (actionEdit, dataNo, mixin, selector) {
+        mixin || (mixin = {});
         selector || (selector = app.selector.editModal);
         cms.ui.template(selector);
         new Vue({
-            mixins: [cms.mixin.edit()],
+            mixins: [cms.mixin.edit(), mixin],
             el: selector,
             data: {
                 selector: selector,
@@ -663,13 +665,18 @@ var CMS = {};
     init.jsonEditor = function (selector) {
         require(['codemirror', 'code-json'], function (CodeMirror) {
             var element = $(selector);
-            element.val(JSON.stringify(JSON.parse(element.val()), null, 2));
+            var value = element.val() ? element.val() : '{}';
+            element.val(JSON.stringify(JSON.parse(value), null, 2));
 
-            CodeMirror.fromTextArea(selector, {
+            var editor = CodeMirror.fromTextArea(selector, {
                 mode: 'application/json',
                 theme: 'eclipse',
                 lineNumbers: true,
                 lint: true
+            });
+
+            editor.on('change', function () {
+                element.val(editor.getValue())
             });
         });
     };
@@ -679,11 +686,15 @@ var CMS = {};
             var element = $(selector);
             element.val(beautifyHtml.html_beautify(element.val()));
 
-            CodeMirror.fromTextArea(selector, {
+            var editor = CodeMirror.fromTextArea(selector, {
                 mode: 'text/html',
                 theme: 'eclipse',
                 lineNumbers: true,
                 lint: true
+            });
+
+            editor.on('change', function () {
+                element.val(editor.getValue())
             });
         });
     };

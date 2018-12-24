@@ -36,7 +36,6 @@ class TreeLogic extends Logic
      * @param array $tree
      * @param \Closure $func
      * @param int $depth
-     * @return mixed
      */
     public function travelTree(&$tree, $func, $depth = 1)
     {

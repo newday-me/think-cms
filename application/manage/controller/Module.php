@@ -16,7 +16,7 @@ class Module extends Base
     {
         if (empty($template)) {
             $moduleViewPath = Env::get('APP_PATH') . 'module/' . _MODULE_ . '/view/';
-            $template = $moduleViewPath . \think\Loader::parseName(_CONTROLLER_) . '/' . _ACTION_ . '.html';
+            $template = $moduleViewPath . _CONTROLLER_ . '/' . _ACTION_ . '.html';
         }
         return parent::fetch($template, $vars, $config, $renderContent);
     }

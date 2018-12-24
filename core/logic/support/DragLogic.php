@@ -13,10 +13,12 @@ abstract class DragLogic extends Logic
      * @param string $mode
      * @param string $fromNo
      * @param string $toNo
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function drag($mode, $fromNo, $toNo)
     {
+        $this->resetError();
+        
         switch ($mode) {
             case 'over':
                 return $this->onDragOver($fromNo, $toNo);
@@ -28,7 +30,8 @@ abstract class DragLogic extends Logic
                 return $this->onDragSide(false, $fromNo, $toNo);
                 break;
             default:
-                return $this->returnError('未知拖动操作');
+                $this->setError(self::ERROR_CODE_DEFAULT, '未知拖动操作');
+                return null;
         }
     }
 
@@ -37,7 +40,7 @@ abstract class DragLogic extends Logic
      *
      * @param string $fromNo
      * @param string $toNo
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     abstract public function onDragOver($fromNo, $toNo);
 
@@ -47,7 +50,7 @@ abstract class DragLogic extends Logic
      * @param bool $before
      * @param string $fromNo
      * @param string $toNo
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     abstract public function onDragSide($before, $fromNo, $toNo);
 

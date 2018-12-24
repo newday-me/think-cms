@@ -49,8 +49,12 @@ class Menu extends Base
             'menu_target' => $this->request->param('menu_target'),
             'menu_show' => $this->request->param('menu_show')
         ];
-        $return = MenuService::getSingleton()->createMenu($data);
-        $this->response($return);
+        $result = MenuService::getSingleton()->createMenu($data);
+        if ($result) {
+            $this->success('添加菜单成功');
+        } else {
+            $this->error(MenuService::getSingleton()->getErrorInfo());
+        }
     }
 
     /**
@@ -66,8 +70,12 @@ class Menu extends Base
         $action = $this->request->param('action');
         switch ($action) {
             case 'get':
-                $return = MenuService::getSingleton()->getMenu($menuNo);
-                $this->response($return);
+                $data = MenuService::getSingleton()->getMenu($menuNo);
+                if ($data) {
+                    $this->success('操作成功', '', $data);
+                } else {
+                    $this->error(MenuService::getSingleton()->getErrorInfo());
+                }
                 break;
             case 'save':
                 $data = [
@@ -79,8 +87,12 @@ class Menu extends Base
                     'menu_target' => $this->request->param('menu_target'),
                     'menu_show' => $this->request->param('menu_show')
                 ];
-                $return = MenuService::getSingleton()->updateMenu($menuNo, $data);
-                $this->response($return);
+                $result = MenuService::getSingleton()->updateMenu($menuNo, $data);
+                if ($result) {
+                    $this->success('操作成功');
+                } else {
+                    $this->error(MenuService::getSingleton()->getErrorInfo());
+                }
                 break;
             default:
                 $this->error('未知操作');
@@ -107,8 +119,12 @@ class Menu extends Base
             $this->error('值为空');
         }
 
-        $return = MenuService::getSingleton()->modifyMenu($menuNo, $field, $value);
-        $this->response($return);
+        $result = MenuService::getSingleton()->modifyMenu($menuNo, $field, $value);
+        if ($result) {
+            $this->success('操作成功');
+        } else {
+            $this->error(MenuService::getSingleton()->getErrorInfo());
+        }
     }
 
     /**
@@ -128,8 +144,12 @@ class Menu extends Base
             $this->error('目标菜单编号为空');
         }
 
-        $return = MenuService::getSingleton()->dragMenu($mode, $fromNo, $toNo);
-        $this->response($return);
+        $result = MenuService::getSingleton()->dragMenu($mode, $fromNo, $toNo);
+        if ($result) {
+            $this->success('操作成功');
+        } else {
+            $this->error(MenuService::getSingleton()->getErrorInfo());
+        }
     }
 
     /**
@@ -142,8 +162,12 @@ class Menu extends Base
             $this->error('菜单编号为空');
         }
 
-        $return = MenuService::getSingleton()->deleteMenu($menuNo);
-        $this->response($return);
+        $result = MenuService::getSingleton()->deleteMenu($menuNo);
+        if ($result) {
+            $this->success('操作成功');
+        } else {
+            $this->error(MenuService::getSingleton()->getErrorInfo());
+        }
     }
 
 }

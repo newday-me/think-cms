@@ -2,9 +2,9 @@
 
 namespace core\db\manage\data;
 
-use core\db\manage\model\ManageUserLoginModel;
-use think\facade\Request;
 use core\base\Data;
+use think\facade\Request;
+use core\db\manage\model\ManageUserLoginModel;
 
 class ManageUserLoginData extends Data
 {
@@ -23,7 +23,7 @@ class ManageUserLoginData extends Data
             'login_agent' => Request::header('user-agent')
         ];
         $record = ManageUserLoginModel::create($data);
-        return $this->recordToArray($record);
+        return $this->transToArray($record);
     }
 
     /**
@@ -33,11 +33,12 @@ class ManageUserLoginData extends Data
      * @param int $page
      * @param int $pageSize
      * @return array
+     * @throws
      */
     public function getLogListPage($closure, $page, $pageSize)
     {
         $list = ManageUserLoginModel::getInstance()->with('user')->where($closure)->page($page, $pageSize)->select();
-        return $this->listToArray($list);
+        return $this->transToArray($list);
     }
 
     /**

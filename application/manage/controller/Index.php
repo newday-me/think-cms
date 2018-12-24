@@ -29,6 +29,8 @@ class Index extends Base
 
     /**
      * 缓存清理
+     *
+     * @return string
      */
     public function runtime()
     {
@@ -46,10 +48,10 @@ class Index extends Base
             RuntimeService::getSingleton()->clearRuntime($paths, $option);
 
             $this->success('清除缓存成功');
-        } else {
-            $this->assign('site_title', '缓存清理');
-            return $this->fetch();
         }
+
+        $this->assign('site_title', '缓存清理');
+        return $this->fetch();
     }
 
 }

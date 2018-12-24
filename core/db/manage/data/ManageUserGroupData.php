@@ -17,7 +17,7 @@ class ManageUserGroupData extends Data
     public function createGroup($data)
     {
         $record = ManageUserGroupModel::create($data);
-        return $this->recordToArray($record);
+        return $this->transToArray($record);
     }
 
     /**
@@ -25,25 +25,27 @@ class ManageUserGroupData extends Data
      *
      * @param string $groupNo
      * @return array|null
+     * @throws
      */
     public function getGroup($groupNo)
     {
         $map = [
             'group_no' => $groupNo
         ];
-        $record = ManageUserGroupModel::get($map);
-        return $this->recordToArray($record);
+        $record = ManageUserGroupModel::getInstance()->get($map);
+        return $this->transToArray($record);
     }
 
     /**
      * 获取群组列表
      *
      * @return array
+     * @throws
      */
     public function getGroupList()
     {
         $list = ManageUserGroupModel::getInstance()->order('group_sort asc')->select();
-        return $this->listToArray($list);
+        return $this->transToArray($list);
     }
 
     /**
@@ -51,6 +53,7 @@ class ManageUserGroupData extends Data
      *
      * @param string $groupNo
      * @return array
+     * @throws
      */
     public function getSubGroupList($groupNo)
     {
@@ -58,7 +61,7 @@ class ManageUserGroupData extends Data
             'group_pno' => $groupNo
         ];
         $list = ManageUserGroupModel::getInstance()->where($map)->order('group_sort asc')->select();
-        return $this->listToArray($list);
+        return $this->transToArray($list);
     }
 
     /**
@@ -140,6 +143,7 @@ class ManageUserGroupData extends Data
      *
      * @param string $groupNo
      * @return int
+     * @throws
      */
     public function deleteMenu($groupNo)
     {

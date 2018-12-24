@@ -2,7 +2,6 @@
 
 namespace app\manage\service;
 
-use app\manage\logic\LoginLogic;
 use think\db\Query;
 use think\facade\Url;
 use core\base\Service;
@@ -13,6 +12,7 @@ use core\db\manage\validate\ManageUserValidate;
 use app\manage\logic\WidgetLogic;
 use app\manage\logic\UserLogic;
 use app\manage\logic\PageLogic;
+use app\manage\logic\LoginLogic;
 
 class UserService extends Service
 {
@@ -21,20 +21,23 @@ class UserService extends Service
      * 获取用户
      *
      * @param string $userNo
-     * @return \cms\core\objects\ReturnObject
+     * @return array|null
      */
     public function getUser($userNo)
     {
+        $this->resetError();
+
         $user = ManageUserData::getSingleton()->getUser($userNo);
         if (empty($user)) {
-            return $this->returnError('用户不存在');
+            $this->setError(self::ERROR_CODE_DEFAULT, '用户不存在');
+            return null;
         } else {
-            return $this->returnSuccess('获取成功', [
+            return [
                 'user_no' => $user['user_no'],
                 'user_name' => $user['user_name'],
                 'user_nick' => $user['user_nick'],
                 'user_status' => $user['user_status']
-            ]);
+            ];
         }
     }
 
@@ -53,13 +56,16 @@ class UserService extends Service
      * 创建用户
      *
      * @param array $data
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function createUser($data)
     {
+        $this->resetError();
+
         $validate = ManageUserValidate::getSingleton();
         if (!$validate->scene('add')->check($data)) {
-            return $this->returnError($validate->getError());
+            $this->setError(self::ERROR_CODE_DEFAULT, $validate->getError());
+            return null;
         }
 
         // 加密密码
@@ -67,9 +73,10 @@ class UserService extends Service
 
         $user = ManageUserData::getSingleton()->createUser($data);
         if ($user) {
-            return $this->returnSuccess('创建成功');
+            return true;
         } else {
-            return $this->returnError('创建失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '创建用户失败');
+            return null;
         }
     }
 
@@ -78,13 +85,16 @@ class UserService extends Service
      *
      * @param string $userNo
      * @param array $data
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function updateUser($userNo, $data)
     {
+        $this->resetError();
+
         $validate = ManageUserValidate::getSingleton();
         if (!$validate->scene('edit')->check($data)) {
-            return $this->returnError($validate->getError());
+            $this->setError(self::ERROR_CODE_DEFAULT, $validate->getError());
+            return null;
         }
 
         // 加密密码
@@ -95,9 +105,10 @@ class UserService extends Service
         }
 
         if (ManageUserData::getSingleton()->updateUser($userNo, $data)) {
-            return $this->returnSuccess('保存成功');
+            return true;
         } else {
-            return $this->returnSuccess('保存失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '保存用户失败');
+            return null;
         }
     }
 
@@ -105,13 +116,16 @@ class UserService extends Service
      * 更新账号
      *
      * @param array $data
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function updateAccount($data)
     {
+        $this->resetError();
+
         $validate = ManageUserValidate::getSingleton();
         if (!$validate->scene('account')->check($data)) {
-            return $this->returnError($validate->getError());
+            $this->setError(self::ERROR_CODE_DEFAULT, $validate->getError());
+            return null;
         }
 
         // 加密密码
@@ -123,9 +137,10 @@ class UserService extends Service
 
         $userNo = LoginLogic::getSingleton()->getLoginUserNo();
         if (ManageUserData::getSingleton()->updateUser($userNo, $data)) {
-            return $this->returnSuccess('保存成功');
+            return true;
         } else {
-            return $this->returnError('保存失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '保存用户失败');
+            return null;
         }
     }
 
@@ -202,24 +217,28 @@ class UserService extends Service
      * @param string $userNo
      * @param string $field
      * @param string $value
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function modifyUser($userNo, $field, $value)
     {
+        $this->resetError();
+
         $allowField = [
             'user_status'
         ];
         if (!in_array($field, $allowField)) {
-            return $this->returnError('非法的字段名');
+            $this->setError(self::ERROR_CODE_DEFAULT, '非法的字段名');
+            return null;
         }
 
         $data = [
             $field => $value
         ];
         if (ManageUserData::getSingleton()->updateUser($userNo, $data)) {
-            return $this->returnSuccess('操作成功');
+            return true;
         } else {
-            return $this->returnError('保存失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '保存用户失败');
+            return null;
         }
     }
 
@@ -227,23 +246,28 @@ class UserService extends Service
      * 删除用户
      *
      * @param string $userNo
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function deleteUser($userNo)
     {
+        $this->resetError();
+
         $user = ManageUserData::getSingleton()->getUser($userNo);
         if (empty($user)) {
-            return $this->returnError('用户不存在');
+            $this->setError(self::ERROR_CODE_DEFAULT, '用户不存在');
+            return null;
         }
 
         if (ManageUserData::getSingleton()->isSuperUser($user)) {
-            return $this->returnError('超级管理员不能删除');
+            $this->setError(self::ERROR_CODE_DEFAULT, '超级管理员不能删除');
+            return null;
         }
 
         if (ManageUserData::getSingleton()->deleteUser($userNo)) {
-            return $this->returnSuccess('删除成功');
+            return true;
         } else {
-            return $this->returnError('删除失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '删除用户失败');
+            return null;
         }
     }
 

@@ -5,11 +5,11 @@ namespace app\manage\service;
 use think\facade\Url;
 use core\base\Service;
 use core\logic\support\TreeLogic;
+use app\manage\logic\MenuLogic;
+use app\manage\logic\WidgetLogic;
 use core\db\manage\data\ManageMenuData;
 use core\db\manage\validate\ManageMenuValidate;
 use core\db\manage\constant\ManageMenuConstant;
-use app\manage\logic\MenuLogic;
-use app\manage\logic\WidgetLogic;
 
 class MenuService extends Service
 {
@@ -72,13 +72,15 @@ class MenuService extends Service
      * 获取菜单
      *
      * @param string $menuNo
-     * @return \cms\core\objects\ReturnObject
+     * @return array|null
      */
     public function getMenu($menuNo)
     {
+        $this->resetError();
+
         $menu = ManageMenuData::getSingleton()->getMenu($menuNo);
         if ($menu) {
-            return $this->returnSuccess('获取成功', [
+            return [
                 'menu_no' => $menu['menu_no'],
                 'menu_name' => $menu['menu_name'],
                 'menu_icon' => $menu['menu_icon'],
@@ -87,9 +89,10 @@ class MenuService extends Service
                 'menu_target' => $menu['menu_target'],
                 'menu_type' => $menu['menu_type'],
                 'menu_status' => $menu['menu_status'],
-            ]);
+            ];
         } else {
-            return $this->returnError('菜单不存在');
+            $this->setError(self::ERROR_CODE_DEFAULT, '菜单不存在');
+            return null;
         }
     }
 
@@ -97,13 +100,16 @@ class MenuService extends Service
      * 创建菜单
      *
      * @param array $data
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function createMenu($data)
     {
+        $this->resetError();
+
         $validate = ManageMenuValidate::getSingleton();
         if (!$validate->scene('add')->check($data)) {
-            return $this->returnError($validate->getError());
+            $this->setError(self::ERROR_CODE_DEFAULT, $validate->getError());
+            return null;
         }
 
         // 菜单操作
@@ -111,9 +117,10 @@ class MenuService extends Service
 
         $menu = ManageMenuData::getSingleton()->createMenu($data);
         if ($menu) {
-            return $this->returnSuccess('创建成功');
+            return true;
         } else {
-            return $this->returnError('创建失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '创建菜单失败');
+            return null;
         }
     }
 
@@ -122,22 +129,26 @@ class MenuService extends Service
      *
      * @param string $menuNo
      * @param array $data
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function updateMenu($menuNo, $data)
     {
+        $this->resetError();
+
         $validate = ManageMenuValidate::getSingleton();
         if (!$validate->scene('edit')->check($data)) {
-            return $this->returnError($validate->getError());
+            $this->setError(self::ERROR_CODE_DEFAULT, $validate->getError());
+            return null;
         }
 
         // 菜单操作
         $data['menu_action'] = MenuLogic::getSingleton()->parseMenuAction($data['menu_url'], $data['menu_build']);
 
         if (ManageMenuData::getSingleton()->updateMenu($menuNo, $data)) {
-            return $this->returnSuccess('保存成功');
+            return true;
         } else {
-            return $this->returnSuccess('保存失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '更新菜单失败');
+            return null;
         }
     }
 
@@ -147,25 +158,29 @@ class MenuService extends Service
      * @param string $menuNo
      * @param string $field
      * @param string $value
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function modifyMenu($menuNo, $field, $value)
     {
+        $this->resetError();
+
         $allowField = [
             'menu_type',
             'menu_status'
         ];
         if (!in_array($field, $allowField)) {
-            return $this->returnError('非法的字段名');
+            $this->setError(self::ERROR_CODE_DEFAULT, '非法的字段名');
+            return null;
         }
 
         $data = [
             $field => $value
         ];
         if (ManageMenuData::getSingleton()->updateMenu($menuNo, $data)) {
-            return $this->returnSuccess('操作成功');
+            return true;
         } else {
-            return $this->returnError('保存失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '更新菜单失败');
+            return null;
         }
     }
 
@@ -175,30 +190,42 @@ class MenuService extends Service
      * @param string $mode
      * @param string $fromNo
      * @param string $toNo
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function dragMenu($mode, $fromNo, $toNo)
     {
-        return MenuLogic::getSingleton()->drag($mode, $fromNo, $toNo);
+        $this->resetError();
+
+        $result = MenuLogic::getSingleton()->drag($mode, $fromNo, $toNo);
+        if ($result) {
+            return true;
+        } else {
+            $this->setErrorByObject(MenuLogic::getSingleton());
+            return null;
+        }
     }
 
     /**
      * 删除菜单
      *
      * @param string $menuNo
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function deleteMenu($menuNo)
     {
+        $this->resetError();
+
         $menuCount = ManageMenuData::getSingleton()->getSubMenuCount($menuNo);
         if ($menuCount) {
-            return $this->returnError('请先删除该菜单下的子菜单');
+            $this->setError(self::ERROR_CODE_DEFAULT, '请先删除该菜单下的子菜单');
+            return null;
         }
 
         if (ManageMenuData::getSingleton()->deleteMenu($menuNo)) {
-            return $this->returnSuccess('删除成功');
+            return true;
         } else {
-            return $this->returnError('删除失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '删除菜单失败');
+            return null;
         }
     }
 

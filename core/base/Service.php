@@ -2,14 +2,16 @@
 
 namespace core\base;
 
-use cms\core\traits\InstanceTrait;
-use cms\core\traits\ReturnTrait;
+use core\traits\ErrorTrait;
+use core\traits\InstanceTrait;
 
 class Service
 {
-    // 实例trait
     use InstanceTrait;
+    use ErrorTrait;
 
-    // 返回trait
-    use ReturnTrait;
+    /**
+     * 默认错误码
+     */
+    const ERROR_CODE_DEFAULT = 0;
 }

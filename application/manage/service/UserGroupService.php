@@ -15,19 +15,22 @@ class UserGroupService extends Service
      * 获取群组
      *
      * @param string $groupNo
-     * @return \cms\core\objects\ReturnObject
+     * @return array|null
      */
     public function getGroup($groupNo)
     {
+        $this->resetError();
+
         $group = ManageUserGroupData::getSingleton()->getGroup($groupNo);
         if ($group) {
-            return $this->returnSuccess('获取成功', [
+            return [
                 'group_no' => $group['group_no'],
                 'group_name' => $group['group_name'],
                 'group_info' => $group['group_info'],
-            ]);
+            ];
         } else {
-            return $this->returnError('群组不存在');
+            $this->setError(self::ERROR_CODE_DEFAULT, '群组不存在');
+            return null;
         }
     }
 
@@ -45,11 +48,19 @@ class UserGroupService extends Service
      * 获取群组的菜单树
      *
      * @param string $groupNo
-     * @return \cms\core\objects\ReturnObject
+     * @return array|null
      */
     public function getGroupMenuTree($groupNo)
     {
-        return UserGroupLogic::getSingleton()->getGroupMenuTree($groupNo);
+        $this->resetError();
+
+        $menuTree = UserGroupLogic::getSingleton()->getGroupMenuTree($groupNo);
+        if ($menuTree) {
+            return $menuTree;
+        } else {
+            $this->setErrorByObject(UserGroupLogic::getSingleton());
+            return null;
+        }
     }
 
     /**
@@ -57,32 +68,34 @@ class UserGroupService extends Service
      *
      * @param string $groupNo
      * @param array $menuNos
-     * @return \cms\core\objects\ReturnObject
      */
     public function saveGroupAuth($groupNo, $menuNos)
     {
         ManageMenuLinkData::getSingleton()->saveGroupMenuNos($groupNo, $menuNos);
-        return $this->returnSuccess('操作成功');
     }
 
     /**
      * 创建群组
      *
      * @param array $data
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function createGroup($data)
     {
+        $this->resetError();
+
         $validate = ManageUserGroupValidate::getSingleton();
         if (!$validate->scene('add')->check($data)) {
-            return $this->returnError($validate->getError());
+            $this->setError(self::ERROR_CODE_DEFAULT, $validate->getError());
+            return null;
         }
 
         $group = ManageUserGroupData::getSingleton()->createGroup($data);
         if ($group) {
-            return $this->returnSuccess('创建成功');
+            return true;
         } else {
-            return $this->returnError('创建失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '创建群组失败');
+            return null;
         }
     }
 
@@ -91,19 +104,23 @@ class UserGroupService extends Service
      *
      * @param string $groupNo
      * @param array $data
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function updateGroup($groupNo, $data)
     {
+        $this->resetError();
+
         $validate = ManageUserGroupValidate::getSingleton();
         if (!$validate->scene('edit')->check($data)) {
-            return $this->returnError($validate->getError());
+            $this->setError(self::ERROR_CODE_DEFAULT, $validate->getError());
+            return null;
         }
 
         if (ManageUserGroupData::getSingleton()->updateGroup($groupNo, $data)) {
-            return $this->returnSuccess('保存成功');
+            return true;
         } else {
-            return $this->returnError('保存失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '更新群组失败');
+            return null;
         }
     }
 
@@ -113,30 +130,42 @@ class UserGroupService extends Service
      * @param string $mode
      * @param string $fromGroupNo
      * @param string $toGroupNo
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function dragGroup($mode, $fromGroupNo, $toGroupNo)
     {
-        return UserGroupLogic::getSingleton()->drag($mode, $fromGroupNo, $toGroupNo);
+        $this->resetError();
+
+        $result = UserGroupLogic::getSingleton()->drag($mode, $fromGroupNo, $toGroupNo);
+        if ($result) {
+            return $result;
+        } else {
+            $this->setErrorByObject(UserGroupLogic::getSingleton());
+            return null;
+        }
     }
 
     /**
      * 删除群组
      *
      * @param string $groupNo
-     * @return \cms\core\objects\ReturnObject
+     * @return bool|null
      */
     public function deleteGroup($groupNo)
     {
+        $this->resetError();
+
         $groupCount = ManageUserGroupData::getSingleton()->getSubGroupCount($groupNo);
         if ($groupCount) {
-            return $this->returnError('请先删除该群组下的子群组');
+            $this->setError(self::ERROR_CODE_DEFAULT, '请先删除该群组下的子群组');
+            return null;
         }
 
         if (ManageUserGroupData::getSingleton()->deleteMenu($groupNo)) {
-            return $this->returnSuccess('删除成功');
+            return true;
         } else {
-            return $this->returnError('删除失败');
+            $this->setError(self::ERROR_CODE_DEFAULT, '删除群组失败');
+            return null;
         }
     }
 

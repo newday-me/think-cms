@@ -3,10 +3,9 @@
 namespace app\manage\service;
 
 use think\Db;
+use think\App;
 use think\facade\Env;
 use think\facade\Request;
-use think\App;
-use cms\support\Util;
 use core\base\Service;
 
 class IndexService extends Service
@@ -18,7 +17,6 @@ class IndexService extends Service
      */
     public function getServerInfo()
     {
-        $util = Util::getSingleton();
         $mysqlVersion = Db::query('select version() as version');
         $serverInfo = [
             'ThinkPHP版本' => 'ThinkPHP ' . App::VERSION,
@@ -36,13 +34,36 @@ class IndexService extends Service
             'POST限制' => ini_get('post_max_size'),
             '最大内存' => ini_get('memory_limit'),
             '执行时间限制' => ini_get('max_execution_time') . "秒",
-            '内存使用' => $util->formatBytes(@memory_get_usage()),
-            '磁盘使用' => $util->formatBytes(@disk_free_space('.')) . '/' . $util->formatBytes(@disk_total_space('.')),
+            '内存使用' => $this->formatBytes(@memory_get_usage()),
+            '磁盘使用' => $this->formatBytes(@disk_free_space('.')) . '/' . $this->formatBytes(@disk_total_space('.')),
             'display_errors' => ini_get("display_errors") == "1" ? '√' : '×',
             'register_globals' => get_cfg_var("register_globals") == "1" ? '√' : '×',
             'magic_quotes_gpc' => (1 === get_magic_quotes_gpc()) ? '√' : '×',
             'magic_quotes_runtime' => (1 === get_magic_quotes_runtime()) ? '√' : '×'
         ];
         return $serverInfo;
+    }
+
+    /**
+     * 文件大小格式化
+     *
+     * @param number $size
+     * @param string $delimiter
+     * @return string
+     */
+    public function formatBytes($size, $delimiter = '')
+    {
+        $units = [
+            'B',
+            'KB',
+            'MB',
+            'GB',
+            'TB',
+            'PB'
+        ];
+        for ($i = 0; $size >= 1024 && $i < 5; $i++) {
+            $size /= 1024;
+        }
+        return round($size, 2) . $delimiter . $units[$i];
     }
 }

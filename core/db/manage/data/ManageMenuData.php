@@ -17,7 +17,7 @@ class ManageMenuData extends Data
     public function createMenu($data)
     {
         $record = ManageMenuModel::create($data);
-        return $this->recordToArray($record);
+        return $this->transToArray($record);
     }
 
     /**
@@ -25,14 +25,15 @@ class ManageMenuData extends Data
      *
      * @param string $menuNo
      * @return array|null
+     * @throws
      */
     public function getMenu($menuNo)
     {
         $map = [
             'menu_no' => $menuNo
         ];
-        $record = ManageMenuModel::get($map);
-        return $this->recordToArray($record);
+        $record = ManageMenuModel::getInstance()->get($map);
+        return $this->transToArray($record);
     }
 
     /**
@@ -40,25 +41,27 @@ class ManageMenuData extends Data
      *
      * @param string $menuAction
      * @return array|null
+     * @throws
      */
     public function getMenuByMenuAction($menuAction)
     {
         $map = [
             'menu_action' => $menuAction
         ];
-        $record = ManageMenuModel::get($map);
-        return $this->recordToArray($record);
+        $record = ManageMenuModel::getInstance()->get($map);
+        return $this->transToArray($record);
     }
 
     /**
      * 获取菜单列表
      *
      * @return array
+     * @throws
      */
     public function getMenuList()
     {
         $list = ManageMenuModel::getInstance()->order('menu_sort asc')->select();
-        return $this->listToArray($list);
+        return $this->transToArray($list);
     }
 
     /**
@@ -66,6 +69,7 @@ class ManageMenuData extends Data
      *
      * @param string $menuNo
      * @return array
+     * @throws
      */
     public function getSubMenuList($menuNo)
     {
@@ -73,7 +77,7 @@ class ManageMenuData extends Data
             'menu_pno' => $menuNo
         ];
         $list = ManageMenuModel::getInstance()->where($map)->order('menu_sort asc')->select();
-        return $this->listToArray($list);
+        return $this->transToArray($list);
     }
 
     /**
@@ -155,6 +159,7 @@ class ManageMenuData extends Data
      *
      * @param string $menuNo
      * @return int
+     * @throws
      */
     public function deleteMenu($menuNo)
     {

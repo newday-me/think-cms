@@ -44,7 +44,7 @@ class Index extends Module
         $this->assign('tag_html', $tagHtml);
 
         // 颜色
-        $colorHtml = $widget->form('textarea', [
+        $colorHtml = $widget->form('color', [
             'title' => '颜色',
             'value' => '#000'
         ]);
